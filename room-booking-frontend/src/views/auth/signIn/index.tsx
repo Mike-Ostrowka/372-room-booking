@@ -107,30 +107,6 @@ function SignIn() {
           me="auto"
           mb={{ base: "20px", md: "auto" }}
         >
-          <Button
-            fontSize="sm"
-            me="0px"
-            mb="26px"
-            py="15px"
-            h="50px"
-            borderRadius="16px"
-            bg={googleBg}
-            color={googleText}
-            fontWeight="500"
-            _hover={googleHover}
-            _active={googleActive}
-            _focus={googleActive}
-          >
-            <Icon as={FcGoogle} w="20px" h="20px" me="10px" />
-            Sign in with Google
-          </Button>
-          <Flex align="center" mb="25px">
-            <HSeparator />
-            <Text color="gray.400" mx="14px">
-              or
-            </Text>
-            <HSeparator />
-          </Flex>
           <FormControl>
             <FormLabel
               display="flex"
@@ -181,24 +157,7 @@ function SignIn() {
                 />
               </InputRightElement>
             </InputGroup>
-            <Flex justifyContent="space-between" align="center" mb="24px">
-              <FormControl display="flex" alignItems="center">
-                <Checkbox
-                  id="remember-login"
-                  colorScheme="brandScheme"
-                  me="10px"
-                />
-                <FormLabel
-                  htmlFor="remember-login"
-                  mb="0"
-                  fontWeight="normal"
-                  color={textColor}
-                  fontSize="sm"
-                >
-                  Keep me logged in
-                </FormLabel>
-              </FormControl>
-            </Flex>
+
             <Button
               fontSize="sm"
               variant="brand"
