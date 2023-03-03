@@ -12,3 +12,17 @@ vite
 OR
 npm start
 ```
+
+## Building:
+
+Build into dist folder
+```
+npm run build 
+```
+
+Run the built version of the application locally:
+```
+npm run preview
+```
+
+
