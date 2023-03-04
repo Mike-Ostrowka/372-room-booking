@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./assets/css/App.css";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-import AuthLayout from "./layouts/auth";
+import AuthSignUpLayout from "./layouts/auth/AuthSignUp";
+import AuthSignInLayout from "./layouts/auth/AuthSignIn";
 import AdminLayout from "./layouts/admin";
 import RTLLayout from "./layouts/rtl";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -13,10 +14,11 @@ ReactDOM.render(
     <React.StrictMode>
       <HashRouter>
         <Switch>
-          <Route path={`/auth`} component={AuthLayout} />
+          <Route path={`/auth/sign-up`} component={AuthSignUpLayout} />
+          <Route path={`/auth/sign-in`} component={AuthSignInLayout} />
           <Route path={`/admin`} component={AdminLayout} />
           <Route path={`/rtl`} component={RTLLayout} />
-          <Redirect from="/" to="/admin" />
+          {/* <Redirect from="/" to="/admin" /> */}
         </Switch>
       </HashRouter>
     </React.StrictMode>
