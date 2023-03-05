@@ -2,7 +2,7 @@ $(document).ready(function(){
     console.log("call GET users-api")
     $.ajax({
         method: 'get',
-        url: '/users-api',
+        url: '/bookings-api',
         data:'',
         success: printBookings
     })
@@ -18,7 +18,7 @@ function printBookings(data){
         var name = $(this).parent().text().split(" ")
         $.ajax({
             method: 'delete',
-            url: '/users-api/'+name[2],
+            url: '/bookings-api/'+name[2],
             data:'',
             success: printBookings
         })
@@ -28,9 +28,9 @@ function printBookings(data){
 function addBooking(){
     $.ajax({
         method: 'post',
-        url: '/users-api',
-        data:'fname='+$('#fname').val()+'&lname='+$('#lname').val()+
-              '&pid='+$('#pid').val(),
+        url: '/bookings-api',
+        data:'id='+`${self.crypto.randomUUID()}`+'&start='+$('#bookingDateInput').val()+
+              '&room='+$('#bookingRoom').val(),
         success: printBookings
     })
 }
