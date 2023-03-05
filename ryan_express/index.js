@@ -18,7 +18,7 @@ var options = {
     dotfiles: 'ignore',
     extensions: ['htm', 'html', 'json']
 };
-app.use('/', express.static('/pub_html'), options);
+app.use('/', express.static('./pub_html', options));
 app.use('/', function (req, res, next) {
     console.log(req.method, 'request: ', req.url, JSON.stringify(req.body));
     next();
