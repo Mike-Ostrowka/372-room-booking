@@ -29,7 +29,7 @@ function addBooking(){
     $.ajax({
         method: 'post',
         url: '/bookings-api',
-        data:'id='+`${self.crypto.randomUUID()}`+'&start='+$('#bookingDateInput').val()+
+        data:'id='+`12`+'&start='+$('#bookingDateInput').val()+
               '&room='+$('#bookingRoom').val(),
         success: printBookings
     })
