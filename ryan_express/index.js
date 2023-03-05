@@ -18,7 +18,7 @@ var options = {
     dotfiles: 'ignore',
     extensions: ['htm', 'html', 'json']
 };
-app.use('/', express.static('./pub_html', options));
+app.use('/', express.static('/pub_html', options));
 app.use('/', function (req, res, next) {
     console.log(req.method, 'request: ', req.url, JSON.stringify(req.body));
     next();
@@ -29,6 +29,7 @@ app.get('/bookings-api', function (request, response) {
     response.json(bookings);
 });
 app.post('/bookings-api', function (request, response) {
+    console.log(request.body);
     bookings.push(request.body);
 });
 app.listen(port, function () {

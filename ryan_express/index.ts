@@ -25,7 +25,7 @@ let options:object = {
     extensions: ['htm', 'html', 'json']
 };
 
-app.use('/', express.static('/pub_html'), options);
+app.use('/', express.static('/pub_html', options));
 app.use('/', function(req:any, res:any, next:any){
     console.log(req.method, 'request: ', req.url, JSON.stringify(req.body));
     next();
@@ -39,6 +39,7 @@ app.get('/bookings-api', (request:any, response:any) => {
 });
 
 app.post('/bookings-api', (request:any, response:any) => {
+    console.log(request.body);
     bookings.push(request.body);
 });
 
