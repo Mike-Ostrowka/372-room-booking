@@ -25,6 +25,19 @@ function printBookings(data){
     })
 }
 
+function loginCallback(data){
+    console.log(data.success);
+}
+
+function login(){
+    $.ajax({
+        method: 'post',
+        url: '/login-api',
+        data: 'username='+$('#usernameEntry').val()+'&password='+$('#passwordEntry').val(),
+        success: loginCallback
+    })
+}
+
 function addBooking(){
     $.ajax({
         method: 'post',
