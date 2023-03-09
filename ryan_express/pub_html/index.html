@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <label for="bookingDate">Date:</label>
+        <input type="date" name="bookingDate" id="bookingDateInput"><br>
+        <label for="bookingRoom">Room Name:</label>
+        <input type="text" name="bookingRoom" id="bookingRoom"><br>
+        <label for="bookingLength">Length (in minutes):</label>
+        <input type="number" name="bookingLength" id="bookingLength"><br>
+    </form>
+    <button id="bookingSubmitButton" onclick="addBooking()">SUBMIT</button>
+    <form>
+        <label for="usernameEntry">Username:</label>
+        <input type="text" name="usernameEntry" id="usernameEntry"><br>
+        <label for="passwordEntry">Password:</label>
+        <input type="password" name="passwordEntry" id="passwordEntry"><br>
+    </form>
+    <button id="authenticationSubmit" onclick="login()">Login</button>
+</body>
+
+<script src="./js/jquery.min.js"></script>
+<script src="./js/script.js"></script>
+</html>
