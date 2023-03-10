@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 // Chakra imports
 import {
   Box,
@@ -14,9 +14,9 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Stack,
   Text,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 // Custom components
 import DefaultAuth from "layouts/auth/Default";
@@ -34,6 +34,9 @@ function SignIn() {
   const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
   const textColorBrand = useColorModeValue("brand.500", "white");
   const brandStars = useColorModeValue("brand.500", "brand.400");
+
+  const toast = useToast();
+  const history = useHistory();
 
   const [show, setShow] = React.useState(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(UserContext);
@@ -54,11 +57,48 @@ function SignIn() {
       .required("Required"),
   });
 
-  const onSubmit = (values: any, { setSubmitting }: any) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
+  const onSubmit = async (values: any, { setSubmitting, setErrors }: any) => {
+    const email = values.email;
+    const password = values.password;
+    const data = {
+      username: email,
+      password: password,
+    };
+    try {
+      const response = await fetch("http://localhost:8080/login-api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const responseData = await response.json();
+      console.log("DATA: ", responseData);
+      if (responseData.success) {
+        toast({
+          title: "Welcome to SFSS Room Booking",
+          description: "You have successfully logged in",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        history.push("/admin");
+        setIsLoggedIn(true);
+      } else {
+        setErrors({ email: true, password: true });
+        toast({
+          title: "An error has occurred",
+          description: "You have used an incorrect email or password",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
       setSubmitting(false);
-    }, 400);
+    } catch (error) {
+      console.log(error);
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -168,7 +208,6 @@ function SignIn() {
                             form.touched.password &&
                             "red"
                           }
-                          width="100%"
                         />
                       )}
                     </Field>
