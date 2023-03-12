@@ -1,9 +1,14 @@
-let express = require('express');
+// let express = require('express');
+import express from 'express';
 let app = express();
-let path = require('path');
+import path from 'path';
+// let path = require('path');
+// import {} from 'serve-index';
 let serveIndex = require('serve-index');
-let md5 = require('md5');
-const {Pool} = require('pg');
+import md5 from 'md5';
+// let md5 = require('md5');
+ import {Pool} from 'pg';
+// const {Pool} = require('pg');
 
 class booking{
     public id:string;
