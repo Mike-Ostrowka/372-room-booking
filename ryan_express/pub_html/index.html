@@ -16,13 +16,17 @@
         <input type="number" name="bookingLength" id="bookingLength"><br>
     </form>
     <button id="bookingSubmitButton" onclick="addBooking()">SUBMIT</button>
-    <form>
-        <label for="usernameEntry">Username:</label>
-        <input type="text" name="usernameEntry" id="usernameEntry"><br>
-        <label for="passwordEntry">Password:</label>
-        <input type="password" name="passwordEntry" id="passwordEntry"><br>
+    <form action="/login-api" method="post">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username"><br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password"><br>
+        <button type="submit">Login</button>
     </form>
-    <button id="authenticationSubmit" onclick="login()">Login</button>
+    <form action="/success" method="get">
+        <button type="submit">TestLogin</button>
+    </form>
+    <!-- <button id="authenticationSubmit" onclick="login()">LoginTest</button> -->
 </body>
 
 <script src="./js/jquery.min.js"></script>

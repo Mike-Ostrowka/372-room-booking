@@ -35,12 +35,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var express = require('express');
-var app = express();
-var path = require('path');
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+exports.__esModule = true;
+// let express = require('express');
+var express_1 = __importDefault(require("express"));
+var app = (0, express_1["default"])();
+// let path = require('path');
+// import {} from 'serve-index';
 var serveIndex = require('serve-index');
-var md5 = require('md5');
-var Pool = require('pg').Pool;
+var md5_1 = __importDefault(require("md5"));
+// let md5 = require('md5');
+var pg_1 = require("pg");
+var express_session_1 = __importDefault(require("express-session"));
+// const {Pool} = require('pg');
 var booking = /** @class */ (function () {
     function booking(id, start, length, room) {
         this.id = id;
@@ -52,8 +61,8 @@ var booking = /** @class */ (function () {
 }());
 var port = process.env.PORT || 8080;
 var bookings = [];
-var dbString = "postgres//postgres:group2@34.82.200.170/room_booking_app";
-var pool = new Pool({
+// const dbString:string = "postgres//postgres:group2@34.82.200.170/room_booking_app";
+var pool = new pg_1.Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
@@ -63,37 +72,53 @@ var options = {
     dotfiles: 'ignore',
     extensions: ['htm', 'html', 'json']
 };
-app.use('/', express.static('./pub_html', options));
+app.use('/', express_1["default"].static('./pub_html', options));
+app.use((0, express_session_1["default"])({
+    name: 'session',
+    secret: 'testsecretpleasechange',
+    resave: false,
+    cookie: { maxAge: 30 * 60 * 1000 },
+    saveUninitialized: true
+}));
 app.use('/', function (req, res, next) {
     console.log(req.method, 'request: ', req.url, JSON.stringify(req.body));
     next();
 });
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 app.get('/bookings-api', function (request, response) {
     response.json(bookings);
 });
 app.post('/login-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, e_1;
+    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                hashedpw = md5(request.body.password);
+                hashedpw = (0, md5_1["default"])(request.body.password);
                 username = request.body.username;
-                console.log(hashedpw);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                authenticationQuery = "SELECT (username, password) FROM authentication WHERE username = $1 AND password = $2";
+                authenticationQuery = "SELECT json_agg(a) FROM authentication a WHERE username = $1 AND password = $2";
                 return [4 /*yield*/, pool.query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();
-                console.log(result.rows);
-                if (result.rows.length > 0) {
-                    response.json({ success: true });
+                // console.log(result.rows);
+                if (result.rows.length > 0 && result.rows[0].json_agg != null) {
+                    userObject = result.rows[0].json_agg[0];
+                    properObject = { u: userObject['username'], p: userObject['password'] };
+                    // delete userObject['uid'];
+                    // console.log(properObject);
+                    request.session.user = properObject;
+                    // response.json(userObject);
+                    // console.log(__dirname + '/successLogin.html');
+                    request.session.regenerate(function (err) {
+                        response.redirect('/successLogin');
+                    });
                 }
                 else {
-                    response.json({ success: false });
+                    console.log("Failed to login!");
+                    response.sendFile(__dirname + '/pub_html/failedLogin.html');
                 }
                 return [3 /*break*/, 4];
             case 3:
@@ -105,6 +130,23 @@ app.post('/login-api', function (request, response) { return __awaiter(void 0, v
         }
     });
 }); });
+app.get('/success', isLoggedIn, function (request, result) {
+    console.log("Logged in!");
+    result.sendFile(__dirname + '/pub_html/successLogin.html');
+});
+function isLoggedIn(request, response, next) {
+    console.log("isLoggedIn");
+    console.log(request.session.cookie._expires);
+    var now = new Date();
+    console.log(now);
+    if (request.session.cookie._expires > now) {
+        return next();
+    }
+    else {
+        console.log("Not logged in.");
+        response.sendFile(__dirname + '/pub_html/failedLogin.html');
+    }
+}
 app.post('/bookings-api', function (request, response) {
     console.log(request.body);
     bookings.push(request.body);

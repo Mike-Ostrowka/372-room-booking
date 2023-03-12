@@ -7,7 +7,8 @@ import path from 'path';
 let serveIndex = require('serve-index');
 import md5 from 'md5';
 // let md5 = require('md5');
- import {Pool} from 'pg';
+import {Pool} from 'pg';
+import session from 'express-session'
 // const {Pool} = require('pg');
 
 class booking{
@@ -27,7 +28,7 @@ class booking{
 let port = process.env.PORT || 8080;
 let bookings:booking[] = [];
 
-const dbString:string = "postgres//postgres:group2@34.82.200.170/room_booking_app";
+// const dbString:string = "postgres//postgres:group2@34.82.200.170/room_booking_app";
 
 let pool = new Pool({
     host: "34.82.200.170",
@@ -42,6 +43,17 @@ let options:object = {
 };
 
 app.use('/', express.static('./pub_html', options));
+
+app.use(
+    session({
+        name:'session',
+        secret: 'testsecretpleasechange',
+        resave: false,
+        cookie: {maxAge: 30*60*1000},
+        saveUninitialized:true
+    })
+);
+
 app.use('/', function(req:any, res:any, next:any){
     console.log(req.method, 'request: ', req.url, JSON.stringify(req.body));
     next();
@@ -57,22 +69,55 @@ app.get('/bookings-api', (request:any, response:any) => {
 app.post('/login-api', async (request:any, response:any) => {
     let hashedpw:string = md5(request.body.password);
     let username:string = request.body.username;
-    console.log(hashedpw);
     try{
-        let authenticationQuery = `SELECT (username, password) FROM authentication WHERE username = $1 AND password = $2`;
+        let authenticationQuery = `SELECT json_agg(a) FROM authentication a WHERE username = $1 AND password = $2`;
         const result = await pool.query(authenticationQuery, [username, hashedpw]);
-        console.log(result.rows);
-        if(result.rows.length > 0){
-            response.json({success: true});
+        // console.log(result.rows);
+        if(result.rows.length > 0 && result.rows[0].json_agg != null){
+            //successfully logged in!
+            let userObject = result.rows[0].json_agg[0];
+            let properObject = {u: userObject['username'], p: userObject['password']};
+            // delete userObject['uid'];
+            // console.log(properObject);
+            request.session.user = properObject;
+            // response.json(userObject);
+            // console.log(__dirname + '/successLogin.html');
+            request.session.regenerate(function(err:any) {
+                response.redirect('/successLogin');
+            });
+
+            
         }else{
-            response.json({success: false});
+            console.log("Failed to login!");
+            response.sendFile(__dirname + '/pub_html/failedLogin.html');
         }
     }catch (e){
         console.log(e);
         response.end(e);
     }
+    
 
 });
+
+
+app.get('/success', isLoggedIn, (request:any, result:any) => {
+    console.log("Logged in!");
+    result.sendFile(__dirname + '/pub_html/successLogin.html');
+});
+
+
+function isLoggedIn (request:any, response:any, next:any){
+    console.log("isLoggedIn")
+    console.log(request.session.cookie._expires);
+    let now = new Date();
+    console.log(now)
+    if(request.session.cookie._expires > now){
+        return next();
+    }else{
+        console.log("Not logged in.");
+        response.sendFile(__dirname + '/pub_html/failedLogin.html');
+    }
+}
 
 app.post('/bookings-api', (request:any, response:any) => {
     console.log(request.body);
