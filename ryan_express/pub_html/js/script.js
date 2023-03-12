@@ -26,7 +26,8 @@ function printBookings(data){
 }
 
 function loginCallback(data){
-    console.log(data.success);
+    console.log(data);
+    $(document)
 }
 
 function login(){
