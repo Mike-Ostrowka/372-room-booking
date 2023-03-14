@@ -165,6 +165,23 @@ app.post('/room-booking', isLoggedIn, async (request: any, response: any) => {
     let room_number: number = request.body.room_number;
     let user_id: number = request.body.user_id;
 
+    // make sure user exists
+    try {
+        var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
+        const userResult = await pool.query(getUserQuery, [user_id]);
+        
+        if (userResult.rowCount == 0) {
+            console.log("this user does not exist in the database.");
+            response.end("this user does not exist in the database.");
+            return;
+        }
+
+    } catch (err) {
+        console.log(err);
+        response.end(err);
+    }
+
+
     // make sure building and room exists in the rooms table
     try {
         var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
