@@ -125,6 +125,46 @@ app.post('/bookings-api', (request:any, response:any) => {
     response.json(bookings);
 });
 
+/**
+ * Add a new room booking
+ * Sample request body format:
+ * {
+ *  booking_datetime: 'YYYY-MM-DD HH:MM'
+ *  duration: 120
+ *  num_occupants: 2
+ *  building_name: 'SUB'
+ *  room_number: 2120
+ *  user_id: 1
+ * }
+ */
+app.post('/room-booking', async (request: any, response: any) => {
+    console.log(request.body);
+    // parse form data
+    let booking_datetime: string = request.body.booking_datetime;
+    let duration: number = request.body.duration;
+    let num_occupants: number = request.body.num_occupants;
+    let building_name: string = request.body.building_name;
+    let room_number: number = request.body.room_number;
+    let user_id: number = request.body.user_id;
+
+    // validate data?
+    // make sure building and room exists in the rooms table
+
+    // make sure user exists and is logged in
+
+    // build and send query
+    try {
+        var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
+        const bookingResult = await pool.query(addBookingQuery, [booking_datetime, duration, num_occupants, building_name, room_number, user_id]);
+        console.log(bookingResult.rows);
+        response.json(bookingResult.rows);
+    }
+    catch (err) {
+        console.log(err);
+        response.end(err);
+    }
+});
+
 app.listen(port, () => {
     console.log(`App running on port ${port}`);
 });

@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -152,6 +152,49 @@ app.post('/bookings-api', function (request, response) {
     bookings.push(request.body);
     response.json(bookings);
 });
+/**
+ * Add a new room booking
+ * Sample request body format:
+ * {
+ *  booking_datetime: 'YYYY-MM-DD HH:MM'
+ *  duration: 120
+ *  num_occupants: 2
+ *  building_name: 'SUB'
+ *  room_number: 2120
+ *  user_id: 1
+ * }
+ */
+app.post('/room-booking', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, addBookingQuery, bookingResult, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(request.body);
+                booking_datetime = request.body.booking_datetime;
+                duration = request.body.duration;
+                num_occupants = request.body.num_occupants;
+                building_name = request.body.building_name;
+                room_number = request.body.room_number;
+                user_id = request.body.user_id;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
+                return [4 /*yield*/, pool.query(addBookingQuery, [booking_datetime, duration, num_occupants, building_name, room_number, user_id])];
+            case 2:
+                bookingResult = _a.sent();
+                console.log(bookingResult.rows);
+                response.json(bookingResult);
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                console.log(err_1);
+                response.end(err_1);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
