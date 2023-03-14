@@ -127,6 +127,7 @@ app.post('/bookings-api', (request:any, response:any) => {
 
 /**
  * Add a new room booking
+ * Building name, room number and user must exist in the db
  * Sample request body format:
  * {
  *  booking_datetime: 'YYYY-MM-DD HH:MM'
@@ -138,7 +139,6 @@ app.post('/bookings-api', (request:any, response:any) => {
  * }
  */
 app.post('/room-booking', async (request: any, response: any) => {
-    console.log(request.body);
     // parse form data
     let booking_datetime: string = request.body.booking_datetime;
     let duration: number = request.body.duration;
@@ -147,10 +147,38 @@ app.post('/room-booking', async (request: any, response: any) => {
     let room_number: number = request.body.room_number;
     let user_id: number = request.body.user_id;
 
-    // validate data?
-    // make sure building and room exists in the rooms table
+    // validate data
+    // TODO: make sure user exists and is logged in
+    try {
+        var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
+        const userResult = await pool.query(getUserQuery, [user_id]);
+        
+        if (userResult.rowCount == 0) {
+            console.log("this user does not exist in the database.");
+            response.end("this user does not exist in the database.");
+            return;
+        }
 
-    // make sure user exists and is logged in
+    } catch (err) {
+        console.log(err);
+        response.end(err);
+    }
+
+    // make sure building and room exists in the rooms table
+    try {
+        var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
+        const roomResult = await pool.query(getRoomQuery, [building_name, room_number]);
+        
+        if (roomResult.rowCount == 0) {
+            console.log("this room does not exist in the database. please enter a valid building name and room number.");
+            response.end("this room does not exist in the database. please enter a valid building name and room number.");
+            return;
+        }
+
+    } catch (err) {
+        console.log(err);
+        response.end(err);
+    }
 
     // build and send query
     try {

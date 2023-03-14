@@ -165,7 +165,7 @@ app.post('/bookings-api', function (request, response) {
  * }
  */
 app.post('/room-booking', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, addBookingQuery, bookingResult, err_1;
+    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getRoomQuery, roomResult, err_1, getUserQuery, userResult, err_2, addBookingQuery, bookingResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -179,19 +179,53 @@ app.post('/room-booking', function (request, response) { return __awaiter(void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
-                return [4 /*yield*/, pool.query(addBookingQuery, [booking_datetime, duration, num_occupants, building_name, room_number, user_id])];
+                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
+                return [4 /*yield*/, pool.query(getRoomQuery, [building_name, room_number])];
             case 2:
-                bookingResult = _a.sent();
-                console.log(bookingResult.rows);
-                response.json(bookingResult);
+                roomResult = _a.sent();
+                if (roomResult.rowCount == 0) {
+                    console.log("this room does not exist in the database. please enter a valid building name and room number.");
+                    response.end("this room does not exist in the database. please enter a valid building name and room number.");
+                    return [2 /*return*/];
+                }
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.end(err_1);
                 return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
+                getUserQuery = "SELECT * FROM users WHERE user_id=$1";
+                return [4 /*yield*/, pool.query(getUserQuery, [user_id])];
+            case 5:
+                userResult = _a.sent();
+                if (userResult.rowCount == 0) {
+                    console.log("this user does not exist in the database.");
+                    response.end("this user does not exist in the database.");
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 7];
+            case 6:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.end(err_2);
+                return [3 /*break*/, 7];
+            case 7:
+                _a.trys.push([7, 9, , 10]);
+                addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
+                return [4 /*yield*/, pool.query(addBookingQuery, [booking_datetime, duration, num_occupants, building_name, room_number, user_id])];
+            case 8:
+                bookingResult = _a.sent();
+                console.log(bookingResult.rows);
+                response.json(bookingResult.rows);
+                return [3 /*break*/, 10];
+            case 9:
+                err_3 = _a.sent();
+                console.log(err_3);
+                response.end(err_3);
+                return [3 /*break*/, 10];
+            case 10: return [2 /*return*/];
         }
     });
 }); });
