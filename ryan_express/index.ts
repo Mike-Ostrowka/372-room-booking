@@ -128,7 +128,7 @@ app.post('/bookings-api', (request:any, response:any) => {
 /**
  * Get all room bookings
  */
-app.get('/room-booking', async (request: any, response: any) => { 
+app.get('/room-booking', isLoggedIn, async (request: any, response: any) => { 
     // build and send query
     try {
         var getBookingsQuery = `SELECT * FROM room_bookings;`;
@@ -145,7 +145,7 @@ app.get('/room-booking', async (request: any, response: any) => {
 
 /**
  * Add a new room booking
- * Building name, room number and user must exist in the db
+ * Building name, room number must exist in the db
  * Sample request body format:
  * {
  *  booking_datetime: 'YYYY-MM-DD HH:MM'
@@ -156,7 +156,7 @@ app.get('/room-booking', async (request: any, response: any) => {
  *  user_id: 1
  * }
  */
-app.post('/room-booking', async (request: any, response: any) => {
+app.post('/room-booking', isLoggedIn, async (request: any, response: any) => {
     // parse form data
     let booking_datetime: string = request.body.booking_datetime;
     let duration: number = request.body.duration;
@@ -164,23 +164,6 @@ app.post('/room-booking', async (request: any, response: any) => {
     let building_name: string = request.body.building_name;
     let room_number: number = request.body.room_number;
     let user_id: number = request.body.user_id;
-
-    // validate data
-    // TODO: make sure user exists and is logged in
-    try {
-        var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
-        const userResult = await pool.query(getUserQuery, [user_id]);
-        
-        if (userResult.rowCount == 0) {
-            console.log("this user does not exist in the database.");
-            response.end("this user does not exist in the database.");
-            return;
-        }
-
-    } catch (err) {
-        console.log(err);
-        response.end(err);
-    }
 
     // make sure building and room exists in the rooms table
     try {
