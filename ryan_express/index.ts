@@ -126,6 +126,24 @@ app.post('/bookings-api', (request:any, response:any) => {
 });
 
 /**
+ * Get all room bookings
+ */
+app.get('/room-booking', async (request: any, response: any) => { 
+    // build and send query
+    try {
+        var getBookingsQuery = `SELECT * FROM room_bookings;`;
+        const bookingsResult = await pool.query(getBookingsQuery);
+        console.log(bookingsResult.rows);
+        response.json(bookingsResult.rows);
+    }
+    catch (err) {
+        console.log(err);
+        response.end(err);
+    }
+
+})
+
+/**
  * Add a new room booking
  * Building name, room number and user must exist in the db
  * Sample request body format:
