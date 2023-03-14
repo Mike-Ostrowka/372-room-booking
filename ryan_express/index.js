@@ -60,7 +60,7 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                authenticationQuery = "SELECT username, password FROM authentication WHERE username = $1 AND password = $2";
+                authenticationQuery = "SELECT username, password FROM users WHERE username = $1 AND password = $2";
                 return [4 /*yield*/, pool.query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();

@@ -22,7 +22,7 @@ app.post("/login-api", async (request: any, response: any) => {
   let hashedpw: string = md5(request.body.password);
   let username: string = request.body.username;
   try {
-    let authenticationQuery = `SELECT username, password FROM authentication WHERE username = $1 AND password = $2`;
+    let authenticationQuery = `SELECT username, password FROM users WHERE username = $1 AND password = $2`;
     const result = await pool.query(authenticationQuery, [username, hashedpw]);
     if (result.rows.length > 0) {
       response.json({ success: true });
