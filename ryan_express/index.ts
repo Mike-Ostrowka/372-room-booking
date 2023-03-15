@@ -1,8 +1,13 @@
-const express = require("express");
-const md5 = require("md5");
-const session = require("express-session");
+// const express = require("express");
+import express from 'express';
+// const md5 = require("md5");
+import md5 from 'md5';
+import session from 'express-session'
+// const session = require("express-session");
+// import cors from 'cors';
 const cors = require("cors");
-const { Pool } = require("pg");
+import pg from 'pg';
+// const { Pool } = require("pg");
 
 let app = express();
 
@@ -12,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 let port = process.env.PORT || 8080;
 
-let pool = new Pool({
+let pool = new pg.Pool({
   host: "34.82.200.170",
   user: "testuser",
   password: "password",
