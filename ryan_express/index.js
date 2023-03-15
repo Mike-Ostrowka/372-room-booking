@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 var express = require("express");
 var md5 = require("md5");
 var session = require("express-session");
@@ -64,17 +64,17 @@ app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
-app.use(express_1["default"].json());
-app.use(express_1["default"].urlencoded({ extended: false }));
-app.get('/bookings-api', function (request, response) {
-    response.json(bookings);
-});
 app.post('/register-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/];
     });
 }); });
-app.post('/login-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/register-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/];
+    });
+}); });
+app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -84,8 +84,7 @@ app.post('/login-api', function (request, response) { return __awaiter(void 0, v
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                console.log(username + " " + hashedpw);
-                authenticationQuery = "SELECT json_agg(a) FROM authentication a WHERE username = $1 AND password = $2";
+                authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1 AND password = $2";
                 return [4 /*yield*/, pool.query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();
@@ -123,7 +122,7 @@ app.post('/login-api', function (request, response) { return __awaiter(void 0, v
 /**
  * Get all room bookings
  */
-app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -158,7 +157,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  *  user_id: 1
  * }
  */
-app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getUserQuery, userResult, err_2, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
