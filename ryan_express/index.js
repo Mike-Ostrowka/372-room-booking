@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -34,42 +35,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-var express = require("express");
-var md5 = require("md5");
-var session = require("express-session");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+exports.__esModule = true;
+// const express = require("express");
+var express_1 = __importDefault(require("express"));
+// const md5 = require("md5");
+var md5_1 = __importDefault(require("md5"));
+var express_session_1 = __importDefault(require("express-session"));
+// const session = require("express-session");
+// import cors from 'cors';
 var cors = require("cors");
-var Pool = require("pg").Pool;
-var app = express();
+var pg_1 = __importDefault(require("pg"));
+// const { Pool } = require("pg");
+var app = (0, express_1["default"])();
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
-var pool = new Pool({
+var pool = new pg_1["default"].Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
     database: "room_booking_app"
 });
-app.use(session({
+app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
     cookie: { maxAge: 30 * 60 * 1000 },
     saveUninitialized: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
-app.post("/login-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                hashedpw = md5(request.body.password);
+                hashedpw = (0, md5_1["default"])(request.body.password);
                 username = request.body.username;
                 _a.label = 1;
             case 1:
@@ -112,7 +121,7 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
 /**
  * Get all room bookings
  */
-app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -147,7 +156,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  *  user_id: 1
  * }
  */
-app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getUserQuery, userResult, err_2, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
