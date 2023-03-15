@@ -66,6 +66,10 @@ app.get('/bookings-api', (request:any, response:any) => {
     response.json(bookings);
 });
 
+app.post('/register-api', async(request:any, response:any) => {
+
+});
+
 app.post('/login-api', async (request:any, response:any) => {
     let hashedpw:string = md5(request.body.password);
     let username:string = request.body.username;

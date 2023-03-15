@@ -39,6 +39,15 @@ function login(){
     })
 }
 
+function registerAccount() {
+    $.ajax({
+        method: 'post',
+        url: '/register-api',
+        data: 'firstName='+$('#firstName').val,
+        success: registerCallback
+    })
+}
+
 function addBooking(){
     $.ajax({
         method: 'post',
