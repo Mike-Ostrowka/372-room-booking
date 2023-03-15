@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 var express = require("express");
 var md5 = require("md5");
+var session = require("express-session");
 var cors = require("cors");
 var Pool = require("pg").Pool;
 var app = express();
@@ -50,8 +51,21 @@ var pool = new Pool({
     password: "password",
     database: "room_booking_app"
 });
+app.use(session({
+    name: "session",
+    secret: "testsecretpleasechange",
+    resave: false,
+    cookie: { maxAge: 30 * 60 * 1000 },
+    saveUninitialized: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/", function (req, res, next) {
+    console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
+    next();
+});
 app.post("/login-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, e_1;
+    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -60,26 +74,52 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                authenticationQuery = "SELECT username, password FROM users WHERE username = $1 AND password = $2";
+                authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1 AND password = $2";
                 return [4 /*yield*/, pool.query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();
-                if (result.rows.length > 0) {
-                    response.json({ success: true });
+                if (result.rows.length > 0 && result.rows[0].json_agg != null) {
+                    userObject = result.rows[0].json_agg[0];
+                    properObject = {
+                        u: userObject["username"],
+                        p: userObject["password"]
+                    };
+                    request.session.user = properObject;
+                    request.session.regenerate(function (err) {
+                        if (err) {
+                            console.log(err);
+                            response.status(500).send("Error regenerating session");
+                        }
+                        else {
+                            response.json({ success: true });
+                        }
+                    });
                 }
                 else {
+                    console.log("Failed to login!");
                     response.json({ success: false });
                 }
                 return [3 /*break*/, 4];
             case 3:
                 e_1 = _a.sent();
                 console.log(e_1);
-                response.end();
+                response.end(e_1);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
+function isLoggedIn(request, response, next) {
+    var now = new Date();
+    if (request.session.cookie._expires > now) {
+        console.log("isLoggedIn");
+        return next();
+    }
+    else {
+        console.log("Not logged in.");
+        response.json({ success: false });
+    }
+}
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
