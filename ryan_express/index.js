@@ -109,6 +109,119 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
         }
     });
 }); });
+/**
+ * Get all room bookings
+ */
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+    var getBookingsQuery, bookingsResult, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                getBookingsQuery = "SELECT * FROM room_bookings;";
+                return [4 /*yield*/, pool.query(getBookingsQuery)];
+            case 1:
+                bookingsResult = _a.sent();
+                console.log(bookingsResult.rows);
+                response.json(bookingsResult.rows);
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                console.log(err_1);
+                response.end(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+/**
+ * Add a new room booking
+ * Building name, room number must exist in the db
+ * Sample request body format:
+ * {
+ *  booking_datetime: 'YYYY-MM-DD HH:MM'
+ *  duration: 120
+ *  num_occupants: 2
+ *  building_name: 'SUB'
+ *  room_number: 2120
+ *  user_id: 1
+ * }
+ */
+app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getUserQuery, userResult, err_2, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                booking_datetime = request.body.booking_datetime;
+                duration = request.body.duration;
+                num_occupants = request.body.num_occupants;
+                building_name = request.body.building_name;
+                room_number = request.body.room_number;
+                user_id = request.body.user_id;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                getUserQuery = "SELECT * FROM users WHERE user_id=$1";
+                return [4 /*yield*/, pool.query(getUserQuery, [user_id])];
+            case 2:
+                userResult = _a.sent();
+                if (userResult.rowCount == 0) {
+                    console.log("this user does not exist in the database.");
+                    response.end("this user does not exist in the database.");
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.end(err_2);
+                return [3 /*break*/, 4];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
+                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
+                return [4 /*yield*/, pool.query(getRoomQuery, [
+                        building_name,
+                        room_number,
+                    ])];
+            case 5:
+                roomResult = _a.sent();
+                if (roomResult.rowCount == 0) {
+                    console.log("this room does not exist in the database. please enter a valid building name and room number.");
+                    response.end("this room does not exist in the database. please enter a valid building name and room number.");
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 7];
+            case 6:
+                err_3 = _a.sent();
+                console.log(err_3);
+                response.end(err_3);
+                return [3 /*break*/, 7];
+            case 7:
+                _a.trys.push([7, 9, , 10]);
+                addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
+                return [4 /*yield*/, pool.query(addBookingQuery, [
+                        booking_datetime,
+                        duration,
+                        num_occupants,
+                        building_name,
+                        room_number,
+                        user_id,
+                    ])];
+            case 8:
+                bookingResult = _a.sent();
+                console.log(bookingResult.rows);
+                response.json(bookingResult.rows);
+                return [3 /*break*/, 10];
+            case 9:
+                err_4 = _a.sent();
+                console.log(err_4);
+                response.end(err_4);
+                return [3 /*break*/, 10];
+            case 10: return [2 /*return*/];
+        }
+    });
+}); });
+// Middleware to check if the user is logged in
 function isLoggedIn(request, response, next) {
     var now = new Date();
     if (request.session.cookie._expires > now) {
