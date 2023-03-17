@@ -99,24 +99,27 @@ app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
     if (haswhiteboard) {
         getRoomsQuery += ` AND haswhiteboard=true`;
     }
-    getRoomsQuery += `;`;
 
-    // part 2: filter bookings that fall within the requested timeslot
-
+    // part 2: get bookings that overlap the requested timeslot
     // determine end time
     let start = new Date(booking_datetime);
     let end = new Date(start.getTime() + duration * 60000);
-    
+
     // format end time to psql ISO date format
     let end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
     console.log(end_formatted);
 
-    let getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_datetime >= $1 and booking_datetime < $2;`
+    let getBookingsQuery = `SELECT building_name, room_number FROM room_bookings WHERE booking_datetime >= $2 and booking_datetime < $3`
 
-
-    // send query
+    // part 3: build and send query
+    let searchQuery = `SELECT * FROM (${getRoomsQuery}) AS r 
+        WHERE NOT EXISTS (
+            SELECT * FROM (${getBookingsQuery}) as b 
+            WHERE b.building_name=r.building_name AND b.room_number=r.room_number
+        );`
     try {
-        const searchResult = await pool.query(getBookingsQuery, [
+        const searchResult = await pool.query(searchQuery, [
+            num_occupants,
             booking_datetime,
             end_formatted
         ]);
