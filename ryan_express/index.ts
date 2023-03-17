@@ -45,8 +45,10 @@ app.post("/login-api", async (request: any, response: any) => {
     if (result.rows.length > 0 && result.rows[0].json_agg != null) {
       let userObject = result.rows[0].json_agg[0];
       let properObject = {
+        u_id: userObject["user_id"],
         u: userObject["username"],
         p: userObject["password"],
+        success: true,
       };
       request.session.user = properObject;
       request.session.regenerate((err: any) => {
@@ -54,7 +56,7 @@ app.post("/login-api", async (request: any, response: any) => {
           console.log(err);
           response.status(500).send("Error regenerating session");
         } else {
-          response.json({ success: true });
+          response.json(properObject);
         }
       });
     } else {
@@ -103,6 +105,7 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   let num_occupants: number = request.body.num_occupants;
   let building_name: string = request.body.building_name;
   let room_number: number = request.body.room_number;
+  let user_id: number = request.body.user_id;
 
   // make sure building and room exists in the rooms table
   try {
@@ -128,13 +131,14 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
 
   // build and send query
   try {
-    var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5);`;
+    var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
     const bookingResult = await pool.query(addBookingQuery, [
       booking_datetime,
       duration,
       num_occupants,
       building_name,
       room_number,
+      user_id,
     ]);
     console.log(bookingResult.rows);
     response.json(bookingResult.rows);
