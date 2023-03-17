@@ -147,7 +147,7 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
 // Middleware to check if the user is logged in
 function isLoggedIn(request: any, response: any, next: any) {
   let now = new Date();
-  if (request.session.cookie._expires > now) {
+  if (request.session.cookie._expires > now && request.session.user) {
     console.log("isLoggedIn");
     return next();
   } else {
