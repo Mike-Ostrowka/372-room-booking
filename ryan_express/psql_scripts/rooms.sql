@@ -12,7 +12,7 @@ INSERT INTO rooms (
     ('SUB', 3210, true, true, 10),
     ('SUB', 3220, true, true, 10),
     ('SUB', 3230, true, true, 10),
-    -- Floor 4
+    -- Floor 
     ('SUB', 4001, true, false, 10),
     ('SUB', 4003, false, false, 6),
     ('SUB', 4005, true, false, 6),

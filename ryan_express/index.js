@@ -110,31 +110,6 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
     });
 }); });
 /**
- * Get all room bookings
- */
-app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var getBookingsQuery, bookingsResult, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                getBookingsQuery = "SELECT * FROM room_bookings;";
-                return [4 /*yield*/, pool.query(getBookingsQuery)];
-            case 1:
-                bookingsResult = _a.sent();
-                console.log(bookingsResult.rows);
-                response.json(bookingsResult.rows);
-                return [3 /*break*/, 3];
-            case 2:
-                err_1 = _a.sent();
-                console.log(err_1);
-                response.end(err_1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-/**
  * Search for rooms
  * Returns all available rooms that fit the provided search criteria
  * Sample request body format:
@@ -147,7 +122,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  * }
  */
 app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, searchResult, err_2;
+    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, start, end, end_formatted, getBookingsQuery, searchResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -158,7 +133,7 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                 haswhiteboard = request.body.haswhiteboard;
                 getRoomsQuery = "SELECT * FROM rooms WHERE capacity >= $1 ";
                 // only add projector/whiteboard if requested by the user
-                // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard
+                // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard,
                 // so we can broaden our search and return more rooms
                 if (hasprojector) {
                     getRoomsQuery += " AND hasprojector=true";
@@ -167,11 +142,19 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
                 getRoomsQuery += ";";
+                start = new Date(booking_datetime);
+                console.log(start.toISOString());
+                end = new Date(start.getTime() + duration * 60000);
+                console.log(end.toISOString());
+                end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
+                console.log(end_formatted);
+                getBookingsQuery = "SELECT * FROM room_bookings WHERE booking_datetime >= $1 and booking_datetime < $2;";
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, pool.query(getRoomsQuery, [
-                        num_occupants
+                return [4 /*yield*/, pool.query(getBookingsQuery, [
+                        booking_datetime,
+                        end_formatted
                     ])];
             case 2:
                 searchResult = _a.sent();
@@ -179,11 +162,36 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                 response.json(searchResult.rows);
                 return [3 /*break*/, 4];
             case 3:
+                err_1 = _a.sent();
+                console.log(err_1);
+                response.end(err_1);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+/**
+ * Get all room bookings
+ */
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var getBookingsQuery, bookingsResult, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                getBookingsQuery = "SELECT * FROM room_bookings;";
+                return [4 /*yield*/, pool.query(getBookingsQuery)];
+            case 1:
+                bookingsResult = _a.sent();
+                console.log(bookingsResult.rows);
+                response.json(bookingsResult.rows);
+                return [3 /*break*/, 3];
+            case 2:
                 err_2 = _a.sent();
                 console.log(err_2);
                 response.end(err_2);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

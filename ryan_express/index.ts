@@ -67,21 +67,6 @@ app.post("/login-api", async (request: any, response: any) => {
   }
 });
 
-/**
- * Get all room bookings
- */
-app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
-  // build and send query
-  try {
-    var getBookingsQuery = `SELECT * FROM room_bookings;`;
-    const bookingsResult = await pool.query(getBookingsQuery);
-    console.log(bookingsResult.rows);
-    response.json(bookingsResult.rows);
-  } catch (err) {
-    console.log(err);
-    response.end(err);
-  }
-});
 
 /**
  * Search for rooms
@@ -106,7 +91,7 @@ app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
     // part 1: filter rooms that fit the physical attributes (capacity, equipment)
     let getRoomsQuery = `SELECT * FROM rooms WHERE capacity >= $1 `;
     // only add projector/whiteboard if requested by the user
-    // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard
+    // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard,
     // so we can broaden our search and return more rooms
     if (hasprojector) {
         getRoomsQuery += ` AND hasprojector=true`;
@@ -116,11 +101,25 @@ app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
     }
     getRoomsQuery += `;`;
 
+    // part 2: filter bookings that fall within the requested timeslot
+
+    // determine end time
+    let start = new Date(booking_datetime);
+    let end = new Date(start.getTime() + duration * 60000);
+    
+    // format end time to psql ISO date format
+    let end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
+    console.log(end_formatted);
+
+    let getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_datetime >= $1 and booking_datetime < $2;`
+
+
     // send query
     try {
-        const searchResult = await pool.query(getRoomsQuery, [
-            num_occupants
-          ]);
+        const searchResult = await pool.query(getBookingsQuery, [
+            booking_datetime,
+            end_formatted
+        ]);
         console.log(searchResult.rows);
         response.json(searchResult.rows);
     } catch (err) {
@@ -129,6 +128,22 @@ app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
     }
    
 });
+
+/**
+ * Get all room bookings
+ */
+app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
+    // build and send query
+    try {
+      var getBookingsQuery = `SELECT * FROM room_bookings;`;
+      const bookingsResult = await pool.query(getBookingsQuery);
+      console.log(bookingsResult.rows);
+      response.json(bookingsResult.rows);
+    } catch (err) {
+      console.log(err);
+      response.end(err);
+    }
+  });
 
 /**
  * Add a new room booking
