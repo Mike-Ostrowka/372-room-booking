@@ -6,6 +6,8 @@ import {
   CardHeader,
   Heading,
   Button,
+  FormHelperText,
+  FormControl,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -19,7 +21,7 @@ const RoomBookingForm = () => {
   });
   const formik = useFormik({
     initialValues: {
-      booking_datetime: new Date().toISOString(),
+      booking_datetime: new Date().toISOString().slice(0, 16),
       duration: "",
       num_occupants: "",
       building_name: "",
@@ -36,81 +38,96 @@ const RoomBookingForm = () => {
         <Heading size="md">New Room Booking</Heading>
       </CardHeader>
       <CardBody>
-        <form onSubmit={formik.handleSubmit}>
-          <Stack spacing={5} alignItems="center">
-            <Stack width="100%" spacing={4}>
-              <Input
-                placeholder="Duration"
-                size="lg"
-                name="duration"
-                value={formik.values.duration}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                borderColor={
-                  formik.errors.duration && formik.touched.duration && "red"
-                }
-              />
-              <Input
-                placeholder="Number of Occupants"
-                size="lg"
-                name="num_occupants"
-                value={formik.values.num_occupants}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                borderColor={
-                  formik.errors.num_occupants &&
-                  formik.touched.num_occupants &&
-                  "red"
-                }
-              />
-              <Input
-                placeholder="Building Name"
-                size="lg"
-                name="building_name"
-                value={formik.values.building_name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                borderColor={
-                  formik.errors.building_name &&
-                  formik.touched.building_name &&
-                  "red"
-                }
-              />
-              <Input
-                placeholder="Room Number"
-                size="lg"
-                name="room_number"
-                value={formik.values.room_number}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                borderColor={
-                  formik.errors.room_number &&
-                  formik.touched.room_number &&
-                  "red"
-                }
-              />
-              <Input
-                placeholder="Select Date and Time"
-                size="lg"
-                type="datetime-local"
-                name="booking_datetime"
-                value={formik.values.booking_datetime}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                borderColor={
-                  formik.errors.booking_datetime &&
-                  formik.touched.booking_datetime &&
-                  "red"
-                }
-              />
+        <FormControl>
+          <form onSubmit={formik.handleSubmit}>
+            <Stack spacing={5} alignItems="center">
+              <Stack width="100%" spacing={4}>
+                <Input
+                  placeholder="Duration"
+                  size="lg"
+                  name="duration"
+                  value={formik.values.duration}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  borderColor={
+                    formik.errors.duration && formik.touched.duration && "red"
+                  }
+                />
+                {formik.errors.duration && formik.touched.duration && (
+                  <FormHelperText>{formik.errors.duration}</FormHelperText>
+                )}
+                <Input
+                  placeholder="Number of Occupants"
+                  size="lg"
+                  name="num_occupants"
+                  value={formik.values.num_occupants}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  borderColor={
+                    formik.errors.num_occupants &&
+                    formik.touched.num_occupants &&
+                    "red"
+                  }
+                />
+                {formik.errors.num_occupants &&
+                  formik.touched.num_occupants && (
+                    <FormHelperText>
+                      {formik.errors.num_occupants}
+                    </FormHelperText>
+                  )}
+                <Input
+                  placeholder="Building Name"
+                  size="lg"
+                  name="building_name"
+                  value={formik.values.building_name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  borderColor={
+                    formik.errors.building_name &&
+                    formik.touched.building_name &&
+                    "red"
+                  }
+                />
+                {formik.errors.building_name &&
+                  formik.touched.building_name && (
+                    <FormHelperText>
+                      {formik.errors.building_name}
+                    </FormHelperText>
+                  )}
+                <Input
+                  placeholder="Room Number"
+                  size="lg"
+                  name="room_number"
+                  value={formik.values.room_number}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  borderColor={
+                    formik.errors.room_number &&
+                    formik.touched.room_number &&
+                    "red"
+                  }
+                />
+                {formik.errors.room_number && formik.touched.room_number && (
+                  <FormHelperText>{formik.errors.room_number}</FormHelperText>
+                )}
+                <Input
+                  placeholder="Select Date and Time"
+                  size="lg"
+                  type="datetime-local"
+                  name="booking_datetime"
+                  value={formik.values.booking_datetime}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </Stack>
+              <Stack width="50%">
+                <Button variant="solid" colorScheme="red" type="submit">
+                  Create Booking
+                </Button>
+              </Stack>
             </Stack>
-            <Stack width="50%">
-              <Button variant="solid" colorScheme="red" type="submit">
-                Create Booking
-              </Button>
-            </Stack>
-          </Stack>
-        </form>
+          </form>
+        </FormControl>
       </CardBody>
     </Card>
   );

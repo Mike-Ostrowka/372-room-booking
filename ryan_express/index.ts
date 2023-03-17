@@ -103,22 +103,6 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   let num_occupants: number = request.body.num_occupants;
   let building_name: string = request.body.building_name;
   let room_number: number = request.body.room_number;
-  let user_id: number = request.body.user_id;
-
-  // make sure user exists
-  try {
-    var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
-    const userResult = await pool.query(getUserQuery, [user_id]);
-
-    if (userResult.rowCount == 0) {
-      console.log("this user does not exist in the database.");
-      response.end("this user does not exist in the database.");
-      return;
-    }
-  } catch (err) {
-    console.log(err);
-    response.end(err);
-  }
 
   // make sure building and room exists in the rooms table
   try {
@@ -144,14 +128,13 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
 
   // build and send query
   try {
-    var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
+    var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5);`;
     const bookingResult = await pool.query(addBookingQuery, [
       booking_datetime,
       duration,
       num_occupants,
       building_name,
       room_number,
-      user_id,
     ]);
     console.log(bookingResult.rows);
     response.json(bookingResult.rows);
