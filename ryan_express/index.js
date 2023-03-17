@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 var express = require("express");
 var md5 = require("md5");
 var session = require("express-session");
@@ -64,7 +64,7 @@ app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
-app.post("/login-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -112,7 +112,7 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
 /**
  * Get all room bookings
  */
-app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -135,6 +135,59 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
     });
 }); });
 /**
+ * Search for rooms
+ * Returns all available rooms that fit the provided search criteria
+ * Sample request body format:
+ * {
+ *  booking_datetime: 'YYYY-MM-DD HH:MM',
+ *  duration: 120,
+ *  num_occupants: 2,
+ *  hasprojector: true,
+ *  haswhiteboard: false
+ * }
+ */
+app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, searchResult, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                booking_datetime = request.body.booking_datetime;
+                duration = request.body.duration;
+                num_occupants = request.body.num_occupants;
+                hasprojector = request.body.hasprojector;
+                haswhiteboard = request.body.haswhiteboard;
+                getRoomsQuery = "SELECT * FROM rooms WHERE capacity >= $1 ";
+                // only add projector/whiteboard if requested by the user
+                // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard
+                // so we can broaden our search and return more rooms
+                if (hasprojector) {
+                    getRoomsQuery += " AND hasprojector=true";
+                }
+                if (haswhiteboard) {
+                    getRoomsQuery += " AND haswhiteboard=true";
+                }
+                getRoomsQuery += ";";
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, pool.query(getRoomsQuery, [
+                        num_occupants
+                    ])];
+            case 2:
+                searchResult = _a.sent();
+                console.log(searchResult.rows);
+                response.json(searchResult.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.end(err_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+/**
  * Add a new room booking
  * Building name, room number must exist in the db
  * Sample request body format:
@@ -147,8 +200,8 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  *  user_id: 1
  * }
  */
-app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getUserQuery, userResult, err_2, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
+app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -161,43 +214,26 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                getUserQuery = "SELECT * FROM users WHERE user_id=$1";
-                return [4 /*yield*/, pool.query(getUserQuery, [user_id])];
-            case 2:
-                userResult = _a.sent();
-                if (userResult.rowCount == 0) {
-                    console.log("this user does not exist in the database.");
-                    response.end("this user does not exist in the database.");
-                    return [2 /*return*/];
-                }
-                return [3 /*break*/, 4];
-            case 3:
-                err_2 = _a.sent();
-                console.log(err_2);
-                response.end(err_2);
-                return [3 /*break*/, 4];
-            case 4:
-                _a.trys.push([4, 6, , 7]);
                 getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
                 return [4 /*yield*/, pool.query(getRoomQuery, [
                         building_name,
                         room_number,
                     ])];
-            case 5:
+            case 2:
                 roomResult = _a.sent();
                 if (roomResult.rowCount == 0) {
                     console.log("this room does not exist in the database. please enter a valid building name and room number.");
                     response.end("this room does not exist in the database. please enter a valid building name and room number.");
                     return [2 /*return*/];
                 }
-                return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 4];
+            case 3:
                 err_3 = _a.sent();
                 console.log(err_3);
                 response.end(err_3);
-                return [3 /*break*/, 7];
-            case 7:
-                _a.trys.push([7, 9, , 10]);
+                return [3 /*break*/, 4];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
                 addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, pool.query(addBookingQuery, [
                         booking_datetime,
@@ -207,17 +243,17 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                         room_number,
                         user_id,
                     ])];
-            case 8:
+            case 5:
                 bookingResult = _a.sent();
                 console.log(bookingResult.rows);
                 response.json(bookingResult.rows);
-                return [3 /*break*/, 10];
-            case 9:
+                return [3 /*break*/, 7];
+            case 6:
                 err_4 = _a.sent();
                 console.log(err_4);
                 response.end(err_4);
-                return [3 /*break*/, 10];
-            case 10: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });

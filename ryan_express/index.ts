@@ -84,6 +84,53 @@ app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
 });
 
 /**
+ * Search for rooms
+ * Returns all available rooms that fit the provided search criteria
+ * Sample request body format:
+ * {
+ *  booking_datetime: 'YYYY-MM-DD HH:MM',
+ *  duration: 120,
+ *  num_occupants: 2,
+ *  hasprojector: true,
+ *  haswhiteboard: false
+ * }
+ */
+app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
+    // parse form data
+    let booking_datetime: string = request.body.booking_datetime;
+    let duration: number = request.body.duration;
+    let num_occupants: number = request.body.num_occupants;
+    let hasprojector: boolean = request.body.hasprojector;
+    let haswhiteboard: boolean = request.body.haswhiteboard;
+  
+    // part 1: filter rooms that fit the physical attributes (capacity, equipment)
+    let getRoomsQuery = `SELECT * FROM rooms WHERE capacity >= $1 `;
+    // only add projector/whiteboard if requested by the user
+    // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard
+    // so we can broaden our search and return more rooms
+    if (hasprojector) {
+        getRoomsQuery += ` AND hasprojector=true`;
+    }
+    if (haswhiteboard) {
+        getRoomsQuery += ` AND haswhiteboard=true`;
+    }
+    getRoomsQuery += `;`;
+
+    // send query
+    try {
+        const searchResult = await pool.query(getRoomsQuery, [
+            num_occupants
+          ]);
+        console.log(searchResult.rows);
+        response.json(searchResult.rows);
+    } catch (err) {
+        console.log(err);
+        response.end(err);
+    }
+   
+});
+
+/**
  * Add a new room booking
  * Building name, room number must exist in the db
  * Sample request body format:
@@ -106,19 +153,19 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   let user_id: number = request.body.user_id;
 
   // make sure user exists
-  try {
-    var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
-    const userResult = await pool.query(getUserQuery, [user_id]);
+//   try {
+//     var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
+//     const userResult = await pool.query(getUserQuery, [user_id]);
 
-    if (userResult.rowCount == 0) {
-      console.log("this user does not exist in the database.");
-      response.end("this user does not exist in the database.");
-      return;
-    }
-  } catch (err) {
-    console.log(err);
-    response.end(err);
-  }
+//     if (userResult.rowCount == 0) {
+//       console.log("this user does not exist in the database.");
+//       response.end("this user does not exist in the database.");
+//       return;
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     response.end(err);
+//   }
 
   // make sure building and room exists in the rooms table
   try {
