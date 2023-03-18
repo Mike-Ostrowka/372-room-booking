@@ -6,7 +6,12 @@ const { Pool } = require("pg");
 
 let app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -24,45 +29,25 @@ app.use(
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    cookie: { maxAge: 30 * 60 * 1000 },
+    maxAge: 30 * 60 * 1000,
     saveUninitialized: true,
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Middleware to check if the user is logged in
+function isLoggedIn(request: any, response: any, next: any) {
+  if (request.session.user) {
+    console.log("isLoggedIn");
+    return next();
+  } else {
+    console.log("Not logged in.");
+    response.json({ success: false });
+  }
+}
 
 app.use("/", function (req: any, res: any, next: any) {
   console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
   next();
-});
-
-app.post('/register-api', async(request:any, response:any) => {
-  let firstName: string = request.body.firstName;
-  let lastName: string = request.body.lastName;
-  let username: string = request.body.username;
-  let password: string = md5(request.body.password);
-  let isStaff: string = request.body.isStaff || '0';
-
-  if(await isUser(username)) {
-    console.log('user already exists');
-    response.json({success: false})
-    return;
-  }
-  try {
-    let registerQuery = `INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)`;
-    console.log(registerQuery);
-    const result = await pool.query(registerQuery, [username, password, firstName, lastName, isStaff]);
-    if(result.rowCount = 1) {
-      console.log("registered user");
-      response.json({success: true});
-    } else {
-      console.log("failed to register user");
-      response.json({success: false});
-    }
-  } catch (e) {
-    console.log(e);
-    response.end(e);
-  }
 });
 
 app.post("/login-api", async (request: any, response: any) => {
@@ -74,16 +59,18 @@ app.post("/login-api", async (request: any, response: any) => {
     if (result.rows.length > 0 && result.rows[0].json_agg != null) {
       let userObject = result.rows[0].json_agg[0];
       let properObject = {
+        u_id: userObject["user_id"],
         u: userObject["username"],
         p: userObject["password"],
+        success: true,
       };
-      request.session.user = properObject;
       request.session.regenerate((err: any) => {
         if (err) {
           console.log(err);
           response.status(500).send("Error regenerating session");
         } else {
-          response.json({ success: true });
+          request.session.user = properObject;
+          response.json(properObject);
         }
       });
     } else {
@@ -134,21 +121,6 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   let room_number: number = request.body.room_number;
   let user_id: number = request.body.user_id;
 
-  // make sure user exists
-  try {
-    var getUserQuery = `SELECT * FROM users WHERE user_id=$1`;
-    const userResult = await pool.query(getUserQuery, [user_id]);
-
-    if (userResult.rowCount == 0) {
-      console.log("this user does not exist in the database.");
-      response.end("this user does not exist in the database.");
-      return;
-    }
-  } catch (err) {
-    console.log(err);
-    response.end(err);
-  }
-
   // make sure building and room exists in the rooms table
   try {
     var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
@@ -161,9 +133,13 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
       console.log(
         "this room does not exist in the database. please enter a valid building name and room number."
       );
-      response.end(
-        "this room does not exist in the database. please enter a valid building name and room number."
-      );
+
+      response
+        .status(500)
+        .json({
+          error:
+            "this room does not exist in the database. please enter a valid building name and room number.",
+        });
       return;
     }
   } catch (err) {
@@ -190,33 +166,6 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   }
 });
 
-// Middleware to check if the user is logged in
-function isLoggedIn(request: any, response: any, next: any) {
-  let now = new Date();
-  if (request.session.cookie._expires > now) {
-    console.log("isLoggedIn");
-    return next();
-  } else {
-    console.log("Not logged in.");
-    response.json({ success: false });
-  }
-}
-
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
-
-//check if user exists
-async function isUser(username: string) {
-  try {
-    let authenticationQuery = `SELECT json_agg(a) FROM users a WHERE username = $1`;
-    const result = await pool.query(authenticationQuery, [username]);
-    if (result.rows.length > 0 && result.rows[0].json_agg != null) {
-      return true;
-      } else {
-        return false;
-      }
-  } catch(e) {
-    console.log(e);
-  }
-}
