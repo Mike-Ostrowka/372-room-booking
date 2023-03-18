@@ -37,11 +37,32 @@ app.use("/", function (req: any, res: any, next: any) {
 });
 
 app.post('/register-api', async(request:any, response:any) => {
+  let firstName: string = request.body.firstName;
+  let lastName: string = request.body.lastName;
+  let username: string = request.body.username;
+  let password: string = md5(request.body.password);
+  let isStaff: string = request.body.isStaff || '0';
 
-});
-
-app.post('/register-api', async(request:any, response:any) => {
-
+  if(await isUser(username)) {
+    console.log('user already exists');
+    response.json({success: false})
+    return;
+  }
+  try {
+    let registerQuery = `INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)`;
+    console.log(registerQuery);
+    const result = await pool.query(registerQuery, [username, password, firstName, lastName, isStaff]);
+    if(result.rowCount = 1) {
+      console.log("registered user");
+      response.json({success: true});
+    } else {
+      console.log("failed to register user");
+      response.json({success: false});
+    }
+  } catch (e) {
+    console.log(e);
+    response.end(e);
+  }
 });
 
 app.post("/login-api", async (request: any, response: any) => {
@@ -184,3 +205,18 @@ function isLoggedIn(request: any, response: any, next: any) {
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
+
+//check if user exists
+async function isUser(username: string) {
+  try {
+    let authenticationQuery = `SELECT json_agg(a) FROM users a WHERE username = $1`;
+    const result = await pool.query(authenticationQuery, [username]);
+    if (result.rows.length > 0 && result.rows[0].json_agg != null) {
+      return true;
+      } else {
+        return false;
+      }
+  } catch(e) {
+    console.log(e);
+  }
+}

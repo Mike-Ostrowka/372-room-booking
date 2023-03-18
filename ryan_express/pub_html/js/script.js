@@ -30,6 +30,10 @@ function loginCallback(data){
     $(document)
 }
 
+// function registerCallback(data) {
+//     console.log(data);
+// }
+
 function login(){
     $.ajax({
         method: 'post',
@@ -39,14 +43,14 @@ function login(){
     })
 }
 
-function registerAccount() {
-    $.ajax({
-        method: 'post',
-        url: '/register-api',
-        data: 'firstName='+$('#firstName').val,
-        success: registerCallback
-    })
-}
+// function registerAccount() {
+//     $.ajax({
+//         method: 'post',
+//         url: '/register-api',
+//         data: 'firstName='+$('#firstName').val()
+//         success: registerCallback
+//     })
+// }
 
 function addBooking(){
     $.ajax({

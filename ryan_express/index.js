@@ -65,17 +65,50 @@ app.use("/", function (req, res, next) {
     next();
 });
 app.post('/register-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var firstName, lastName, username, password, isStaff, registerQuery, result, e_1;
     return __generator(this, function (_a) {
-        return [2 /*return*/];
-    });
-}); });
-app.post('/register-api', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                firstName = request.body.firstName;
+                lastName = request.body.lastName;
+                username = request.body.username;
+                password = md5(request.body.password);
+                isStaff = request.body.isStaff || '0';
+                return [4 /*yield*/, isUser(username)];
+            case 1:
+                if (_a.sent()) {
+                    console.log('user already exists');
+                    response.json({ success: false });
+                    return [2 /*return*/];
+                }
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 4, , 5]);
+                registerQuery = "INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)";
+                console.log(registerQuery);
+                return [4 /*yield*/, pool.query(registerQuery, [username, password, firstName, lastName, isStaff])];
+            case 3:
+                result = _a.sent();
+                if (result.rowCount = 1) {
+                    console.log("registered user");
+                    response.json({ success: true });
+                }
+                else {
+                    console.log("failed to register user");
+                    response.json({ success: false });
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                e_1 = _a.sent();
+                console.log(e_1);
+                response.end(e_1);
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
     });
 }); });
 app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
+    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -111,9 +144,9 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
                 }
                 return [3 /*break*/, 4];
             case 3:
-                e_1 = _a.sent();
-                console.log(e_1);
-                response.end(e_1);
+                e_2 = _a.sent();
+                console.log(e_2);
+                response.end(e_2);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -246,3 +279,31 @@ function isLoggedIn(request, response, next) {
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
+//check if user exists
+function isUser(username) {
+    return __awaiter(this, void 0, void 0, function () {
+        var authenticationQuery, result, e_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1";
+                    return [4 /*yield*/, pool.query(authenticationQuery, [username])];
+                case 1:
+                    result = _a.sent();
+                    if (result.rows.length > 0 && result.rows[0].json_agg != null) {
+                        return [2 /*return*/, true];
+                    }
+                    else {
+                        return [2 /*return*/, false];
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_3 = _a.sent();
+                    console.log(e_3);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
