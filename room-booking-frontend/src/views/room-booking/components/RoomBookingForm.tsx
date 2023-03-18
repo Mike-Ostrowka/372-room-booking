@@ -8,16 +8,28 @@ import {
   Button,
   FormHelperText,
   FormControl,
+  useToast,
 } from "@chakra-ui/react";
+import { useContext } from "react";
+import { UserContext } from "contexts/UserContext";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const RoomBookingForm = () => {
+  const toast = useToast();
+  const { loggedInUser } = useContext(UserContext);
+  console.log("LOGGED IN USER: ", loggedInUser);
   const validationSchema = Yup.object().shape({
-    duration: Yup.string().required("Duration is Required"),
-    num_occupants: Yup.string().required("Number of Occupants is Required"),
+    duration: Yup.number()
+      .typeError("Duration must be a number")
+      .required("Duration is Required"),
+    num_occupants: Yup.number()
+      .typeError("Number of Occupants must be a number")
+      .required("Number of Occupants is Required"),
     building_name: Yup.string().required("Building Name is Required"),
-    room_number: Yup.string().required("Room Number is Required"),
+    room_number: Yup.number()
+      .typeError("Room Number must be a number")
+      .required("Room Number is Required"),
   });
   const formik = useFormik({
     initialValues: {
@@ -27,8 +39,48 @@ const RoomBookingForm = () => {
       building_name: "",
       room_number: "",
     },
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values: any, { setSubmitting }: any) => {
+      const data = {
+        booking_datetime: values.booking_datetime,
+        duration: parseInt(values.duration),
+        num_occupants: parseInt(values.num_occupants),
+        building_name: values.building_name,
+        room_number: parseInt(values.room_number),
+        user_id: parseInt(loggedInUser.u_id),
+      };
+      try {
+        const response = await fetch("http://localhost:8080/room-booking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          credentials: "include",
+        });
+        if (response.status === 200) {
+          toast({
+            title: "New Room Booking",
+            description: "You have successfully created a new room booking",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Room Booking Failed",
+            description:
+              "The system could not book a room at this time. Please ensure the room number and building are valid.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+        setSubmitting(false);
+      } catch (e) {
+        console.log(e);
+        setSubmitting(false);
+      }
+      formik.resetForm();
     },
     validationSchema: validationSchema,
   });
@@ -121,7 +173,12 @@ const RoomBookingForm = () => {
                 />
               </Stack>
               <Stack width="50%">
-                <Button variant="solid" colorScheme="red" type="submit">
+                <Button
+                  variant="solid"
+                  colorScheme="red"
+                  type="submit"
+                  isLoading={formik.isSubmitting}
+                >
                   Create Booking
                 </Button>
               </Stack>

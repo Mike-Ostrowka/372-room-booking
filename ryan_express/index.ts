@@ -6,7 +6,12 @@ const { Pool } = require("pg");
 
 let app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -24,12 +29,21 @@ app.use(
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    cookie: { maxAge: 30 * 60 * 1000 },
+    maxAge: 30 * 60 * 1000,
     saveUninitialized: true,
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Middleware to check if the user is logged in
+function isLoggedIn(request: any, response: any, next: any) {
+  if (request.session.user) {
+    console.log("isLoggedIn");
+    return next();
+  } else {
+    console.log("Not logged in.");
+    response.json({ success: false });
+  }
+}
 
 app.use("/", function (req: any, res: any, next: any) {
   console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
@@ -50,12 +64,12 @@ app.post("/login-api", async (request: any, response: any) => {
         p: userObject["password"],
         success: true,
       };
-      request.session.user = properObject;
       request.session.regenerate((err: any) => {
         if (err) {
           console.log(err);
           response.status(500).send("Error regenerating session");
         } else {
+          request.session.user = properObject;
           response.json(properObject);
         }
       });
@@ -119,9 +133,13 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
       console.log(
         "this room does not exist in the database. please enter a valid building name and room number."
       );
-      response.end(
-        "this room does not exist in the database. please enter a valid building name and room number."
-      );
+
+      response
+        .status(500)
+        .json({
+          error:
+            "this room does not exist in the database. please enter a valid building name and room number.",
+        });
       return;
     }
   } catch (err) {
@@ -147,18 +165,6 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
     response.end(err);
   }
 });
-
-// Middleware to check if the user is logged in
-function isLoggedIn(request: any, response: any, next: any) {
-  let now = new Date();
-  if (request.session.cookie._expires > now && request.session.user) {
-    console.log("isLoggedIn");
-    return next();
-  } else {
-    console.log("Not logged in.");
-    response.json({ success: false });
-  }
-}
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

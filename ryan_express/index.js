@@ -41,7 +41,11 @@ var session = require("express-session");
 var cors = require("cors");
 var Pool = require("pg").Pool;
 var app = express();
-app.use(cors());
+var corsOptions = {
+    origin: "http://localhost:5173",
+    credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
@@ -55,17 +59,26 @@ app.use(session({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    cookie: { maxAge: 30 * 60 * 1000 },
+    maxAge: 30 * 60 * 1000,
     saveUninitialized: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Middleware to check if the user is logged in
+function isLoggedIn(request, response, next) {
+    if (request.session.user) {
+        console.log("isLoggedIn");
+        return next();
+    }
+    else {
+        console.log("Not logged in.");
+        response.json({ success: false });
+    }
+}
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
 app.post("/login-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
+    var hashedpw, username, authenticationQuery, result, userObject, properObject_1, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -80,18 +93,20 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
                 result = _a.sent();
                 if (result.rows.length > 0 && result.rows[0].json_agg != null) {
                     userObject = result.rows[0].json_agg[0];
-                    properObject = {
+                    properObject_1 = {
+                        u_id: userObject["user_id"],
                         u: userObject["username"],
-                        p: userObject["password"]
+                        p: userObject["password"],
+                        success: true
                     };
-                    request.session.user = properObject;
                     request.session.regenerate(function (err) {
                         if (err) {
                             console.log(err);
                             response.status(500).send("Error regenerating session");
                         }
                         else {
-                            response.json({ success: true });
+                            request.session.user = properObject_1;
+                            response.json(properObject_1);
                         }
                     });
                 }
@@ -148,7 +163,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  * }
  */
 app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getUserQuery, userResult, err_2, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
+    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getRoomQuery, roomResult, err_2, addBookingQuery, bookingResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -161,13 +176,20 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                getUserQuery = "SELECT * FROM users WHERE user_id=$1";
-                return [4 /*yield*/, pool.query(getUserQuery, [user_id])];
+                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
+                return [4 /*yield*/, pool.query(getRoomQuery, [
+                        building_name,
+                        room_number,
+                    ])];
             case 2:
-                userResult = _a.sent();
-                if (userResult.rowCount == 0) {
-                    console.log("this user does not exist in the database.");
-                    response.end("this user does not exist in the database.");
+                roomResult = _a.sent();
+                if (roomResult.rowCount == 0) {
+                    console.log("this room does not exist in the database. please enter a valid building name and room number.");
+                    response
+                        .status(500)
+                        .json({
+                        error: "this room does not exist in the database. please enter a valid building name and room number."
+                    });
                     return [2 /*return*/];
                 }
                 return [3 /*break*/, 4];
@@ -178,26 +200,6 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 return [3 /*break*/, 4];
             case 4:
                 _a.trys.push([4, 6, , 7]);
-                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, pool.query(getRoomQuery, [
-                        building_name,
-                        room_number,
-                    ])];
-            case 5:
-                roomResult = _a.sent();
-                if (roomResult.rowCount == 0) {
-                    console.log("this room does not exist in the database. please enter a valid building name and room number.");
-                    response.end("this room does not exist in the database. please enter a valid building name and room number.");
-                    return [2 /*return*/];
-                }
-                return [3 /*break*/, 7];
-            case 6:
-                err_3 = _a.sent();
-                console.log(err_3);
-                response.end(err_3);
-                return [3 /*break*/, 7];
-            case 7:
-                _a.trys.push([7, 9, , 10]);
                 addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, pool.query(addBookingQuery, [
                         booking_datetime,
@@ -207,32 +209,20 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                         room_number,
                         user_id,
                     ])];
-            case 8:
+            case 5:
                 bookingResult = _a.sent();
                 console.log(bookingResult.rows);
                 response.json(bookingResult.rows);
-                return [3 /*break*/, 10];
-            case 9:
-                err_4 = _a.sent();
-                console.log(err_4);
-                response.end(err_4);
-                return [3 /*break*/, 10];
-            case 10: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 6:
+                err_3 = _a.sent();
+                console.log(err_3);
+                response.end(err_3);
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });
-// Middleware to check if the user is logged in
-function isLoggedIn(request, response, next) {
-    var now = new Date();
-    if (request.session.cookie._expires > now) {
-        console.log("isLoggedIn");
-        return next();
-    }
-    else {
-        console.log("Not logged in.");
-        response.json({ success: false });
-    }
-}
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
