@@ -41,7 +41,11 @@ var session = require("express-session");
 var cors = require("cors");
 var Pool = require("pg").Pool;
 var app = express();
-app.use(cors());
+var corsOptions = {
+    origin: "http://localhost:5173",
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
@@ -49,23 +53,109 @@ var pool = new Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
-    database: "room_booking_app"
+    database: "room_booking_app",
 });
 app.use(session({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    cookie: { maxAge: 30 * 60 * 1000 },
-    saveUninitialized: true
+    maxAge: 30 * 60 * 1000,
+    saveUninitialized: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Middleware to check if the user is logged in
+function isLoggedIn(request, response, next) {
+    if (request.session.user) {
+        console.log("isLoggedIn");
+        return next();
+    }
+    else {
+        console.log("Not logged in.");
+        response.json({ success: false });
+    }
+}
+//check if user exists
+function isUser(username) {
+    return __awaiter(this, void 0, void 0, function () {
+        var authenticationQuery, result, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1";
+                    return [4 /*yield*/, pool.query(authenticationQuery, [username])];
+                case 1:
+                    result = _a.sent();
+                    if (result.rows.length > 0 && result.rows[0].json_agg != null) {
+                        return [2 /*return*/, true];
+                    }
+                    else {
+                        return [2 /*return*/, false];
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_1 = _a.sent();
+                    console.log(e_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
+app.post("/register-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var firstName, lastName, username, password, isStaff, registerQuery, result, e_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                firstName = request.body.firstName;
+                lastName = request.body.lastName;
+                username = request.body.username;
+                password = md5(request.body.password);
+                isStaff = request.body.isStaff || "0";
+                return [4 /*yield*/, isUser(username)];
+            case 1:
+                if (_a.sent()) {
+                    console.log("user already exists");
+                    response.json({ success: false });
+                    return [2 /*return*/];
+                }
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 4, , 5]);
+                registerQuery = "INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)";
+                console.log(registerQuery);
+                return [4 /*yield*/, pool.query(registerQuery, [
+                        username,
+                        password,
+                        firstName,
+                        lastName,
+                        isStaff,
+                    ])];
+            case 3:
+                result = _a.sent();
+                if ((result.rowCount = 1)) {
+                    console.log("registered user");
+                    response.json({ success: true });
+                }
+                else {
+                    console.log("failed to register user");
+                    response.json({ success: false });
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                e_2 = _a.sent();
+                console.log(e_2);
+                response.end(e_2);
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); });
 app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, userObject, properObject, e_1;
+    var hashedpw, username, authenticationQuery, result, userObject, properObject_1, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -80,18 +170,20 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
                 result = _a.sent();
                 if (result.rows.length > 0 && result.rows[0].json_agg != null) {
                     userObject = result.rows[0].json_agg[0];
-                    properObject = {
+                    properObject_1 = {
+                        u_id: userObject["user_id"],
                         u: userObject["username"],
-                        p: userObject["password"]
+                        p: userObject["password"],
+                        success: true,
                     };
-                    request.session.user = properObject;
                     request.session.regenerate(function (err) {
                         if (err) {
                             console.log(err);
                             response.status(500).send("Error regenerating session");
                         }
                         else {
-                            response.json({ success: true });
+                            request.session.user = properObject_1;
+                            response.json(properObject_1);
                         }
                     });
                 }
@@ -101,9 +193,9 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
                 }
                 return [3 /*break*/, 4];
             case 3:
-                e_1 = _a.sent();
-                console.log(e_1);
-                response.end(e_1);
+                e_3 = _a.sent();
+                console.log(e_3);
+                response.end(e_3);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -122,7 +214,7 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
  * }
  */
 app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, start, end, end_formatted, getBookingsQuery, searchResult, err_1;
+    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, start, end, end_formatted, getBookingsQuery, searchQuery, searchResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -141,18 +233,17 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                 if (haswhiteboard) {
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
-                getRoomsQuery += ";";
                 start = new Date(booking_datetime);
-                console.log(start.toISOString());
                 end = new Date(start.getTime() + duration * 60000);
-                console.log(end.toISOString());
                 end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
                 console.log(end_formatted);
-                getBookingsQuery = "SELECT * FROM room_bookings WHERE booking_datetime >= $1 and booking_datetime < $2;";
+                getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE booking_datetime >= $2 and booking_datetime < $3";
+                searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n        WHERE NOT EXISTS (\n            SELECT * FROM (").concat(getBookingsQuery, ") as b \n            WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n        );");
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, pool.query(getBookingsQuery, [
+                return [4 /*yield*/, pool.query(searchQuery, [
+                        num_occupants,
                         booking_datetime,
                         end_formatted
                     ])];
@@ -231,7 +322,9 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 roomResult = _a.sent();
                 if (roomResult.rowCount == 0) {
                     console.log("this room does not exist in the database. please enter a valid building name and room number.");
-                    response.end("this room does not exist in the database. please enter a valid building name and room number.");
+                    response.status(500).json({
+                        error: "this room does not exist in the database. please enter a valid building name and room number.",
+                    });
                     return [2 /*return*/];
                 }
                 return [3 /*break*/, 4];
@@ -265,18 +358,6 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
         }
     });
 }); });
-// Middleware to check if the user is logged in
-function isLoggedIn(request, response, next) {
-    var now = new Date();
-    if (request.session.cookie._expires > now) {
-        console.log("isLoggedIn");
-        return next();
-    }
-    else {
-        console.log("Not logged in.");
-        response.json({ success: false });
-    }
-}
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });

@@ -1,8 +1,8 @@
 import { Icon } from "@chakra-ui/react";
-import { MdHome } from "react-icons/md";
+import { MdHome, MdSensorDoor } from "react-icons/md";
 
-// Admin Imports
 import MainDashboard from "views/admin/default";
+import RoomBooking from "views/room-booking";
 
 const routes = [
   {
@@ -11,6 +11,13 @@ const routes = [
     path: "/default",
     icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
     component: MainDashboard,
+  },
+  {
+    name: "Book a Room",
+    layout: "/admin",
+    path: "/room-booking",
+    icon: <Icon as={MdSensorDoor} width="20px" height="20px" color="inherit" />,
+    component: RoomBooking,
   },
 ];
 

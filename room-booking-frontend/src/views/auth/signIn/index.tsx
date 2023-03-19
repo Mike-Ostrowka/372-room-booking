@@ -39,9 +39,9 @@ function SignIn() {
   const history = useHistory();
 
   const [show, setShow] = React.useState(false);
-  const { isLoggedIn, setIsLoggedIn } = useContext(UserContext);
+  const { loggedInUser, setLoggedInUser } = useContext(UserContext);
 
-  console.log("LOGGED IN?: ", isLoggedIn);
+  console.log("LOGGED IN?: ", loggedInUser);
 
   const handleClick = () => setShow(!show);
 
@@ -71,6 +71,7 @@ function SignIn() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
       const responseData = await response.json();
       console.log("DATA: ", responseData);
@@ -83,7 +84,7 @@ function SignIn() {
           isClosable: true,
         });
         history.push("/admin");
-        setIsLoggedIn(true);
+        setLoggedInUser(responseData);
       } else {
         setErrors({ email: true, password: true });
         toast({
@@ -93,6 +94,7 @@ function SignIn() {
           duration: 5000,
           isClosable: true,
         });
+        setLoggedInUser(null);
       }
       setSubmitting(false);
     } catch (error) {
