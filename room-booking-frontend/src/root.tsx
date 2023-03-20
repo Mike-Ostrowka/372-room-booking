@@ -8,7 +8,7 @@ import RTLLayout from "./layouts/rtl";
 import { UserContext } from "./contexts/UserContext";
 
 function App() {
-  const { isLoggedIn } = useContext(UserContext);
+  const { loggedInUser } = useContext(UserContext);
 
   return (
     <React.StrictMode>
@@ -18,7 +18,7 @@ function App() {
           <Route path={`/auth/sign-in`} component={AuthSignInLayout} />
           <Route path={`/admin`} component={AdminLayout} />
           <Route path={`/rtl`} component={RTLLayout} />
-          {isLoggedIn ? (
+          {loggedInUser !== null ? (
             <Redirect from="/" to="/admin" />
           ) : (
             <Redirect from="/" to="/auth/sign-in" />
