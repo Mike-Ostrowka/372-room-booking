@@ -101,6 +101,15 @@ function isUser(username) {
         });
     });
 }
+// Calculate and format the endtime, 
+// given a booking start time and duration
+function calculateEndTime(start_time, duration) {
+    var start = new Date(start_time);
+    var end = new Date(start.getTime() + duration * 60000);
+    // format end time to psql ISO date format
+    var end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
+    return end_formatted;
+}
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
@@ -206,7 +215,7 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
  * Returns all available rooms that fit the provided search criteria
  * Sample request body format:
  * {
- *  booking_datetime: 'YYYY-MM-DD HH:MM',
+ *  start_datetime: 'YYYY-MM-DD HH:MM',
  *  duration: 120,
  *  num_occupants: 2,
  *  hasprojector: true,
@@ -214,11 +223,11 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
  * }
  */
 app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, start, end, end_formatted, getBookingsQuery, searchQuery, searchResult, err_1;
+    var start_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, end_datetime, getBookingsQuery, searchQuery, searchResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                booking_datetime = request.body.booking_datetime;
+                start_datetime = request.body.start_datetime;
                 duration = request.body.duration;
                 num_occupants = request.body.num_occupants;
                 hasprojector = request.body.hasprojector;
@@ -233,10 +242,7 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                 if (haswhiteboard) {
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
-                start = new Date(booking_datetime);
-                end = new Date(start.getTime() + duration * 60000);
-                end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
-                console.log(end_formatted);
+                end_datetime = calculateEndTime(start_datetime, duration);
                 getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE booking_datetime >= $2 and booking_datetime < $3";
                 searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n        WHERE NOT EXISTS (\n            SELECT * FROM (").concat(getBookingsQuery, ") as b \n            WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n        );");
                 _a.label = 1;
@@ -244,8 +250,8 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, pool.query(searchQuery, [
                         num_occupants,
-                        booking_datetime,
-                        end_formatted
+                        start_datetime,
+                        end_datetime
                     ])];
             case 2:
                 searchResult = _a.sent();
@@ -291,7 +297,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  * Building name, room number must exist in the db
  * Sample request body format:
  * {
- *  booking_datetime: 'YYYY-MM-DD HH:MM'
+ *  start_datetime: 'YYYY-MM-DD HH:MM'
  *  duration: 120
  *  num_occupants: 2
  *  building_name: 'SUB'
@@ -300,16 +306,28 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  * }
  */
 app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_datetime, duration, num_occupants, building_name, room_number, user_id, getRoomQuery, roomResult, err_3, addBookingQuery, bookingResult, err_4;
+    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                booking_datetime = request.body.booking_datetime;
+                start_datetime = request.body.start_datetime;
                 duration = request.body.duration;
                 num_occupants = request.body.num_occupants;
                 building_name = request.body.building_name;
                 room_number = request.body.room_number;
                 user_id = request.body.user_id;
+                max_duration = 60 * 3;
+                max_occupants = 25;
+                if (duration > max_duration) {
+                    response.status(500).json({
+                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
+                    });
+                }
+                if (num_occupants > max_occupants) {
+                    response.status(500).json({
+                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
+                    });
+                }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -321,9 +339,9 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
             case 2:
                 roomResult = _a.sent();
                 if (roomResult.rowCount == 0) {
-                    console.log("this room does not exist in the database. please enter a valid building name and room number.");
+                    console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
-                        error: "this room does not exist in the database. please enter a valid building name and room number.",
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
                     });
                     return [2 /*return*/];
                 }
@@ -334,27 +352,31 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 response.end(err_3);
                 return [3 /*break*/, 4];
             case 4:
-                _a.trys.push([4, 6, , 7]);
-                addBookingQuery = "INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);";
+                end_datetime = calculateEndTime(start_datetime, duration);
+                _a.label = 5;
+            case 5:
+                _a.trys.push([5, 7, , 8]);
+                addBookingQuery = "INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);";
                 return [4 /*yield*/, pool.query(addBookingQuery, [
-                        booking_datetime,
+                        start_datetime,
+                        end_datetime,
                         duration,
                         num_occupants,
                         building_name,
                         room_number,
                         user_id,
                     ])];
-            case 5:
+            case 6:
                 bookingResult = _a.sent();
                 console.log(bookingResult.rows);
                 response.json(bookingResult.rows);
-                return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 8];
+            case 7:
                 err_4 = _a.sent();
                 console.log(err_4);
                 response.end(err_4);
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); });

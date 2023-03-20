@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS rooms (
 
 CREATE TABLE IF NOT EXISTS room_bookings (
     booking_id serial, 
-    booking_datetime timestamp NOT NULL, 
+    start_datetime timestamp NOT NULL, 
+    end_datetime timestamp NOT NULL,
     duration integer NOT NULL, 
     num_occupants integer NOT NULL, 
     building_name varchar(20) NOT NULL, 
@@ -30,4 +31,5 @@ CREATE TABLE IF NOT EXISTS room_bookings (
     FOREIGN KEY (building_name, room_number) REFERENCES rooms(building_name, room_number), 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
 
