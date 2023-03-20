@@ -197,7 +197,7 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
 
   // build and send query
   try {
-    var addBookingQuery = `INSERT INTO room_bookings (booking_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
+    var addBookingQuery = `INSERT INTO room_bookings (start_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
     const bookingResult = await pool.query(addBookingQuery, [
       booking_datetime,
       duration,
