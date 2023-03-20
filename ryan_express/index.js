@@ -243,13 +243,15 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
                 end_datetime = calculateEndTime(start_datetime, duration);
-                getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE booking_datetime >= $2 and booking_datetime < $3";
+                getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
                 searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n        WHERE NOT EXISTS (\n            SELECT * FROM (").concat(getBookingsQuery, ") as b \n            WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n        );");
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, pool.query(searchQuery, [
                         num_occupants,
+                        start_datetime,
+                        end_datetime,
                         start_datetime,
                         end_datetime
                     ])];
