@@ -263,7 +263,9 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
             case 3:
                 err_1 = _a.sent();
                 console.log(err_1);
-                response.end(err_1);
+                response.status(500).json({
+                    error: err_1
+                });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -288,7 +290,9 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
             case 2:
                 err_2 = _a.sent();
                 console.log(err_2);
-                response.end(err_2);
+                response.status(500).json({
+                    error: err_2
+                });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -351,7 +355,9 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
             case 3:
                 err_3 = _a.sent();
                 console.log(err_3);
-                response.end(err_3);
+                response.status(500).json({
+                    error: err_3
+                });
                 return [3 /*break*/, 4];
             case 4:
                 end_datetime = calculateEndTime(start_datetime, duration);
@@ -376,7 +382,9 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
             case 7:
                 err_4 = _a.sent();
                 console.log(err_4);
-                response.end(err_4);
+                response.status(500).json({
+                    error: err_4
+                });
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
         }
