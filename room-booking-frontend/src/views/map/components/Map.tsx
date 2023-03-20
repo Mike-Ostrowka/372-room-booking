@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import mapboxgl, { LngLat } from "mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import "./Map.css";
 
 mapboxgl.accessToken =
