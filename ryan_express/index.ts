@@ -1,13 +1,8 @@
-// const express = require("express");
-import express from "express";
-// const md5 = require("md5");
-import md5 from "md5";
-import session from "express-session";
-// const session = require("express-session");
-// import cors from 'cors';
+const express = require("express");
+const md5 = require("md5");
+const session = require("express-session");
 const cors = require("cors");
-import pg from "pg";
-// const { Pool } = require("pg");
+const pg = require("pg");
 
 let app = express();
 
