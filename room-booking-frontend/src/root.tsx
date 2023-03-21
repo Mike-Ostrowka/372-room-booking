@@ -15,14 +15,18 @@ function App() {
       <HashRouter>
         <Switch>
           {loggedInUser !== null ? (
-            <Route path={`/admin`} component={AdminLayout} />
+            <>
+              <Route path={`/admin`} component={AdminLayout} />
+              <Route path={`/rtl`} component={RTLLayout} />
+              <Redirect to="/admin" />
+            </>
           ) : (
-            <Redirect exact from="/" to="/auth/sign-in" />
+            <>
+              <Route path={`/auth/sign-up`} component={AuthSignUpLayout} />
+              <Route path={`/auth/sign-in`} component={AuthSignInLayout} />
+              <Redirect to="/auth/sign-in" />
+            </>
           )}
-          <Route path={`/auth/sign-up`} component={AuthSignUpLayout} />
-          <Route path={`/auth/sign-in`} component={AuthSignInLayout} />
-          <Route path={`/rtl`} component={RTLLayout} />
-          <Redirect to="/auth/sign-in" />
         </Switch>
       </HashRouter>
     </React.StrictMode>
