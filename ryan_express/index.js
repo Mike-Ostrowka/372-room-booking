@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,28 +35,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-var express = require("express");
-var md5 = require("md5");
-var session = require("express-session");
-var cors = require("cors");
-var pg = require("pg");
-var app = express();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+exports.__esModule = true;
+var express_1 = __importDefault(require("express"));
+var md5_1 = __importDefault(require("md5"));
+var express_session_1 = __importDefault(require("express-session"));
+var cors_1 = __importDefault(require("cors"));
+var pg_1 = __importDefault(require("pg"));
+var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
     credentials: true
 };
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use((0, cors_1["default"])(corsOptions));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
-var pool = new pg.Pool({
+var pool = new pg_1["default"].Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
     database: "room_booking_app"
 });
-app.use(session({
+app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
@@ -122,7 +126,7 @@ app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
-app.post("/register-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/register-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var firstName, lastName, username, password, isStaff, registerQuery, result, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -130,7 +134,7 @@ app.post("/register-api", function (request, response) { return __awaiter(_this,
                 firstName = request.body.firstName;
                 lastName = request.body.lastName;
                 username = request.body.username;
-                password = md5(request.body.password);
+                password = (0, md5_1["default"])(request.body.password);
                 isStaff = request.body.isStaff;
                 return [4 /*yield*/, isUser(username)];
             case 1:
@@ -171,12 +175,12 @@ app.post("/register-api", function (request, response) { return __awaiter(_this,
         }
     });
 }); });
-app.post("/login-api", function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var hashedpw, username, authenticationQuery, result, userObject, properObject_1, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                hashedpw = md5(request.body.password);
+                hashedpw = (0, md5_1["default"])(request.body.password);
                 username = request.body.username;
                 _a.label = 1;
             case 1:
@@ -230,7 +234,7 @@ app.post("/login-api", function (request, response) { return __awaiter(_this, vo
  *  haswhiteboard: false
  * }
  */
-app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/search-rooms", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, end_datetime, getBookingsQuery, searchQuery, searchResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -282,7 +286,7 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
 /**
  * Get all room bookings
  */
-app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.get("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -319,7 +323,7 @@ app.get("/room-booking", isLoggedIn, function (request, response) { return __awa
  *  user_id: 1
  * }
  */
-app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(_this, void 0, void 0, function () {
+app.post("/room-booking", isLoggedIn, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {

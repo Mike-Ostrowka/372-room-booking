@@ -1,8 +1,8 @@
-const express = require("express");
-const md5 = require("md5");
-const session = require("express-session");
-const cors = require("cors");
-const pg = require("pg");
+import express from "express";
+import md5 from "md5";
+import session from "express-session";
+import cors from "cors";
+import pg from "pg";
 
 let app = express();
 

@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "CommonJS",
     "strict": true,
-    "esModuleInterop": true,
-    // "moduleResolution": "node"
+    "esModuleInterop": true
   }
 }
