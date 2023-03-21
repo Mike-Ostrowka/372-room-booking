@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+<<<<<<< HEAD
 // const express = require("express");
 var express_1 = __importDefault(require("express"));
 // const md5 = require("md5");
@@ -50,12 +51,23 @@ var cors = require("cors");
 var pg_1 = __importDefault(require("pg"));
 // const { Pool } = require("pg");
 var isLoggedIn_1 = __importDefault(require("./routes/middleware/isLoggedIn"));
+=======
+var express_1 = __importDefault(require("express"));
+var md5_1 = __importDefault(require("md5"));
+var express_session_1 = __importDefault(require("express-session"));
+var cors_1 = __importDefault(require("cors"));
+var pg_1 = __importDefault(require("pg"));
+>>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
     credentials: true
 };
+<<<<<<< HEAD
 app.use(cors(corsOptions));
+=======
+app.use((0, cors_1["default"])(corsOptions));
+>>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
 app.use(express_1["default"].json());
 app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
@@ -69,7 +81,10 @@ app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
+<<<<<<< HEAD
     // maxAge: 30 * 60 * 1000,
+=======
+>>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
     cookie: { maxAge: 30 * 60 * 1000 },
     saveUninitialized: true
 }));
@@ -111,13 +126,21 @@ function isUser(username) {
         });
     });
 }
-// Calculate and format the endtime, 
+// Calculate and format the endtime,
 // given a booking start time and duration
 function calculateEndTime(start_time, duration) {
     var start = new Date(start_time);
     var end = new Date(start.getTime() + duration * 60000);
     // format end time to psql ISO date format
-    var end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
+    var end_formatted = end.getFullYear() +
+        "-" +
+        (end.getMonth() + 1) +
+        "-" +
+        end.getDate() +
+        " " +
+        end.getHours() +
+        ":" +
+        end.getMinutes();
     return end_formatted;
 }
 app.use("/", function (req, res, next) {
@@ -133,12 +156,16 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
                 lastName = request.body.lastName;
                 username = request.body.username;
                 password = (0, md5_1["default"])(request.body.password);
+<<<<<<< HEAD
                 isStaff = request.body.isStaff || "0";
+=======
+                isStaff = request.body.isStaff;
+>>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
                 return [4 /*yield*/, isUser(username)];
             case 1:
                 if (_a.sent()) {
                     console.log("user already exists");
-                    response.json({ success: false });
+                    response.json({ success: false, userExists: true });
                     return [2 /*return*/];
                 }
                 _a.label = 2;
@@ -157,11 +184,11 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
                 result = _a.sent();
                 if ((result.rowCount = 1)) {
                     console.log("registered user");
-                    response.json({ success: true });
+                    response.json({ success: true, userExists: false });
                 }
                 else {
                     console.log("failed to register user");
-                    response.json({ success: false });
+                    response.json({ success: false, userExists: false });
                 }
                 return [3 /*break*/, 5];
             case 4:
@@ -263,7 +290,7 @@ app.post("/search-rooms", isLoggedIn_1["default"], function (request, response) 
                         start_datetime,
                         end_datetime,
                         start_datetime,
-                        end_datetime
+                        end_datetime,
                     ])];
             case 2:
                 searchResult = _a.sent();

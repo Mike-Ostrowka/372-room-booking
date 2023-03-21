@@ -33,7 +33,7 @@ const RoomBookingForm = () => {
   });
   const formik = useFormik({
     initialValues: {
-      booking_datetime: new Date().toISOString().slice(0, 16),
+      start_datetime: new Date().toISOString().slice(0, 16),
       duration: "",
       num_occupants: "",
       building_name: "",
@@ -41,7 +41,7 @@ const RoomBookingForm = () => {
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       const data = {
-        booking_datetime: values.booking_datetime,
+        start_datetime: values.start_datetime,
         duration: parseInt(values.duration),
         num_occupants: parseInt(values.num_occupants),
         building_name: values.building_name,
@@ -166,8 +166,8 @@ const RoomBookingForm = () => {
                   placeholder="Select Date and Time"
                   size="lg"
                   type="datetime-local"
-                  name="booking_datetime"
-                  value={formik.values.booking_datetime}
+                  name="start_datetime"
+                  value={formik.values.start_datetime}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
