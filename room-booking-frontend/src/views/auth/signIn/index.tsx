@@ -83,8 +83,8 @@ function SignIn() {
           duration: 5000,
           isClosable: true,
         });
-        history.push("/admin");
         setLoggedInUser(responseData);
+        history.push("/admin");
       } else {
         setErrors({ email: true, password: true });
         toast({

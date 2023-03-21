@@ -11,6 +11,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
+import AdminNavbarLinks from "components/navbar/NavbarLinksAdmin";
 
 export default function AdminNavbar(props: {
   secondary: boolean;
@@ -141,6 +142,13 @@ export default function AdminNavbar(props: {
           >
             {brandText}
           </Link>
+        </Box>
+        <Box ms="auto" w={{ sm: "100%", md: "unset" }}>
+          <AdminNavbarLinks
+            onOpen={props.onOpen}
+            secondary={props.secondary}
+            fixed={props.fixed}
+          />
         </Box>
       </Flex>
     </Box>

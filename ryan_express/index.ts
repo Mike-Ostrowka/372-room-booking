@@ -70,11 +70,11 @@ app.post("/register-api", async (request: any, response: any) => {
   let lastName: string = request.body.lastName;
   let username: string = request.body.username;
   let password: string = md5(request.body.password);
-  let isStaff: string = request.body.isStaff || "0";
+  let isStaff: boolean = request.body.isStaff;
 
   if (await isUser(username)) {
     console.log("user already exists");
-    response.json({ success: false });
+    response.json({ success: false, userExists: true });
     return;
   }
   try {
@@ -89,10 +89,10 @@ app.post("/register-api", async (request: any, response: any) => {
     ]);
     if ((result.rowCount = 1)) {
       console.log("registered user");
-      response.json({ success: true });
+      response.json({ success: true, userExists: false });
     } else {
       console.log("failed to register user");
-      response.json({ success: false });
+      response.json({ success: false, userExists: false });
     }
   } catch (e) {
     console.log(e);

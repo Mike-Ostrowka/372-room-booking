@@ -14,15 +14,15 @@ function App() {
     <React.StrictMode>
       <HashRouter>
         <Switch>
+          {loggedInUser !== null ? (
+            <Route path={`/admin`} component={AdminLayout} />
+          ) : (
+            <Redirect exact from="/" to="/auth/sign-in" />
+          )}
           <Route path={`/auth/sign-up`} component={AuthSignUpLayout} />
           <Route path={`/auth/sign-in`} component={AuthSignInLayout} />
-          <Route path={`/admin`} component={AdminLayout} />
           <Route path={`/rtl`} component={RTLLayout} />
-          {loggedInUser !== null ? (
-            <Redirect from="/" to="/admin" />
-          ) : (
-            <Redirect from="/" to="/auth/sign-in" />
-          )}
+          <Redirect to="/auth/sign-in" />
         </Switch>
       </HashRouter>
     </React.StrictMode>
