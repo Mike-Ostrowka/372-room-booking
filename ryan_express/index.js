@@ -35,32 +35,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var express = require("express");
-var md5 = require("md5");
-var session = require("express-session");
-var cors = require("cors");
-var Pool = require("pg").Pool;
-var app = express();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+exports.__esModule = true;
+var express_1 = __importDefault(require("express"));
+var md5_1 = __importDefault(require("md5"));
+var express_session_1 = __importDefault(require("express-session"));
+var cors_1 = __importDefault(require("cors"));
+var pg_1 = __importDefault(require("pg"));
+var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
-    credentials: true,
+    credentials: true
 };
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use((0, cors_1["default"])(corsOptions));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
-var pool = new Pool({
+var pool = new pg_1["default"].Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
-    database: "room_booking_app",
+    database: "room_booking_app"
 });
-app.use(session({
+app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    maxAge: 30 * 60 * 1000,
-    saveUninitialized: true,
+    cookie: { maxAge: 30 * 60 * 1000 },
+    saveUninitialized: true
 }));
 // Middleware to check if the user is logged in
 function isLoggedIn(request, response, next) {
@@ -101,13 +105,21 @@ function isUser(username) {
         });
     });
 }
-// Calculate and format the endtime, 
+// Calculate and format the endtime,
 // given a booking start time and duration
 function calculateEndTime(start_time, duration) {
     var start = new Date(start_time);
     var end = new Date(start.getTime() + duration * 60000);
     // format end time to psql ISO date format
-    var end_formatted = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate() + ' ' + end.getHours() + ':' + end.getMinutes();
+    var end_formatted = end.getFullYear() +
+        "-" +
+        (end.getMonth() + 1) +
+        "-" +
+        end.getDate() +
+        " " +
+        end.getHours() +
+        ":" +
+        end.getMinutes();
     return end_formatted;
 }
 app.use("/", function (req, res, next) {
@@ -122,13 +134,13 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
                 firstName = request.body.firstName;
                 lastName = request.body.lastName;
                 username = request.body.username;
-                password = md5(request.body.password);
-                isStaff = request.body.isStaff || "0";
+                password = (0, md5_1["default"])(request.body.password);
+                isStaff = request.body.isStaff;
                 return [4 /*yield*/, isUser(username)];
             case 1:
                 if (_a.sent()) {
                     console.log("user already exists");
-                    response.json({ success: false });
+                    response.json({ success: false, userExists: true });
                     return [2 /*return*/];
                 }
                 _a.label = 2;
@@ -147,11 +159,11 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
                 result = _a.sent();
                 if ((result.rowCount = 1)) {
                     console.log("registered user");
-                    response.json({ success: true });
+                    response.json({ success: true, userExists: false });
                 }
                 else {
                     console.log("failed to register user");
-                    response.json({ success: false });
+                    response.json({ success: false, userExists: false });
                 }
                 return [3 /*break*/, 5];
             case 4:
@@ -168,7 +180,7 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                hashedpw = md5(request.body.password);
+                hashedpw = (0, md5_1["default"])(request.body.password);
                 username = request.body.username;
                 _a.label = 1;
             case 1:
@@ -183,7 +195,7 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
                         u_id: userObject["user_id"],
                         u: userObject["username"],
                         p: userObject["password"],
-                        success: true,
+                        success: true
                     };
                     request.session.regenerate(function (err) {
                         if (err) {
@@ -253,7 +265,7 @@ app.post("/search-rooms", isLoggedIn, function (request, response) { return __aw
                         start_datetime,
                         end_datetime,
                         start_datetime,
-                        end_datetime
+                        end_datetime,
                     ])];
             case 2:
                 searchResult = _a.sent();
@@ -347,7 +359,7 @@ app.post("/room-booking", isLoggedIn, function (request, response) { return __aw
                 if (roomResult.rowCount == 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
-                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number."
                     });
                     return [2 /*return*/];
                 }
