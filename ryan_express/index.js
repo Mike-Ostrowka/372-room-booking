@@ -44,10 +44,8 @@ var md5_1 = __importDefault(require("md5"));
 var express_session_1 = __importDefault(require("express-session"));
 var cors_1 = __importDefault(require("cors"));
 var pg_1 = __importDefault(require("pg"));
-// middleware and util functions
-var isLoggedIn_1 = __importDefault(require("./routes/middleware/isLoggedIn"));
-var calcTime_1 = __importDefault(require("./routes/utils/calcTime"));
 var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
+var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
@@ -200,125 +198,8 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
 }); });
 // Search for available rooms
 app.use('/search-rooms', searchRooms_1["default"]);
-/**
- * Get all room bookings
- */
-app.get("/room-booking", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var getBookingsQuery, bookingsResult, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                getBookingsQuery = "SELECT * FROM room_bookings;";
-                return [4 /*yield*/, pool.query(getBookingsQuery)];
-            case 1:
-                bookingsResult = _a.sent();
-                console.log(bookingsResult.rows);
-                response.json(bookingsResult.rows);
-                return [3 /*break*/, 3];
-            case 2:
-                err_1 = _a.sent();
-                console.log(err_1);
-                response.status(500).json({
-                    error: err_1
-                });
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-/**
- * Add a new room booking
- * Building name, room number must exist in the db
- * Sample request body format:
- * {
- *  start_datetime: 'YYYY-MM-DD HH:MM'
- *  duration: 120
- *  num_occupants: 2
- *  building_name: 'SUB'
- *  room_number: 2120
- *  user_id: 1
- * }
- */
-app.post("/room-booking", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_2, end_datetime, addBookingQuery, bookingResult, err_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                start_datetime = request.body.start_datetime;
-                duration = request.body.duration;
-                num_occupants = request.body.num_occupants;
-                building_name = request.body.building_name;
-                room_number = request.body.room_number;
-                user_id = request.body.user_id;
-                max_duration = 60 * 3;
-                max_occupants = 25;
-                if (duration > max_duration) {
-                    response.status(500).json({
-                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
-                    });
-                }
-                if (num_occupants > max_occupants) {
-                    response.status(500).json({
-                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
-                    });
-                }
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, pool.query(getRoomQuery, [
-                        building_name,
-                        room_number,
-                    ])];
-            case 2:
-                roomResult = _a.sent();
-                if (roomResult.rowCount == 0) {
-                    console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
-                    response.status(500).json({
-                        error: "Error: this room does not exist in the database. please enter a valid building name and room number."
-                    });
-                    return [2 /*return*/];
-                }
-                return [3 /*break*/, 4];
-            case 3:
-                err_2 = _a.sent();
-                console.log(err_2);
-                response.status(500).json({
-                    error: err_2
-                });
-                return [3 /*break*/, 4];
-            case 4:
-                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
-                _a.label = 5;
-            case 5:
-                _a.trys.push([5, 7, , 8]);
-                addBookingQuery = "INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);";
-                return [4 /*yield*/, pool.query(addBookingQuery, [
-                        start_datetime,
-                        end_datetime,
-                        duration,
-                        num_occupants,
-                        building_name,
-                        room_number,
-                        user_id,
-                    ])];
-            case 6:
-                bookingResult = _a.sent();
-                console.log(bookingResult.rows);
-                response.json(bookingResult.rows);
-                return [3 /*break*/, 8];
-            case 7:
-                err_3 = _a.sent();
-                console.log(err_3);
-                response.status(500).json({
-                    error: err_3
-                });
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
-        }
-    });
-}); });
+// Room bookings
+app.use('/room-booking', roomBooking_1["default"]);
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
