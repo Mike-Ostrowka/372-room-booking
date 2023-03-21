@@ -1,8 +1,13 @@
-const express = require("express");
-const md5 = require("md5");
-const session = require("express-session");
+// const express = require("express");
+import express from "express";
+// const md5 = require("md5");
+import md5 from "md5";
+import session from "express-session";
+// const session = require("express-session");
+// import cors from 'cors';
 const cors = require("cors");
-const { Pool } = require("pg");
+import pg from "pg";
+// const { Pool } = require("pg");
 
 let app = express();
 
@@ -17,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 
 let port = process.env.PORT || 8080;
 
-let pool = new Pool({
+let pool = new pg.Pool({
   host: "34.82.200.170",
   user: "testuser",
   password: "password",
@@ -29,7 +34,7 @@ app.use(
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    maxAge: 30 * 60 * 1000,
+    cookie: { maxAge: 30 * 60 * 1000 },
     saveUninitialized: true,
   })
 );
@@ -58,6 +63,26 @@ async function isUser(username: string) {
   } catch (e) {
     console.log(e);
   }
+}
+
+// Calculate and format the endtime,
+// given a booking start time and duration
+function calculateEndTime(start_time: string, duration: number) {
+  let start = new Date(start_time);
+  let end = new Date(start.getTime() + duration * 60000);
+
+  // format end time to psql ISO date format
+  let end_formatted =
+    end.getFullYear() +
+    "-" +
+    (end.getMonth() + 1) +
+    "-" +
+    end.getDate() +
+    " " +
+    end.getHours() +
+    ":" +
+    end.getMinutes();
+  return end_formatted;
 }
 
 app.use("/", function (req: any, res: any, next: any) {
@@ -134,6 +159,70 @@ app.post("/login-api", async (request: any, response: any) => {
 });
 
 /**
+ * Search for rooms
+ * Returns all available rooms that fit the provided search criteria
+ * Sample request body format:
+ * {
+ *  start_datetime: 'YYYY-MM-DD HH:MM',
+ *  duration: 120,
+ *  num_occupants: 2,
+ *  hasprojector: true,
+ *  haswhiteboard: false
+ * }
+ */
+app.post("/search-rooms", isLoggedIn, async (request: any, response: any) => {
+  // parse form data
+  let start_datetime: string = request.body.start_datetime;
+  let duration: number = request.body.duration;
+  let num_occupants: number = request.body.num_occupants;
+  let hasprojector: boolean = request.body.hasprojector;
+  let haswhiteboard: boolean = request.body.haswhiteboard;
+
+  // part 1: filter rooms that fit the physical attributes (capacity, equipment)
+  let getRoomsQuery = `SELECT * FROM rooms WHERE capacity >= $1 `;
+  // only add projector/whiteboard if requested by the user
+  // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard,
+  // so we can broaden our search and return more rooms
+  if (hasprojector) {
+    getRoomsQuery += ` AND hasprojector=true`;
+  }
+  if (haswhiteboard) {
+    getRoomsQuery += ` AND haswhiteboard=true`;
+  }
+
+  // part 2: get bookings that overlap the requested timeslot
+  // determine end time
+  let end_datetime = calculateEndTime(start_datetime, duration);
+
+  // a booking overlaps if it starts at/after the start time
+  // or ends at/after the end time
+  let getBookingsQuery = `SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)`;
+
+  // part 3: build and send query
+  let searchQuery = `SELECT * FROM (${getRoomsQuery}) AS r 
+        WHERE NOT EXISTS (
+            SELECT * FROM (${getBookingsQuery}) as b 
+            WHERE b.building_name=r.building_name AND b.room_number=r.room_number
+        );`;
+  try {
+    const searchResult = await pool.query(searchQuery, [
+      num_occupants,
+      start_datetime,
+      end_datetime,
+      start_datetime,
+      end_datetime,
+    ]);
+    console.log(searchResult.rows);
+    response.json(searchResult.rows);
+  } catch (err) {
+    console.log(err);
+    response.status(500).json({
+      error: err,
+    });
+  }
+});
+
+/**
  * Get all room bookings
  */
 app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
@@ -145,7 +234,9 @@ app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
     response.json(bookingsResult.rows);
   } catch (err) {
     console.log(err);
-    response.end(err);
+    response.status(500).json({
+      error: err,
+    });
   }
 });
 
@@ -154,7 +245,7 @@ app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
  * Building name, room number must exist in the db
  * Sample request body format:
  * {
- *  booking_datetime: 'YYYY-MM-DD HH:MM'
+ *  start_datetime: 'YYYY-MM-DD HH:MM'
  *  duration: 120
  *  num_occupants: 2
  *  building_name: 'SUB'
@@ -164,12 +255,26 @@ app.get("/room-booking", isLoggedIn, async (request: any, response: any) => {
  */
 app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
   // parse form data
-  let booking_datetime: string = request.body.booking_datetime;
+  let start_datetime: string = request.body.start_datetime;
   let duration: number = request.body.duration;
   let num_occupants: number = request.body.num_occupants;
   let building_name: string = request.body.building_name;
   let room_number: number = request.body.room_number;
   let user_id: number = request.body.user_id;
+
+  // check max duration and occupants
+  let max_duration: number = 60 * 3;
+  let max_occupants: number = 25;
+  if (duration > max_duration) {
+    response.status(500).json({
+      error: `Error: booking duration exceeds the alloted max of ${max_duration} minutes.`,
+    });
+  }
+  if (num_occupants > max_occupants) {
+    response.status(500).json({
+      error: `Error: number of occupants exceed the alloted max of ${max_occupants}.`,
+    });
+  }
 
   // make sure building and room exists in the rooms table
   try {
@@ -181,25 +286,31 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
 
     if (roomResult.rowCount == 0) {
       console.log(
-        "this room does not exist in the database. please enter a valid building name and room number."
+        "Error: this room does not exist in the database. please enter a valid building name and room number."
       );
 
       response.status(500).json({
         error:
-          "this room does not exist in the database. please enter a valid building name and room number.",
+          "Error: this room does not exist in the database. please enter a valid building name and room number.",
       });
       return;
     }
   } catch (err) {
     console.log(err);
-    response.end(err);
+    response.status(500).json({
+      error: err,
+    });
   }
+
+  // calculate endtime
+  let end_datetime = calculateEndTime(start_datetime, duration);
 
   // build and send query
   try {
-    var addBookingQuery = `INSERT INTO room_bookings (start_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6);`;
+    var addBookingQuery = `INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);`;
     const bookingResult = await pool.query(addBookingQuery, [
-      booking_datetime,
+      start_datetime,
+      end_datetime,
       duration,
       num_occupants,
       building_name,
@@ -210,7 +321,9 @@ app.post("/room-booking", isLoggedIn, async (request: any, response: any) => {
     response.json(bookingResult.rows);
   } catch (err) {
     console.log(err);
-    response.end(err);
+    response.status(500).json({
+      error: err,
+    });
   }
 });
 
