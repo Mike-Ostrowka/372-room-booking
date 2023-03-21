@@ -9,6 +9,8 @@ const cors = require("cors");
 import pg from 'pg';
 // const { Pool } = require("pg");
 
+import isLoggedIn from './routes/middleware/isLoggedIn';
+
 let app = express();
 
 const corsOptions = {
@@ -34,21 +36,11 @@ app.use(
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    maxAge: 30 * 60 * 1000,
+    // maxAge: 30 * 60 * 1000,
+    cookie: {maxAge: 30 * 60 * 1000},
     saveUninitialized: true,
   })
 );
-
-// Middleware to check if the user is logged in
-function isLoggedIn(request: any, response: any, next: any) {
-  if (request.session.user) {
-    console.log("isLoggedIn");
-    return next();
-  } else {
-    console.log("Not logged in.");
-    response.json({ success: false });
-  }
-}
 
 //check if user exists
 async function isUser(username: string) {
