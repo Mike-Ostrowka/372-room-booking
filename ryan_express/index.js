@@ -39,35 +39,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-<<<<<<< HEAD
-// const express = require("express");
-var express_1 = __importDefault(require("express"));
-// const md5 = require("md5");
-var md5_1 = __importDefault(require("md5"));
-var express_session_1 = __importDefault(require("express-session"));
-// const session = require("express-session");
-// import cors from 'cors';
-var cors = require("cors");
-var pg_1 = __importDefault(require("pg"));
-// const { Pool } = require("pg");
-var isLoggedIn_1 = __importDefault(require("./routes/middleware/isLoggedIn"));
-=======
 var express_1 = __importDefault(require("express"));
 var md5_1 = __importDefault(require("md5"));
 var express_session_1 = __importDefault(require("express-session"));
 var cors_1 = __importDefault(require("cors"));
 var pg_1 = __importDefault(require("pg"));
->>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
+// middleware and util functions
+var isLoggedIn_1 = __importDefault(require("./routes/middleware/isLoggedIn"));
+var calcTime_1 = __importDefault(require("./routes/utils/calcTime"));
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
     credentials: true
 };
-<<<<<<< HEAD
-app.use(cors(corsOptions));
-=======
 app.use((0, cors_1["default"])(corsOptions));
->>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
 app.use(express_1["default"].json());
 app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
@@ -81,23 +66,9 @@ app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-<<<<<<< HEAD
-    // maxAge: 30 * 60 * 1000,
-=======
->>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
     cookie: { maxAge: 30 * 60 * 1000 },
     saveUninitialized: true
 }));
-// // Middleware to check if the user is logged in
-// function isLoggedIn(request: any, response: any, next: any) {
-//   if (request.session.user) {
-//     console.log("isLoggedIn");
-//     return next();
-//   } else {
-//     console.log("Not logged in.");
-//     response.json({ success: false });
-//   }
-// }
 //check if user exists
 function isUser(username) {
     return __awaiter(this, void 0, void 0, function () {
@@ -126,23 +97,6 @@ function isUser(username) {
         });
     });
 }
-// Calculate and format the endtime,
-// given a booking start time and duration
-function calculateEndTime(start_time, duration) {
-    var start = new Date(start_time);
-    var end = new Date(start.getTime() + duration * 60000);
-    // format end time to psql ISO date format
-    var end_formatted = end.getFullYear() +
-        "-" +
-        (end.getMonth() + 1) +
-        "-" +
-        end.getDate() +
-        " " +
-        end.getHours() +
-        ":" +
-        end.getMinutes();
-    return end_formatted;
-}
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
@@ -156,11 +110,7 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
                 lastName = request.body.lastName;
                 username = request.body.username;
                 password = (0, md5_1["default"])(request.body.password);
-<<<<<<< HEAD
-                isStaff = request.body.isStaff || "0";
-=======
                 isStaff = request.body.isStaff;
->>>>>>> 81c0adfc5f432f35e3685a1172790ce4cd0eaf9f
                 return [4 /*yield*/, isUser(username)];
             case 1:
                 if (_a.sent()) {
@@ -279,7 +229,7 @@ app.post("/search-rooms", isLoggedIn_1["default"], function (request, response) 
                 if (haswhiteboard) {
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
-                end_datetime = calculateEndTime(start_datetime, duration);
+                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
                 getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
                 searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n        WHERE NOT EXISTS (\n            SELECT * FROM (").concat(getBookingsQuery, ") as b \n            WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n        );");
                 _a.label = 1;
@@ -397,7 +347,7 @@ app.post("/room-booking", isLoggedIn_1["default"], function (request, response) 
                 });
                 return [3 /*break*/, 4];
             case 4:
-                end_datetime = calculateEndTime(start_datetime, duration);
+                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
                 _a.label = 5;
             case 5:
                 _a.trys.push([5, 7, , 8]);
