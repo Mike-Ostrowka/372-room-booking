@@ -47,6 +47,7 @@ var pg_1 = __importDefault(require("pg"));
 // middleware and util functions
 var isLoggedIn_1 = __importDefault(require("./routes/middleware/isLoggedIn"));
 var calcTime_1 = __importDefault(require("./routes/utils/calcTime"));
+var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
@@ -197,72 +198,13 @@ app.post("/login-api", function (request, response) { return __awaiter(void 0, v
         }
     });
 }); });
-/**
- * Search for rooms
- * Returns all available rooms that fit the provided search criteria
- * Sample request body format:
- * {
- *  start_datetime: 'YYYY-MM-DD HH:MM',
- *  duration: 120,
- *  num_occupants: 2,
- *  hasprojector: true,
- *  haswhiteboard: false
- * }
- */
-app.post("/search-rooms", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, end_datetime, getBookingsQuery, searchQuery, searchResult, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                start_datetime = request.body.start_datetime;
-                duration = request.body.duration;
-                num_occupants = request.body.num_occupants;
-                hasprojector = request.body.hasprojector;
-                haswhiteboard = request.body.haswhiteboard;
-                getRoomsQuery = "SELECT * FROM rooms WHERE capacity >= $1 ";
-                // only add projector/whiteboard if requested by the user
-                // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard,
-                // so we can broaden our search and return more rooms
-                if (hasprojector) {
-                    getRoomsQuery += " AND hasprojector=true";
-                }
-                if (haswhiteboard) {
-                    getRoomsQuery += " AND haswhiteboard=true";
-                }
-                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
-                getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
-                searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n        WHERE NOT EXISTS (\n            SELECT * FROM (").concat(getBookingsQuery, ") as b \n            WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n        );");
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, pool.query(searchQuery, [
-                        num_occupants,
-                        start_datetime,
-                        end_datetime,
-                        start_datetime,
-                        end_datetime,
-                    ])];
-            case 2:
-                searchResult = _a.sent();
-                console.log(searchResult.rows);
-                response.json(searchResult.rows);
-                return [3 /*break*/, 4];
-            case 3:
-                err_1 = _a.sent();
-                console.log(err_1);
-                response.status(500).json({
-                    error: err_1
-                });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
+// Search for available rooms
+app.use('/search-rooms', searchRooms_1["default"]);
 /**
  * Get all room bookings
  */
 app.get("/room-booking", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var getBookingsQuery, bookingsResult, err_2;
+    var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -275,10 +217,10 @@ app.get("/room-booking", isLoggedIn_1["default"], function (request, response) {
                 response.json(bookingsResult.rows);
                 return [3 /*break*/, 3];
             case 2:
-                err_2 = _a.sent();
-                console.log(err_2);
+                err_1 = _a.sent();
+                console.log(err_1);
                 response.status(500).json({
-                    error: err_2
+                    error: err_1
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -299,7 +241,7 @@ app.get("/room-booking", isLoggedIn_1["default"], function (request, response) {
  * }
  */
 app.post("/room-booking", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
+    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_2, end_datetime, addBookingQuery, bookingResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -340,10 +282,10 @@ app.post("/room-booking", isLoggedIn_1["default"], function (request, response) 
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_3 = _a.sent();
-                console.log(err_3);
+                err_2 = _a.sent();
+                console.log(err_2);
                 response.status(500).json({
-                    error: err_3
+                    error: err_2
                 });
                 return [3 /*break*/, 4];
             case 4:
@@ -367,10 +309,10 @@ app.post("/room-booking", isLoggedIn_1["default"], function (request, response) 
                 response.json(bookingResult.rows);
                 return [3 /*break*/, 8];
             case 7:
-                err_4 = _a.sent();
-                console.log(err_4);
+                err_3 = _a.sent();
+                console.log(err_3);
                 response.status(500).json({
-                    error: err_4
+                    error: err_3
                 });
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
@@ -380,3 +322,4 @@ app.post("/room-booking", isLoggedIn_1["default"], function (request, response) 
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
+exports["default"] = pool;
