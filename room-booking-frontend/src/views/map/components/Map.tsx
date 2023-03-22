@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "./Map.css";
 import "mapbox-gl/dist/mapbox-gl.css"
 
+//todo: put in database
 mapboxgl.accessToken =
   "pk.eyJ1IjoibWlrZTEyNTIiLCJhIjoiY2xmZzJhNXJsMTV0ZTNwbnVzYnY3eWxoaiJ9.bCXZcVk_fBTZkH87GWY71Q";
 
@@ -24,6 +25,7 @@ const Map = () => {
     
     // Add navigation control (the +/- zoom buttons)
     map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    map.addControl(new mapboxgl.GeolocateControl(), "bottom-left" );
     
     map.on("move", () => {
       setLng(parseFloat(map.getCenter().lng.toFixed(4)));
