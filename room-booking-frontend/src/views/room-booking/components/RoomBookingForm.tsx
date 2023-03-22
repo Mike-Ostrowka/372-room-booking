@@ -9,6 +9,7 @@ import {
   FormHelperText,
   FormControl,
   useToast,
+  Select,
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { UserContext } from "contexts/UserContext";
@@ -16,6 +17,32 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const RoomBookingForm = () => {
+  const roomNumbers = [
+    "2120",
+    "2410",
+    "2420",
+    "2440",
+    "3210",
+    "3220",
+    "3230",
+    "4001",
+    "4003",
+    "4005",
+    "4101",
+    "4103",
+    "4105",
+    "4107",
+    "4200",
+    "4311",
+    "4313",
+    "4315",
+    "4317",
+    "4322",
+    "4324",
+    "4325",
+    "4326",
+  ];
+  const buildingNames = ["SUB"];
   const toast = useToast();
   const { loggedInUser } = useContext(UserContext);
   console.log("LOGGED IN USER: ", loggedInUser);
@@ -95,7 +122,7 @@ const RoomBookingForm = () => {
             <Stack spacing={5} alignItems="center">
               <Stack width="100%" spacing={4}>
                 <Input
-                  placeholder="Duration"
+                  placeholder="Duration (Minutes)"
                   size="lg"
                   name="duration"
                   value={formik.values.duration}
@@ -127,7 +154,7 @@ const RoomBookingForm = () => {
                       {formik.errors.num_occupants}
                     </FormHelperText>
                   )}
-                <Input
+                <Select
                   placeholder="Building Name"
                   size="lg"
                   name="building_name"
@@ -139,14 +166,20 @@ const RoomBookingForm = () => {
                     formik.touched.building_name &&
                     "red"
                   }
-                />
+                >
+                  {buildingNames.map((b) => (
+                    <option value={b} key={b}>
+                      {b}
+                    </option>
+                  ))}
+                </Select>
                 {formik.errors.building_name &&
                   formik.touched.building_name && (
                     <FormHelperText>
                       {formik.errors.building_name}
                     </FormHelperText>
                   )}
-                <Input
+                <Select
                   placeholder="Room Number"
                   size="lg"
                   name="room_number"
@@ -158,7 +191,13 @@ const RoomBookingForm = () => {
                     formik.touched.room_number &&
                     "red"
                   }
-                />
+                >
+                  {roomNumbers.map((r) => (
+                    <option value={r} key={r}>
+                      {r}
+                    </option>
+                  ))}
+                </Select>
                 {formik.errors.room_number && formik.touched.room_number && (
                   <FormHelperText>{formik.errors.room_number}</FormHelperText>
                 )}
