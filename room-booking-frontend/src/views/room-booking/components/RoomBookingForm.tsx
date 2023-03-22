@@ -49,7 +49,7 @@ const RoomBookingForm = () => {
         user_id: parseInt(loggedInUser.u_id),
       };
       try {
-        const response = await fetch("http://localhost:8080/room-booking", {
+        const response = await fetch("/room-booking", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

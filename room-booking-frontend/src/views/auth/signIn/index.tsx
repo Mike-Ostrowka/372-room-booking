@@ -65,7 +65,7 @@ function SignIn() {
       password: password,
     };
     try {
-      const response = await fetch("http://localhost:8080/login-api", {
+      const response = await fetch("/login-api", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

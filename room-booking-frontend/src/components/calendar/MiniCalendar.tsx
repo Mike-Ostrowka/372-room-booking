@@ -31,7 +31,7 @@ export default function MiniCalendar(props: {
   useEffect(() => {
     const fetchRoomBookings = async () => {
       try {
-        const response = await fetch("http://localhost:8080/room-booking", {
+        const response = await fetch("/room-booking", {
           method: "GET",
           credentials: "include",
         });

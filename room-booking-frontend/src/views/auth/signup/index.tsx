@@ -60,7 +60,7 @@ function SignUp() {
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       try {
-        const response = await fetch("http://localhost:8080/register-api", {
+        const response = await fetch("/register-api", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
