@@ -1,6 +1,5 @@
 import { Router } from "express";
 import md5 from "md5";
-// import session from "express-session";
 import pool from "../index";
 
 const loginRouter = Router();
