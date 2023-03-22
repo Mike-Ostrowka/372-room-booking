@@ -2,6 +2,7 @@
 /* LIGHT MODE + GENERAL */
 
 .react-calendar {
+  width: 1500px;
   border: unset;
   background-color: transparent;
   font-family: "DM Sans", sans-serif;
@@ -53,7 +54,7 @@ abbr[title] {
   align-items: center;
   justify-content: center;
   padding: 0px !important;
-  height: 34px !important;
+  height: 75px !important;
   color: #1b2559;
 }
 .react-calendar__month-view__weekdays {
