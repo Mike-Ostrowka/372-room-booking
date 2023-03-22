@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "mapbox-gl/dist/mapbox-gl.css"
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoibWlrZTEyNTIiLCJhIjoiY2xmZzJhNXJsMTV0ZTNwbnVzYnY3eWxoaiJ9.bCXZcVk_fBTZkH87GWY71Q";
@@ -95,7 +95,13 @@ const Map = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-      <div className="map-container" ref={mapContainerRef} />
+    <div className="map-container">
+      <link
+        href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
+        rel="stylesheet"
+      />
+      <div ref={mapContainerRef} />
+    </div>
   );
 };
 
