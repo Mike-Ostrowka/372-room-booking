@@ -2,6 +2,7 @@ import express from "express";
 import session from "express-session";
 import cors from "cors";
 import pg from "pg";
+import path from 'path';
 
 import registerRouter from "./routes/register";
 import loginRouter from "./routes/login";
@@ -28,6 +29,8 @@ let pool = new pg.Pool({
   database: "room_booking_app",
 });
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
 app.use(
   session({
     name: "session",
@@ -41,6 +44,10 @@ app.use(
 app.use("/", function (req: any, res: any, next: any) {
   console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
   next();
+});
+
+app.get("/", (request:any, response:any) => {
+  response.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Register a user
