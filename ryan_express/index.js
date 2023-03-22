@@ -7,6 +7,7 @@ var express_1 = __importDefault(require("express"));
 var express_session_1 = __importDefault(require("express-session"));
 var cors_1 = __importDefault(require("cors"));
 var pg_1 = __importDefault(require("pg"));
+var path_1 = __importDefault(require("path"));
 var register_1 = __importDefault(require("./routes/register"));
 var login_1 = __importDefault(require("./routes/login"));
 var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
@@ -26,6 +27,7 @@ var pool = new pg_1["default"].Pool({
     password: "password",
     database: "room_booking_app"
 });
+app.use(express_1["default"].static(path_1["default"].join(__dirname, 'dist')));
 app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
@@ -36,6 +38,9 @@ app.use((0, express_session_1["default"])({
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
+});
+app.get("/", function (request, response) {
+    response.sendFile(path_1["default"].join(__dirname, 'dist', 'index.html'));
 });
 // Register a user
 app.use('/register-api', register_1["default"]);
