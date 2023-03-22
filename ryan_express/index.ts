@@ -1,5 +1,4 @@
 import express from "express";
-import md5 from "md5";
 import session from "express-session";
 import cors from "cors";
 import pg from "pg";
