@@ -44,6 +44,7 @@ var md5_1 = __importDefault(require("md5"));
 var express_session_1 = __importDefault(require("express-session"));
 var cors_1 = __importDefault(require("cors"));
 var pg_1 = __importDefault(require("pg"));
+var login_1 = __importDefault(require("./routes/login"));
 var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
 var app = (0, express_1["default"])();
@@ -149,53 +150,8 @@ app.post("/register-api", function (request, response) { return __awaiter(void 0
         }
     });
 }); });
-app.post("/login-api", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var hashedpw, username, authenticationQuery, result, userObject, properObject_1, e_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                hashedpw = (0, md5_1["default"])(request.body.password);
-                username = request.body.username;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1 AND password = $2";
-                return [4 /*yield*/, pool.query(authenticationQuery, [username, hashedpw])];
-            case 2:
-                result = _a.sent();
-                if (result.rows.length > 0 && result.rows[0].json_agg != null) {
-                    userObject = result.rows[0].json_agg[0];
-                    properObject_1 = {
-                        u_id: userObject["user_id"],
-                        u: userObject["username"],
-                        p: userObject["password"],
-                        success: true
-                    };
-                    request.session.regenerate(function (err) {
-                        if (err) {
-                            console.log(err);
-                            response.status(500).send("Error regenerating session");
-                        }
-                        else {
-                            request.session.user = properObject_1;
-                            response.json(properObject_1);
-                        }
-                    });
-                }
-                else {
-                    console.log("Failed to login!");
-                    response.json({ success: false });
-                }
-                return [3 /*break*/, 4];
-            case 3:
-                e_3 = _a.sent();
-                console.log(e_3);
-                response.end(e_3);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
+// log in
+app.use('/login-api', login_1["default"]);
 // Search for available rooms
 app.use('/search-rooms', searchRooms_1["default"]);
 // Room bookings
