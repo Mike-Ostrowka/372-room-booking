@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "./Map.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoibWlrZTEyNTIiLCJhIjoiY2xmZzJhNXJsMTV0ZTNwbnVzYnY3eWxoaiJ9.bCXZcVk_fBTZkH87GWY71Q";
@@ -16,14 +17,14 @@ const Map = () => {
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [lng, lat],
-      zoom: zoom,
+      style: "mapbox://styles/mapbox/satellite-v9",
+      center: [-122.75, 49.2],
+      zoom: 10.0,
     });
-
+    
     // Add navigation control (the +/- zoom buttons)
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
+    map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    
     map.on("move", () => {
       setLng(parseFloat(map.getCenter().lng.toFixed(4)));
       setLat(parseFloat(map.getCenter().lat.toFixed(4)));
