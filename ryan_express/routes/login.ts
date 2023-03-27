@@ -4,12 +4,14 @@ import pool from "../index";
 
 const loginRouter = Router();
 
+// POST /login-api - authenticates existing users
 loginRouter.post("/", async (request: any, response: any) => {
   let hashedpw: string = md5(request.body.password);
   let username: string = request.body.username;
   try {
     let authenticationQuery = `SELECT json_agg(a) FROM users a WHERE username = $1 AND password = $2`;
     const result = await pool.query(authenticationQuery, [username, hashedpw]);
+    // check if this user exists within the users table
     if (result.rows.length > 0 && result.rows[0].json_agg != null) {
       let userObject = result.rows[0].json_agg[0];
       let properObject = {
@@ -18,6 +20,7 @@ loginRouter.post("/", async (request: any, response: any) => {
         p: userObject["password"],
         success: true,
       };
+      // create a session which contains user data
       request.session.regenerate((err: any) => {
         if (err) {
           console.log(err);

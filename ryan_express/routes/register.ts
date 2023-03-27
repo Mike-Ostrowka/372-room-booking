@@ -4,6 +4,7 @@ import pool from "../index";
 
 const registerRouter = Router();
 
+// POST /register-api - registers new users into the system
 registerRouter.post("/", async (request: any, response: any) => {
   let firstName: string = request.body.firstName;
   let lastName: string = request.body.lastName;
@@ -17,6 +18,7 @@ registerRouter.post("/", async (request: any, response: any) => {
     return;
   }
   try {
+    // creating a new user in users table
     let registerQuery = `INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)`;
     console.log(registerQuery);
     const result = await pool.query(registerQuery, [
@@ -26,7 +28,8 @@ registerRouter.post("/", async (request: any, response: any) => {
       lastName,
       isStaff,
     ]);
-    if ((result.rowCount = 1)) {
+    // check if user was registered successfully
+    if (result.rowCount == 1) {
       console.log("registered user");
       response.json({ success: true, userExists: false });
     } else {
@@ -39,7 +42,7 @@ registerRouter.post("/", async (request: any, response: any) => {
   }
 });
 
-//check if user exists
+// check if user exists
 async function isUser(username: string) {
   try {
     let authenticationQuery = `SELECT json_agg(a) FROM users a WHERE username = $1`;
