@@ -6,6 +6,7 @@ import isLoggedIn from "./middleware/isLoggedIn";
 
 const roomsRouter = Router();
 
+// helper function to check if user is an admin
 const checkUserIsAdmin = async (user_id: number) => {
   const getUserQuery =
     "SELECT * FROM users WHERE user_id = $1 AND isstaff = TRUE";
@@ -75,6 +76,7 @@ roomsRouter.get("/:id", isLoggedIn, async (request: any, response: any) => {
         error: "This user is not an admin",
       });
     } else {
+      // make query to get rooms
       const getRoomsQuery = "SELECT * FROM rooms";
       const getRoomsRes = await pool.query(getRoomsQuery);
       response.json(getRoomsRes.rows);
