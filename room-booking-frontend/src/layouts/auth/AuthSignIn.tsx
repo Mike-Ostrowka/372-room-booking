@@ -57,7 +57,7 @@ export default function AuthSignIn() {
           {getRoute() ? (
             <Box mx="auto" minH="100vh">
               <Switch>
-                {getRoutes(routes)}
+                {getRoutes(routes())}
                 <Redirect
                   from="/auth"
                   to="/auth/sign-in/default

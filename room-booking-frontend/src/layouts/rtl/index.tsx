@@ -77,7 +77,7 @@ export default function Dashboard(props: { [x: string]: any }) {
           setToggleSidebar,
         }}
       >
-        <Sidebar routes={routes} display="none" {...rest} />
+        <Sidebar routes={routes()} display="none" {...rest} />
         <Box
           float="left"
           minHeight="100vh"
@@ -97,9 +97,9 @@ export default function Dashboard(props: { [x: string]: any }) {
               <Navbar
                 onOpen={onOpen}
                 logoText={"Horizon UI Dashboard"}
-                brandText={getActiveRoute(routes)}
-                secondary={getActiveNavbar(routes)}
-                message={getActiveNavbarText(routes)}
+                brandText={getActiveRoute(routes())}
+                secondary={getActiveNavbar(routes())}
+                message={getActiveNavbarText(routes())}
                 fixed={fixed}
                 {...rest}
               />
@@ -115,7 +115,7 @@ export default function Dashboard(props: { [x: string]: any }) {
               pt="50px"
             >
               <Switch>
-                {getRoutes(routes)}
+                {getRoutes(routes())}
                 <Redirect from="/" to="/rtl/rtl-default" />
               </Switch>
             </Box>

@@ -18,6 +18,7 @@ loginRouter.post("/", async (request: any, response: any) => {
         u_id: userObject["user_id"],
         u: userObject["username"],
         p: userObject["password"],
+        is_staff: userObject["isstaff"],
         success: true,
       };
       // create a session which contains user data

@@ -43,6 +43,7 @@ var express_1 = require("express");
 var md5_1 = __importDefault(require("md5"));
 var index_1 = __importDefault(require("../index"));
 var loginRouter = (0, express_1.Router)();
+// POST /login-api - authenticates existing users
 loginRouter.post("/", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var hashedpw, username, authenticationQuery, result, userObject, properObject_1, e_1;
     return __generator(this, function (_a) {
@@ -57,14 +58,17 @@ loginRouter.post("/", function (request, response) { return __awaiter(void 0, vo
                 return [4 /*yield*/, index_1["default"].query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();
+                // check if this user exists within the users table
                 if (result.rows.length > 0 && result.rows[0].json_agg != null) {
                     userObject = result.rows[0].json_agg[0];
                     properObject_1 = {
                         u_id: userObject["user_id"],
                         u: userObject["username"],
                         p: userObject["password"],
+                        is_staff: userObject["isstaff"],
                         success: true
                     };
+                    // create a session which contains user data
                     request.session.regenerate(function (err) {
                         if (err) {
                             console.log(err);
