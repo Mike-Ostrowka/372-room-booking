@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
@@ -48,14 +48,14 @@ var roomBookingRouter = (0, express_1.Router)();
 /**
  * Get all room bookings
  */
-roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 getBookingsQuery = "SELECT * FROM room_bookings;";
-                return [4 /*yield*/, index_1["default"].query(getBookingsQuery)];
+                return [4 /*yield*/, index_1.default.query(getBookingsQuery)];
             case 1:
                 bookingsResult = _a.sent();
                 console.log(bookingsResult.rows);
@@ -65,7 +65,7 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.status(500).json({
-                    error: err_1
+                    error: err_1,
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -85,7 +85,7 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
  *  user_id: 1
  * }
  */
-roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_2, end_datetime, addBookingQuery, bookingResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -100,19 +100,19 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 max_occupants = 25;
                 if (duration > max_duration) {
                     response.status(500).json({
-                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
+                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes."),
                     });
                 }
                 if (num_occupants > max_occupants) {
                     response.status(500).json({
-                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
+                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, "."),
                     });
                 }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, index_1["default"].query(getRoomQuery, [
+                return [4 /*yield*/, index_1.default.query(getRoomQuery, [
                         building_name,
                         room_number,
                     ])];
@@ -121,7 +121,7 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 if (roomResult.rowCount == 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
-                        error: "Error: this room does not exist in the database. please enter a valid building name and room number."
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
                     });
                     return [2 /*return*/];
                 }
@@ -130,16 +130,16 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 err_2 = _a.sent();
                 console.log(err_2);
                 response.status(500).json({
-                    error: err_2
+                    error: err_2,
                 });
                 return [3 /*break*/, 4];
             case 4:
-                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
+                end_datetime = (0, calcTime_1.default)(start_datetime, duration);
                 _a.label = 5;
             case 5:
                 _a.trys.push([5, 7, , 8]);
                 addBookingQuery = "INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);";
-                return [4 /*yield*/, index_1["default"].query(addBookingQuery, [
+                return [4 /*yield*/, index_1.default.query(addBookingQuery, [
                         start_datetime,
                         end_datetime,
                         duration,
@@ -157,11 +157,11 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 err_3 = _a.sent();
                 console.log(err_3);
                 response.status(500).json({
-                    error: err_3
+                    error: err_3,
                 });
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
         }
     });
 }); });
-exports["default"] = roomBookingRouter;
+exports.default = roomBookingRouter;

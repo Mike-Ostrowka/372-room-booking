@@ -7,6 +7,7 @@ import registerRouter from "./routes/register";
 import loginRouter from "./routes/login";
 import searchRoomsRouter from './routes/searchRooms';
 import roomBookingRouter from "./routes/roomBooking";
+import roomReviewRouter from "./routes/roomReview";
 
 let app = express();
 
@@ -54,6 +55,9 @@ app.use('/search-rooms', searchRoomsRouter);
 
 // Room bookings
 app.use('/room-booking', roomBookingRouter);
+
+// Room reviews
+app.use('/room-review', roomReviewRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 // Calculate and format the endtime,
 // given a booking start time and duration
 function calculateEndTime(start_time, duration) {
@@ -17,4 +17,4 @@ function calculateEndTime(start_time, duration) {
         end.getMinutes();
     return end_formatted;
 }
-exports["default"] = calculateEndTime;
+exports.default = calculateEndTime;

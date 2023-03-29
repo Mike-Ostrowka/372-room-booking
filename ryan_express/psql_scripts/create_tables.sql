@@ -32,4 +32,14 @@ CREATE TABLE IF NOT EXISTS room_bookings (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-
+CREATE TABLE IF NOT EXISTS room_reviews (
+    review_id serial, 
+    review text NOT NULL, 
+    room_rating integer NOT NULL, 
+    noise_level varchar NOT NULL, 
+    functioning_room boolean NOT NULL, 
+    issue_details text, 
+    booking_id serial NOT NULL UNIQUE, 
+    PRIMARY KEY (review_id), 
+    FOREIGN KEY (booking_id) REFERENCES room_bookings(booking_id)
+);

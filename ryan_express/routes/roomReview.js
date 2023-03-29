@@ -43,67 +43,87 @@ var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
-var calcTime_1 = __importDefault(require("./utils/calcTime"));
-var searchRoomsRouter = (0, express_1.Router)();
+var roomReviewRouter = (0, express_1.Router)();
 /**
- * Search for rooms
- * Returns all available rooms that fit the provided search criteria
- * Sample request body format:
- * {
- *  start_datetime: 'YYYY-MM-DD HH:MM',
- *  duration: 120,
- *  num_occupants: 2,
- *  hasprojector: true,
- *  haswhiteboard: false
- * }
+ * Get all room reviews
  */
-searchRoomsRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, end_datetime, getBookingsQuery, searchQuery, searchResult, err_1;
+roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var getReviewsQuery, reviewsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                start_datetime = request.body.start_datetime;
-                duration = request.body.duration;
-                num_occupants = request.body.num_occupants;
-                hasprojector = request.body.hasprojector;
-                haswhiteboard = request.body.haswhiteboard;
-                getRoomsQuery = "SELECT * FROM rooms WHERE capacity >= $1 ";
-                // only add projector/whiteboard if requested by the user
-                // e.g. if we want a projector, but didn't request a whiteboard, still include rooms that have a whiteboard,
-                // so we can broaden our search and return more rooms
-                if (hasprojector) {
-                    getRoomsQuery += " AND hasprojector=true";
-                }
-                if (haswhiteboard) {
-                    getRoomsQuery += " AND haswhiteboard=true";
-                }
-                end_datetime = (0, calcTime_1.default)(start_datetime, duration);
-                getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
-                searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n          WHERE NOT EXISTS (\n              SELECT * FROM (").concat(getBookingsQuery, ") as b \n              WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n          );");
-                _a.label = 1;
+                _a.trys.push([0, 2, , 3]);
+                getReviewsQuery = "SELECT * FROM room_reviews;";
+                return [4 /*yield*/, index_1.default.query(getReviewsQuery)];
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, index_1.default.query(searchQuery, [
-                        num_occupants,
-                        start_datetime,
-                        end_datetime,
-                        start_datetime,
-                        end_datetime,
-                    ])];
+                reviewsResult = _a.sent();
+                console.log(reviewsResult.rows);
+                response.json(reviewsResult.rows);
+                return [3 /*break*/, 3];
             case 2:
-                searchResult = _a.sent();
-                console.log(searchResult.rows);
-                response.json(searchResult.rows);
-                return [3 /*break*/, 4];
-            case 3:
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.status(500).json({
                     error: err_1,
+                });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+/**
+ * Add a new room review
+ * Sample request body format:
+ * {
+ *  review: 'was a nice room.',
+ *  room_rating: 5,
+ *  noise_level: 'quiet',
+ *  functioning_room: false,
+ *  issue_details: 'outlets were not working',
+ *  booking_id: 88
+ * }
+ * Constraints:
+ * - Reviews can only be made for past bookings
+ * - 1 review per booking
+ * - Booking must exist for the current user
+ */
+roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, addReviewQuery, bookingResult, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                review = request.body.review;
+                room_rating = request.body.room_rating;
+                noise_level = request.body.noise_level;
+                functioning_room = request.body.functioning_room;
+                issue_details = request.body.issue_details;
+                booking_id = request.body.booking_id;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
+                return [4 /*yield*/, index_1.default.query(addReviewQuery, [
+                        review,
+                        room_rating,
+                        noise_level,
+                        functioning_room,
+                        issue_details,
+                        booking_id,
+                    ])];
+            case 2:
+                bookingResult = _a.sent();
+                console.log(bookingResult.rows);
+                response.json(bookingResult.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.status(500).json({
+                    error: err_2,
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
-exports.default = searchRoomsRouter;
+exports.default = roomReviewRouter;
