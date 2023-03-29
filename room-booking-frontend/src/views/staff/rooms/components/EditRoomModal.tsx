@@ -14,8 +14,6 @@ import {
   Select,
   Checkbox,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { UserContext } from "contexts/UserContext";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -30,7 +28,6 @@ const EditRoomModal = ({
     setOpenEditDialog(false);
   };
   const toast = useToast();
-  const { loggedInUser } = useContext(UserContext);
   const buildings = new Set(rooms.map((r: any) => r.building_name));
 
   console.log("ROOM DATA: ", rooms);
@@ -58,7 +55,7 @@ const EditRoomModal = ({
       };
       try {
         const response = await fetch(
-          `http://localhost:8080/rooms/${loggedInUser.u_id}`,
+          `http://localhost:8080/rooms/${roomData.room_number}/${roomData.building_name}`,
           {
             method: "PUT",
             headers: {

@@ -42,25 +42,8 @@ exports.__esModule = true;
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware
-var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
+var isLoggedInAdmin_1 = __importDefault(require("./middleware/isLoggedInAdmin"));
 var roomsRouter = (0, express_1.Router)();
-// helper function to check if user is an admin
-var checkUserIsAdmin = function (user_id) { return __awaiter(void 0, void 0, void 0, function () {
-    var getUserQuery, getUserRes;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                getUserQuery = "SELECT * FROM users WHERE user_id = $1 AND isstaff = TRUE";
-                return [4 /*yield*/, index_1["default"].query(getUserQuery, [user_id])];
-            case 1:
-                getUserRes = _a.sent();
-                if (getUserRes.rowCount == 0) {
-                    return [2 /*return*/, false];
-                }
-                return [2 /*return*/, true];
-        }
-    });
-}); };
 /**
  * Allowing administator to perform the
  * following actions for rooms:
@@ -70,12 +53,11 @@ var checkUserIsAdmin = function (user_id) { return __awaiter(void 0, void 0, voi
  * -Delete
  */
 // POST /rooms - creates a new room
-roomsRouter.post("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var user_id, building_name, room_number, has_projector, has_whiteboard, capacity, isUserAdmin, addRoomQuery, getRoomsQuery, getRoomsRes, e_1;
+roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var building_name, room_number, has_projector, has_whiteboard, capacity, addRoomQuery, getRoomsQuery, getRoomsRes, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user_id = request.params.id;
                 building_name = request.body.building_name;
                 room_number = request.body.room_number;
                 has_projector = request.body.has_projector;
@@ -83,16 +65,7 @@ roomsRouter.post("/:id", isLoggedIn_1["default"], function (request, response) {
                 capacity = request.body.capacity;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 7, , 8]);
-                return [4 /*yield*/, checkUserIsAdmin(user_id)];
-            case 2:
-                isUserAdmin = _a.sent();
-                if (!!isUserAdmin) return [3 /*break*/, 3];
-                response.status(401).json({
-                    error: "This user is not an admin"
-                });
-                return [3 /*break*/, 6];
-            case 3:
+                _a.trys.push([1, 4, , 5]);
                 addRoomQuery = "INSERT INTO rooms (building_name, room_number, hasprojector, haswhiteboard, capacity) VALUES ($1, $2, $3, $4, $5)";
                 return [4 /*yield*/, index_1["default"].query(addRoomQuery, [
                         building_name,
@@ -101,154 +74,123 @@ roomsRouter.post("/:id", isLoggedIn_1["default"], function (request, response) {
                         has_whiteboard,
                         capacity,
                     ])];
-            case 4:
+            case 2:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
                 return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
-            case 5:
+            case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
-                _a.label = 6;
-            case 6: return [3 /*break*/, 8];
-            case 7:
+                return [3 /*break*/, 5];
+            case 4:
                 e_1 = _a.sent();
                 console.log(e_1);
                 response.status(500).json({
                     error: e_1
                 });
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });
 // GET /rooms - gets all rooms
-roomsRouter.get("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var user_id, isUserAdmin, getRoomsQuery, getRoomsRes, e_2;
+roomsRouter.get("/", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var getRoomsQuery, getRoomsRes, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user_id = request.params.id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 6, , 7]);
-                return [4 /*yield*/, checkUserIsAdmin(user_id)];
-            case 2:
-                isUserAdmin = _a.sent();
-                if (!!isUserAdmin) return [3 /*break*/, 3];
-                response.status(401).json({
-                    error: "This user is not an admin"
-                });
-                return [3 /*break*/, 5];
-            case 3:
+                _a.trys.push([0, 2, , 3]);
                 getRoomsQuery = "SELECT * FROM rooms";
                 return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
-            case 4:
+            case 1:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
-                _a.label = 5;
-            case 5: return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 3];
+            case 2:
                 e_2 = _a.sent();
                 console.log(e_2);
                 response.status(500).json({
                     error: e_2
                 });
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });
 // PUT /rooms/:id - updates a room
-roomsRouter.put("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var user_id, building_name, room_number, has_projector, has_whiteboard, capacity, isUserAdmin, updateRoomQuery, getRoomsQuery, getRoomsRes, e_3;
+roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var room_number, building_name, new_room_number, new_building_name, has_projector, has_whiteboard, capacity, updateRoomQuery, getRoomsQuery, getRoomsRes, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user_id = request.params.id;
-                building_name = request.body.building_name;
-                room_number = request.body.room_number;
+                room_number = request.params.room_number;
+                building_name = request.params.building_name;
+                new_room_number = request.body.room_number;
+                new_building_name = request.body.building_name;
                 has_projector = request.body.has_projector;
                 has_whiteboard = request.body.has_whiteboard;
                 capacity = request.body.capacity;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 7, , 8]);
-                return [4 /*yield*/, checkUserIsAdmin(user_id)];
-            case 2:
-                isUserAdmin = _a.sent();
-                if (!!isUserAdmin) return [3 /*break*/, 3];
-                response.status(401).json({
-                    error: "This user is not an admin"
-                });
-                return [3 /*break*/, 6];
-            case 3:
-                updateRoomQuery = "UPDATE rooms SET building_name=$1, room_number=$2, hasprojector=$3, haswhiteboard=$4, capacity=$5 WHERE room_number=$2";
+                _a.trys.push([1, 4, , 5]);
+                updateRoomQuery = "UPDATE rooms SET building_name=$1, room_number=$2, hasprojector=$3, haswhiteboard=$4, capacity=$5 WHERE room_number=$6 AND building_name=$7";
                 return [4 /*yield*/, index_1["default"].query(updateRoomQuery, [
-                        building_name,
-                        room_number,
+                        new_building_name,
+                        new_room_number,
                         has_projector,
                         has_whiteboard,
                         capacity,
+                        room_number,
+                        building_name,
                     ])];
-            case 4:
+            case 2:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
                 return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
-            case 5:
+            case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
-                _a.label = 6;
-            case 6: return [3 /*break*/, 8];
-            case 7:
+                return [3 /*break*/, 5];
+            case 4:
                 e_3 = _a.sent();
                 console.log(e_3);
                 response.status(500).json({
                     error: e_3
                 });
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });
 // DELETE /rooms/:id - deletes a room
-roomsRouter["delete"]("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var user_id, room_number, isUserAdmin, deleteRoomQuery, getRoomsQuery, getRoomsRes, e_4;
+roomsRouter["delete"]("/:room_number/:building_name", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var room_number, building_name, deleteRoomQuery, getRoomsQuery, getRoomsRes, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user_id = request.params.id;
-                room_number = request.body.room_number;
+                room_number = request.params.room_number;
+                building_name = request.params.building_name;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 7, , 8]);
-                return [4 /*yield*/, checkUserIsAdmin(user_id)];
+                _a.trys.push([1, 4, , 5]);
+                deleteRoomQuery = "DELETE FROM rooms WHERE room_number=$1 AND building_name=$2";
+                return [4 /*yield*/, index_1["default"].query(deleteRoomQuery, [room_number, building_name])];
             case 2:
-                isUserAdmin = _a.sent();
-                if (!!isUserAdmin) return [3 /*break*/, 3];
-                response.status(401).json({
-                    error: "This user is not an admin"
-                });
-                return [3 /*break*/, 6];
-            case 3:
-                deleteRoomQuery = "DELETE FROM rooms WHERE room_number=$1";
-                return [4 /*yield*/, index_1["default"].query(deleteRoomQuery, [room_number])];
-            case 4:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
                 return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
-            case 5:
+            case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
-                _a.label = 6;
-            case 6: return [3 /*break*/, 8];
-            case 7:
+                return [3 /*break*/, 5];
+            case 4:
                 e_4 = _a.sent();
                 console.log(e_4);
                 response.status(500).json({
                     error: e_4
                 });
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });

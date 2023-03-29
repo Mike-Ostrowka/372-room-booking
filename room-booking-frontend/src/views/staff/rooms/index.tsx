@@ -1,22 +1,17 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import RoomsTable from "./components/RoomsTable";
-import { UserContext } from "contexts/UserContext";
 
 const StaffRoomsComponent = () => {
   const [rooms, setRooms] = useState([]);
-  const { loggedInUser } = useContext(UserContext);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:8080/rooms/${loggedInUser.u_id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const res = await fetch(`http://localhost:8080/rooms`, {
+          method: "GET",
+          credentials: "include",
+        });
         const roomsRes = await res.json();
         setRooms(roomsRes);
       } catch (e) {

@@ -2,20 +2,9 @@ import { Router } from "express";
 import pool from "../index";
 
 // middleware
-import isLoggedIn from "./middleware/isLoggedIn";
+import isLoggedInAdmin from "./middleware/isLoggedInAdmin";
 
 const roomsRouter = Router();
-
-// helper function to check if user is an admin
-const checkUserIsAdmin = async (user_id: number) => {
-  const getUserQuery =
-    "SELECT * FROM users WHERE user_id = $1 AND isstaff = TRUE";
-  const getUserRes = await pool.query(getUserQuery, [user_id]);
-  if (getUserRes.rowCount == 0) {
-    return false;
-  }
-  return true;
-};
 
 /**
  * Allowing administator to perform the
@@ -27,9 +16,8 @@ const checkUserIsAdmin = async (user_id: number) => {
  */
 
 // POST /rooms - creates a new room
-roomsRouter.post("/:id", isLoggedIn, async (request: any, response: any) => {
+roomsRouter.post("/", isLoggedInAdmin, async (request: any, response: any) => {
   // parse data
-  const user_id: number = request.params.id;
   const building_name: string = request.body.building_name;
   const room_number: number = request.body.room_number;
   const has_projector: boolean = request.body.has_projector;
@@ -37,26 +25,18 @@ roomsRouter.post("/:id", isLoggedIn, async (request: any, response: any) => {
   const capacity: number = request.body.capacity;
 
   try {
-    const isUserAdmin = await checkUserIsAdmin(user_id);
-    // check if user is an admin
-    if (!isUserAdmin) {
-      response.status(401).json({
-        error: "This user is not an admin",
-      });
-    } else {
-      const addRoomQuery =
-        "INSERT INTO rooms (building_name, room_number, hasprojector, haswhiteboard, capacity) VALUES ($1, $2, $3, $4, $5)";
-      await pool.query(addRoomQuery, [
-        building_name,
-        room_number,
-        has_projector,
-        has_whiteboard,
-        capacity,
-      ]);
-      const getRoomsQuery = "SELECT * FROM rooms";
-      const getRoomsRes = await pool.query(getRoomsQuery);
-      response.json(getRoomsRes.rows);
-    }
+    const addRoomQuery =
+      "INSERT INTO rooms (building_name, room_number, hasprojector, haswhiteboard, capacity) VALUES ($1, $2, $3, $4, $5)";
+    await pool.query(addRoomQuery, [
+      building_name,
+      room_number,
+      has_projector,
+      has_whiteboard,
+      capacity,
+    ]);
+    const getRoomsQuery = "SELECT * FROM rooms";
+    const getRoomsRes = await pool.query(getRoomsQuery);
+    response.json(getRoomsRes.rows);
   } catch (e) {
     console.log(e);
     response.status(500).json({
@@ -66,23 +46,12 @@ roomsRouter.post("/:id", isLoggedIn, async (request: any, response: any) => {
 });
 
 // GET /rooms - gets all rooms
-roomsRouter.get("/:id", isLoggedIn, async (request: any, response: any) => {
-  // parse data
-  const user_id = request.params.id;
-
+roomsRouter.get("/", isLoggedInAdmin, async (request: any, response: any) => {
   try {
-    const isUserAdmin = await checkUserIsAdmin(user_id);
-    // check if user is an admin
-    if (!isUserAdmin) {
-      response.status(401).json({
-        error: "This user is not an admin",
-      });
-    } else {
-      // make query to get rooms
-      const getRoomsQuery = "SELECT * FROM rooms";
-      const getRoomsRes = await pool.query(getRoomsQuery);
-      response.json(getRoomsRes.rows);
-    }
+    // make query to get rooms
+    const getRoomsQuery = "SELECT * FROM rooms";
+    const getRoomsRes = await pool.query(getRoomsQuery);
+    response.json(getRoomsRes.rows);
   } catch (e) {
     console.log(e);
     response.status(500).json({
@@ -92,72 +61,69 @@ roomsRouter.get("/:id", isLoggedIn, async (request: any, response: any) => {
 });
 
 // PUT /rooms/:id - updates a room
-roomsRouter.put("/:id", isLoggedIn, async (request: any, response: any) => {
-  // parse data
-  const user_id = request.params.id;
-  const building_name: string = request.body.building_name;
-  const room_number: number = request.body.room_number;
-  const has_projector: boolean = request.body.has_projector;
-  const has_whiteboard: boolean = request.body.has_whiteboard;
-  const capacity: number = request.body.capacity;
+roomsRouter.put(
+  "/:room_number/:building_name",
+  isLoggedInAdmin,
+  async (request: any, response: any) => {
+    // parse data
+    const room_number: number = request.params.room_number;
+    const building_name: string = request.params.building_name;
 
-  try {
-    const isUserAdmin = await checkUserIsAdmin(user_id);
-    // check if user is an admin
-    if (!isUserAdmin) {
-      response.status(401).json({
-        error: "This user is not an admin",
-      });
-    } else {
+    const new_room_number: number = request.body.room_number;
+    const new_building_name: string = request.body.building_name;
+    const has_projector: boolean = request.body.has_projector;
+    const has_whiteboard: boolean = request.body.has_whiteboard;
+    const capacity: number = request.body.capacity;
+
+    try {
       // make query to update room
       const updateRoomQuery =
-        "UPDATE rooms SET building_name=$1, room_number=$2, hasprojector=$3, haswhiteboard=$4, capacity=$5 WHERE room_number=$2";
+        "UPDATE rooms SET building_name=$1, room_number=$2, hasprojector=$3, haswhiteboard=$4, capacity=$5 WHERE room_number=$6 AND building_name=$7";
       await pool.query(updateRoomQuery, [
-        building_name,
-        room_number,
+        new_building_name,
+        new_room_number,
         has_projector,
         has_whiteboard,
         capacity,
+        room_number,
+        building_name,
       ]);
       const getRoomsQuery = "SELECT * FROM rooms";
       const getRoomsRes = await pool.query(getRoomsQuery);
       response.json(getRoomsRes.rows);
+    } catch (e) {
+      console.log(e);
+      response.status(500).json({
+        error: e,
+      });
     }
-  } catch (e) {
-    console.log(e);
-    response.status(500).json({
-      error: e,
-    });
   }
-});
+);
 
 // DELETE /rooms/:id - deletes a room
-roomsRouter.delete("/:id", isLoggedIn, async (request: any, response: any) => {
-  // parse data
-  const user_id = request.params.id;
-  const room_number = request.body.room_number;
+roomsRouter.delete(
+  "/:room_number/:building_name",
+  isLoggedInAdmin,
+  async (request: any, response: any) => {
+    // parse data
+    const room_number = request.params.room_number;
+    const building_name = request.params.building_name;
 
-  try {
-    const isUserAdmin = await checkUserIsAdmin(user_id);
-    // check if user is an admin
-    if (!isUserAdmin) {
-      response.status(401).json({
-        error: "This user is not an admin",
-      });
-    } else {
+    try {
       // make query to delete room
-      const deleteRoomQuery = "DELETE FROM rooms WHERE room_number=$1";
-      await pool.query(deleteRoomQuery, [room_number]);
+      const deleteRoomQuery =
+        "DELETE FROM rooms WHERE room_number=$1 AND building_name=$2";
+      await pool.query(deleteRoomQuery, [room_number, building_name]);
       const getRoomsQuery = "SELECT * FROM rooms";
       const getRoomsRes = await pool.query(getRoomsQuery);
       response.json(getRoomsRes.rows);
+    } catch (e) {
+      console.log(e);
+      response.status(500).json({
+        error: e,
+      });
     }
-  } catch (e) {
-    console.log(e);
-    response.status(500).json({
-      error: e,
-    });
   }
-});
+);
 
 export default roomsRouter;
