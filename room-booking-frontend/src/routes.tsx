@@ -4,7 +4,7 @@ import {
   MdSensorDoor,
   MdMap,
   MdSearch,
-  MdPanTool,
+  MdSettings,
 } from "react-icons/md";
 
 import MainDashboard from "views/admin/default";
@@ -26,7 +26,7 @@ const routes = () => {
           layout: "/admin",
           path: "/default",
           icon: (
-            <Icon as={MdPanTool} width="20px" height="20px" color="inherit" />
+            <Icon as={MdSettings} width="20px" height="20px" color="inherit" />
           ),
           component: StaffRoomsComponent,
         },

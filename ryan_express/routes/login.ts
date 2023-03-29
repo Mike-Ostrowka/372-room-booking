@@ -22,15 +22,8 @@ loginRouter.post("/", async (request: any, response: any) => {
         success: true,
       };
       // create a session which contains user data
-      request.session.regenerate((err: any) => {
-        if (err) {
-          console.log(err);
-          response.status(500).send("Error regenerating session");
-        } else {
-          request.session.user = properObject;
-          response.json(properObject);
-        }
-      });
+      request.session.user = properObject;
+      response.json(properObject);
     } else {
       console.log("Failed to login!");
       response.json({ success: false });
