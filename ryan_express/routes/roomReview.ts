@@ -39,6 +39,30 @@ roomReviewRouter.get("/room", isLoggedIn, async (request: any, response: any) =>
     let room_number = request.body.room_number;
 
     // check that room exists
+    try {
+        var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
+        const roomResult = await pool.query(getRoomQuery, [
+        building_name,
+        room_number,
+        ]);
+
+        if (roomResult.rowCount === 0) {
+            console.log(
+                "Error: this room does not exist in the database. please enter a valid building name and room number."
+            );
+
+            response.status(500).json({
+                error:
+                "Error: this room does not exist in the database. please enter a valid building name and room number.",
+            });
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+        error: err,
+        });
+    }
 
     // build and send query
     try {
@@ -86,7 +110,7 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     // booking id must be unique
     try {
         var getReviewsQuery = `SELECT * FROM room_reviews WHERE booking_id=$1;`;
-        const getReviewsResult = await pool.query(getReviewsQuery, [booking_id,]);
+        const getReviewsResult = await pool.query(getReviewsQuery, [booking_id]);
 
         if (getReviewsResult.rowCount > 0) {
             console.log("Error: A room review already exists for this booking.");
@@ -105,6 +129,25 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     }
 
     // check that booking exists
+    try {
+        var getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_id=$1;`;
+        const getBookingsResult = await pool.query(getBookingsQuery, [booking_id]);
+
+        if (getBookingsResult.rowCount === 0) {
+            console.log("Error: This room booking does not exist in the database.");
+
+            response.status(400).json({
+                error: "Error: This room booking does not exist in the database."
+            });
+
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+            error: err,
+        });
+    }
 
     // reviews can only be made for past bookings
     try {

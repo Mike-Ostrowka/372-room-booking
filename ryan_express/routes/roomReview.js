@@ -82,7 +82,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
  * }
  */
 roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var building_name, room_number, getReviewsQuery, reviewsResult, err_2;
+    var building_name, room_number, getRoomQuery, roomResult, err_2, getReviewsQuery, reviewsResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -91,12 +91,20 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                getReviewsQuery = "SELECT room_reviews.* FROM room_reviews \n        INNER JOIN room_bookings ON room_reviews.booking_id=room_bookings.booking_id \n        WHERE building_name=$1 \n        AND room_number=$2;";
-                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [building_name, room_number])];
+                getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
+                return [4 /*yield*/, index_1.default.query(getRoomQuery, [
+                        building_name,
+                        room_number,
+                    ])];
             case 2:
-                reviewsResult = _a.sent();
-                console.log(reviewsResult.rows);
-                response.json(reviewsResult.rows);
+                roomResult = _a.sent();
+                if (roomResult.rowCount === 0) {
+                    console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
+                    response.status(500).json({
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
+                    });
+                    return [2 /*return*/];
+                }
                 return [3 /*break*/, 4];
             case 3:
                 err_2 = _a.sent();
@@ -105,7 +113,23 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
                     error: err_2,
                 });
                 return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
+                getReviewsQuery = "SELECT room_reviews.* FROM room_reviews \n        INNER JOIN room_bookings ON room_reviews.booking_id=room_bookings.booking_id \n        WHERE building_name=$1 \n        AND room_number=$2;";
+                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [building_name, room_number])];
+            case 5:
+                reviewsResult = _a.sent();
+                console.log(reviewsResult.rows);
+                response.json(reviewsResult.rows);
+                return [3 /*break*/, 7];
+            case 6:
+                err_3 = _a.sent();
+                console.log(err_3);
+                response.status(500).json({
+                    error: err_3,
+                });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });
@@ -123,9 +147,10 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
  * Constraints:
  * - Reviews can only be made for past bookings
  * - 1 review per booking
+ * - Booking must exist
  */
 roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_3, endTimeQuery, endTimeResult, endTime, err_4, addReviewQuery, reviewsResult, err_5;
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_4, getBookingsQuery, getBookingsResult, err_5, endTimeQuery, endTimeResult, endTime, err_6, addReviewQuery, reviewsResult, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -139,7 +164,7 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getReviewsQuery = "SELECT * FROM room_reviews WHERE booking_id=$1;";
-                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [booking_id,])];
+                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [booking_id])];
             case 2:
                 getReviewsResult = _a.sent();
                 if (getReviewsResult.rowCount > 0) {
@@ -151,20 +176,40 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_3 = _a.sent();
-                console.log(err_3);
+                err_4 = _a.sent();
+                console.log(err_4);
                 response.status(500).json({
-                    error: err_3,
+                    error: err_4,
                 });
                 return [3 /*break*/, 4];
             case 4:
                 _a.trys.push([4, 6, , 7]);
+                getBookingsQuery = "SELECT * FROM room_bookings WHERE booking_id=$1;";
+                return [4 /*yield*/, index_1.default.query(getBookingsQuery, [booking_id])];
+            case 5:
+                getBookingsResult = _a.sent();
+                if (getBookingsResult.rowCount === 0) {
+                    console.log("Error: This room booking does not exist in the database.");
+                    response.status(400).json({
+                        error: "Error: This room booking does not exist in the database."
+                    });
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 7];
+            case 6:
+                err_5 = _a.sent();
+                console.log(err_5);
+                response.status(500).json({
+                    error: err_5,
+                });
+                return [3 /*break*/, 7];
+            case 7:
+                _a.trys.push([7, 9, , 10]);
                 endTimeQuery = "SELECT end_datetime FROM room_bookings WHERE booking_id=$1;";
                 return [4 /*yield*/, index_1.default.query(endTimeQuery, [booking_id])];
-            case 5:
+            case 8:
                 endTimeResult = _a.sent();
                 endTime = endTimeResult.rows[0].end_datetime;
-                console.log("received endtime from db: ".concat(endTime));
                 if (!calcTime_1.default.isPastDate(endTime)) {
                     console.log("Error: Reviews may only be made for past bookings");
                     response.status(400).json({
@@ -172,16 +217,16 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                     });
                     return [2 /*return*/];
                 }
-                return [3 /*break*/, 7];
-            case 6:
-                err_4 = _a.sent();
-                console.log(err_4);
+                return [3 /*break*/, 10];
+            case 9:
+                err_6 = _a.sent();
+                console.log(err_6);
                 response.status(500).json({
-                    error: err_4,
+                    error: err_6,
                 });
-                return [3 /*break*/, 7];
-            case 7:
-                _a.trys.push([7, 9, , 10]);
+                return [3 /*break*/, 10];
+            case 10:
+                _a.trys.push([10, 12, , 13]);
                 addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, index_1.default.query(addReviewQuery, [
                         review,
@@ -191,19 +236,19 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                         issue_details,
                         booking_id,
                     ])];
-            case 8:
+            case 11:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
                 response.json(reviewsResult.rows);
-                return [3 /*break*/, 10];
-            case 9:
-                err_5 = _a.sent();
-                console.log(err_5);
+                return [3 /*break*/, 13];
+            case 12:
+                err_7 = _a.sent();
+                console.log(err_7);
                 response.status(500).json({
-                    error: err_5,
+                    error: err_7,
                 });
-                return [3 /*break*/, 10];
-            case 10: return [2 /*return*/];
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); });

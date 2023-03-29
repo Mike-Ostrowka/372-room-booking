@@ -20,10 +20,8 @@ function calculateEndTime(start_time, duration) {
 // checks if a datetime is in the past
 // called by the room review endpt to validate a review is for a past booking
 function isPastDate(inputDate) {
-    console.log("input date: ".concat(inputDate));
     var inDatetime = new Date(inputDate);
     var curDatetime = new Date();
-    console.log("in date: ".concat(inDatetime, ", cur date: ").concat(curDatetime));
     return inDatetime < curDatetime;
 }
 exports.default = { calculateEndTime: calculateEndTime, isPastDate: isPastDate };
