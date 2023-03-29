@@ -93,7 +93,7 @@ searchRoomsRouter.post("/", isLoggedIn_1.default, function (request, response) {
             case 2:
                 searchResult = _a.sent();
                 console.log(searchResult.rows);
-                response.json(searchResult.rows);
+                response.status(200).json(searchResult.rows);
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();

@@ -59,7 +59,7 @@ roomBookingRouter.get("/", isLoggedIn_1.default, function (request, response) { 
             case 1:
                 bookingsResult = _a.sent();
                 console.log(bookingsResult.rows);
-                response.json(bookingsResult.rows);
+                response.status(200).json(bookingsResult.rows);
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
@@ -151,7 +151,7 @@ roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) {
             case 6:
                 bookingResult = _a.sent();
                 console.log(bookingResult.rows);
-                response.json(bookingResult.rows);
+                response.status(200).json(bookingResult.rows);
                 return [3 /*break*/, 8];
             case 7:
                 err_3 = _a.sent();

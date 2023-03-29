@@ -59,7 +59,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
             case 1:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
-                response.json(reviewsResult.rows);
+                response.status(200).json(reviewsResult.rows);
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
