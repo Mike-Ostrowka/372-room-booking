@@ -16,7 +16,7 @@ roomReviewRouter.get("/", isLoggedIn, async (request: any, response: any) => {
       var getReviewsQuery = `SELECT * FROM room_reviews;`;
       const reviewsResult = await pool.query(getReviewsQuery);
       console.log(reviewsResult.rows);
-      response.json(reviewsResult.rows);
+      response.status(200).json(reviewsResult.rows);
     } catch (err) {
       console.log(err);
       response.status(500).json({

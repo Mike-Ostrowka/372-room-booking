@@ -16,7 +16,7 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
       var getBookingsQuery = `SELECT * FROM room_bookings;`;
       const bookingsResult = await pool.query(getBookingsQuery);
       console.log(bookingsResult.rows);
-      response.json(bookingsResult.rows);
+      response.status(200).json(bookingsResult.rows);
     } catch (err) {
       console.log(err);
       response.status(500).json({
@@ -103,7 +103,7 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         user_id,
         ]);
         console.log(bookingResult.rows);
-        response.json(bookingResult.rows);
+        response.status(200).json(bookingResult.rows);
     } catch (err) {
         console.log(err);
         response.status(500).json({

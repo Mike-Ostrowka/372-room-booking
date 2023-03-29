@@ -62,7 +62,7 @@ searchRoomsRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         end_datetime,
       ]);
       console.log(searchResult.rows);
-      response.json(searchResult.rows);
+      response.status(200).json(searchResult.rows);
     } catch (err) {
       console.log(err);
       response.status(500).json({
