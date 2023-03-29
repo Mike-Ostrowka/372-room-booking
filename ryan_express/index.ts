@@ -8,6 +8,7 @@ import loginRouter from "./routes/login";
 import searchRoomsRouter from "./routes/searchRooms";
 import roomBookingRouter from "./routes/roomBooking";
 import roomsRouter from "./routes/rooms";
+import roomReviewRouter from "./routes/roomReview";
 
 let app = express();
 
@@ -58,6 +59,9 @@ app.use("/room-booking", roomBookingRouter);
 
 // Rooms
 app.use("/rooms", roomsRouter);
+
+// Room reviews
+app.use("/room-review", roomReviewRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

@@ -3,7 +3,7 @@ import pool from "../index";
 
 // middleware and util functions
 import isLoggedIn from "./middleware/isLoggedIn";
-import calculateEndTime from "./utils/calcTime";
+import timeUtils from "./utils/calcTime";
 
 const roomBookingRouter = Router();
 
@@ -16,7 +16,7 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
     var getBookingsQuery = `SELECT * FROM room_bookings;`;
     const bookingsResult = await pool.query(getBookingsQuery);
     console.log(bookingsResult.rows);
-    response.json(bookingsResult.rows);
+    response.status(200).json(bookingsResult.rows);
   } catch (err) {
     console.log(err);
     response.status(500).json({
@@ -69,7 +69,7 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
       room_number,
     ]);
 
-    if (roomResult.rowCount == 0) {
+    if (roomResult.rowCount === 0) {
       console.log(
         "Error: this room does not exist in the database. please enter a valid building name and room number."
       );
@@ -88,7 +88,7 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
   }
 
   // calculate endtime
-  let end_datetime = calculateEndTime(start_datetime, duration);
+  let end_datetime = timeUtils.calculateEndTime(start_datetime, duration);
 
   // build and send query
   try {
@@ -103,7 +103,7 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
       user_id,
     ]);
     console.log(bookingResult.rows);
-    response.json(bookingResult.rows);
+    response.status(200).json(bookingResult.rows);
   } catch (err) {
     console.log(err);
     response.status(500).json({

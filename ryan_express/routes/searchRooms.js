@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
@@ -57,7 +57,7 @@ var searchRoomsRouter = (0, express_1.Router)();
  *  haswhiteboard: false
  * }
  */
-searchRoomsRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+searchRoomsRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, hasprojector, haswhiteboard, getRoomsQuery, end_datetime, getBookingsQuery, searchQuery, searchResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -77,13 +77,13 @@ searchRoomsRouter.post("/", isLoggedIn_1["default"], function (request, response
                 if (haswhiteboard) {
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
-                end_datetime = (0, calcTime_1["default"])(start_datetime, duration);
+                end_datetime = calcTime_1.default.calculateEndTime(start_datetime, duration);
                 getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
                 searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n          WHERE NOT EXISTS (\n              SELECT * FROM (").concat(getBookingsQuery, ") as b \n              WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n          );");
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, index_1["default"].query(searchQuery, [
+                return [4 /*yield*/, index_1.default.query(searchQuery, [
                         num_occupants,
                         start_datetime,
                         end_datetime,
@@ -93,17 +93,17 @@ searchRoomsRouter.post("/", isLoggedIn_1["default"], function (request, response
             case 2:
                 searchResult = _a.sent();
                 console.log(searchResult.rows);
-                response.json(searchResult.rows);
+                response.status(200).json(searchResult.rows);
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.status(500).json({
-                    error: err_1
+                    error: err_1,
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
-exports["default"] = searchRoomsRouter;
+exports.default = searchRoomsRouter;
