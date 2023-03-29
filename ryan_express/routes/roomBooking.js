@@ -118,7 +118,7 @@ roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) {
                     ])];
             case 2:
                 roomResult = _a.sent();
-                if (roomResult.rowCount == 0) {
+                if (roomResult.rowCount === 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
                         error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
@@ -134,7 +134,7 @@ roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) {
                 });
                 return [3 /*break*/, 4];
             case 4:
-                end_datetime = (0, calcTime_1.default)(start_datetime, duration);
+                end_datetime = calcTime_1.default.calculateEndTime(start_datetime, duration);
                 _a.label = 5;
             case 5:
                 _a.trys.push([5, 7, , 8]);

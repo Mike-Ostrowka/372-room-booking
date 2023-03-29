@@ -17,4 +17,11 @@ function calculateEndTime(start_time, duration) {
         end.getMinutes();
     return end_formatted;
 }
-exports.default = calculateEndTime;
+// checks if a datetime is in the past
+// called by the room review endpt to validate a review is for a past booking
+function isPastDate(datetime) {
+    var inDatetime = new Date(datetime);
+    var curDatetime = new Date();
+    return inDatetime < curDatetime;
+}
+exports.default = { calculateEndTime: calculateEndTime, isPastDate: isPastDate };

@@ -3,7 +3,7 @@ import pool from "../index";
 
 // middleware and util functions
 import isLoggedIn from './middleware/isLoggedIn';
-import calculateEndTime from "./utils/calcTime";
+import timeUtils from "./utils/calcTime";
 
 const searchRoomsRouter = Router();
 
@@ -41,7 +41,7 @@ searchRoomsRouter.post("/", isLoggedIn, async (request: any, response: any) => {
   
     // part 2: get bookings that overlap the requested timeslot
     // determine end time
-    let end_datetime = calculateEndTime(start_datetime, duration);
+    let end_datetime = timeUtils.calculateEndTime(start_datetime, duration);
   
     // a booking overlaps if it starts at/after the start time
     // or ends at/after the end time

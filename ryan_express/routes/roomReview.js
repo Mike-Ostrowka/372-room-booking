@@ -43,6 +43,7 @@ var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
+var calcTime_1 = __importDefault(require("./utils/calcTime"));
 var roomReviewRouter = (0, express_1.Router)();
 /**
  * Get all room reviews
@@ -85,10 +86,9 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
  * Constraints:
  * - Reviews can only be made for past bookings
  * - 1 review per booking
- * - Booking must exist for the current user
  */
 roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_2, addReviewQuery, reviewsResult, err_3;
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_2, endTimeQuery, endTimeResult, endTime, err_3, addReviewQuery, reviewsResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -107,7 +107,7 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 getReviewsResult = _a.sent();
                 if (getReviewsResult.rowCount > 0) {
                     console.log("Error: A room review already exists for this booking.");
-                    response.status(500).json({
+                    response.status(400).json({
                         error: "Error: A room review already exists for this booking."
                     });
                     return [2 /*return*/];
@@ -122,6 +122,28 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 return [3 /*break*/, 4];
             case 4:
                 _a.trys.push([4, 6, , 7]);
+                endTimeQuery = "SELECT end_datetime FROM room_bookings WHERE booking_id=$1;";
+                return [4 /*yield*/, index_1.default.query(endTimeQuery, [booking_id])];
+            case 5:
+                endTimeResult = _a.sent();
+                endTime = endTimeResult.rows[0];
+                if (!calcTime_1.default.isPastDate(endTime)) {
+                    console.log("Error: Reviews may only be made for past bookings");
+                    response.status(400).json({
+                        error: "Error: Reviews may only be made for past bookings"
+                    });
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 7];
+            case 6:
+                err_3 = _a.sent();
+                console.log(err_3);
+                response.status(500).json({
+                    error: err_3,
+                });
+                return [3 /*break*/, 7];
+            case 7:
+                _a.trys.push([7, 9, , 10]);
                 addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, index_1.default.query(addReviewQuery, [
                         review,
@@ -131,19 +153,19 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                         issue_details,
                         booking_id,
                     ])];
-            case 5:
+            case 8:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
                 response.json(reviewsResult.rows);
-                return [3 /*break*/, 7];
-            case 6:
-                err_3 = _a.sent();
-                console.log(err_3);
+                return [3 /*break*/, 10];
+            case 9:
+                err_4 = _a.sent();
+                console.log(err_4);
                 response.status(500).json({
-                    error: err_3,
+                    error: err_4,
                 });
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 10];
+            case 10: return [2 /*return*/];
         }
     });
 }); });

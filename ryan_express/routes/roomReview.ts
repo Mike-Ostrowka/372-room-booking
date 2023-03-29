@@ -1,10 +1,10 @@
+import { time } from "console";
 import { Router } from "express";
 import pool from "../index";
 
 // middleware and util functions
 import isLoggedIn from './middleware/isLoggedIn';
-import calculateEndTime from "./utils/calcTime";
-
+import timeUtils from './utils/calcTime';
 const roomReviewRouter = Router();
 
 /**
@@ -39,7 +39,6 @@ roomReviewRouter.get("/", isLoggedIn, async (request: any, response: any) => {
  * Constraints:
  * - Reviews can only be made for past bookings
  * - 1 review per booking
- * - Booking must exist for the current user
  */
 roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     // parse form data
@@ -72,6 +71,28 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         });
     }
 
+    // reviews can only be made for past bookings
+    try {
+        // get the booking endtime
+        var endTimeQuery = `SELECT end_datetime FROM room_bookings WHERE booking_id=$1;`;
+        const endTimeResult = await pool.query(endTimeQuery, [booking_id]);
+        let endTime = endTimeResult.rows[0];
+
+        if (!timeUtils.isPastDate(endTime)) {
+            console.log("Error: Reviews may only be made for past bookings");
+
+            response.status(400).json({
+                error: "Error: Reviews may only be made for past bookings"
+            });
+
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+            error: err,
+        });
+    }
 
     // build and send query
     try {

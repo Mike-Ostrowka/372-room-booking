@@ -77,7 +77,7 @@ searchRoomsRouter.post("/", isLoggedIn_1.default, function (request, response) {
                 if (haswhiteboard) {
                     getRoomsQuery += " AND haswhiteboard=true";
                 }
-                end_datetime = (0, calcTime_1.default)(start_datetime, duration);
+                end_datetime = calcTime_1.default.calculateEndTime(start_datetime, duration);
                 getBookingsQuery = "SELECT building_name, room_number FROM room_bookings WHERE (start_datetime >= $2 AND start_datetime < $3) OR (end_datetime > $4 AND end_datetime <= $5)";
                 searchQuery = "SELECT * FROM (".concat(getRoomsQuery, ") AS r \n          WHERE NOT EXISTS (\n              SELECT * FROM (").concat(getBookingsQuery, ") as b \n              WHERE b.building_name=r.building_name AND b.room_number=r.room_number\n          );");
                 _a.label = 1;
