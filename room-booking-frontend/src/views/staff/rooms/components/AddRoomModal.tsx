@@ -17,19 +17,15 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-const EditRoomModal = ({
-  openEditDialog,
-  setOpenEditDialog,
-  rooms,
-  roomData,
+const AddRoomModal = ({
+  setOpenAddRoomDialog,
+  openAddRoomDialog,
   setRooms,
 }: any) => {
   const onClose = () => {
-    setOpenEditDialog(false);
+    setOpenAddRoomDialog(false);
   };
   const toast = useToast();
-
-  console.log("ROOM DATA: ", rooms);
 
   const validationSchema = Yup.object().shape({
     capacity: Yup.string().required("Capacity is Required"),
@@ -38,11 +34,11 @@ const EditRoomModal = ({
   });
   const formik = useFormik({
     initialValues: {
-      capacity: roomData.capacity.toString(),
-      building_name: roomData.building_name.toString(),
-      room_number: roomData.room_number.toString(),
-      has_projector: roomData.hasprojector,
-      has_whiteboard: roomData.haswhiteboard,
+      capacity: "",
+      building_name: "",
+      room_number: "",
+      has_projector: false,
+      has_whiteboard: false,
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       const data = {
@@ -53,38 +49,35 @@ const EditRoomModal = ({
         has_whiteboard: values.has_whiteboard,
       };
       try {
-        const response = await fetch(
-          `http://localhost:8080/rooms/${roomData.room_number}/${roomData.building_name}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:8080/rooms`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          credentials: "include",
+        });
         const roomsRes = await response.json();
         setRooms(roomsRes);
         if (response.status === 200) {
           toast({
-            title: "Room Changes Saved",
-            description: "You have successfully edited a room",
+            title: "New Room Added",
+            description: "You have successfully added a room",
             status: "success",
             duration: 5000,
             isClosable: true,
           });
         } else {
           toast({
-            title: "Room Changes Failed",
+            title: "Room Addition Failed",
             description:
-              "The system could not edit a room at this time. Please ensure this room does not already exist.",
+              "The system could not add a room at this time. Please ensure this room does not already exist.",
             status: "error",
             duration: 5000,
             isClosable: true,
           });
         }
-        setOpenEditDialog(false);
+        setOpenAddRoomDialog(false);
         setSubmitting(false);
       } catch (e) {
         console.log(e);
@@ -98,7 +91,7 @@ const EditRoomModal = ({
   console.log("FORMIK DATA", formik.values);
 
   return (
-    <Modal isOpen={openEditDialog} onClose={onClose}>
+    <Modal isOpen={openAddRoomDialog} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Edit Room</ModalHeader>
@@ -186,7 +179,7 @@ const EditRoomModal = ({
                     type="submit"
                     isLoading={formik.isSubmitting}
                   >
-                    Save Changes
+                    Submit
                   </Button>
                 </Stack>
               </Stack>
@@ -198,4 +191,4 @@ const EditRoomModal = ({
   );
 };
 
-export default EditRoomModal;
+export default AddRoomModal;
