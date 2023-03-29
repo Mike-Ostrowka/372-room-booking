@@ -20,7 +20,6 @@ import * as Yup from "yup";
 const EditRoomModal = ({
   openEditDialog,
   setOpenEditDialog,
-  rooms,
   roomData,
   setRooms,
 }: any) => {
@@ -29,12 +28,14 @@ const EditRoomModal = ({
   };
   const toast = useToast();
 
-  console.log("ROOM DATA: ", rooms);
-
   const validationSchema = Yup.object().shape({
-    capacity: Yup.string().required("Capacity is Required"),
+    capacity: Yup.number()
+      .typeError("Capacity must be a number")
+      .required("Capacity is Required"),
     building_name: Yup.string().required("Building Name is Required"),
-    room_number: Yup.string().required("Room Number is Required"),
+    room_number: Yup.number()
+      .typeError("Room Number must be a number")
+      .required("Room Number is Required"),
   });
   const formik = useFormik({
     initialValues: {
@@ -64,12 +65,13 @@ const EditRoomModal = ({
             credentials: "include",
           }
         );
-        const roomsRes = await response.json();
-        setRooms(roomsRes);
+
         if (response.status === 200) {
+          const roomsRes = await response.json();
+          setRooms(roomsRes);
           toast({
             title: "Room Changes Saved",
-            description: "You have successfully edited a room",
+            description: `You have successfully updated room ${data.building_name} ${data.room_number}`,
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -94,8 +96,6 @@ const EditRoomModal = ({
     },
     validationSchema: validationSchema,
   });
-
-  console.log("FORMIK DATA", formik.values);
 
   return (
     <Modal isOpen={openEditDialog} onClose={onClose}>

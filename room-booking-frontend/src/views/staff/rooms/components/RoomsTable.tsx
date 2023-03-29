@@ -29,9 +29,10 @@ const RoomsTable = ({ rooms, setRooms }: any) => {
           credentials: "include",
         }
       );
-      const roomsRes = await res.json();
-      setRooms(roomsRes);
+
       if (res.status === 200) {
+        const roomsRes = await res.json();
+        setRooms(roomsRes);
         toast({
           title: "Room Deleted",
           description: `You have deleted room ${room.building_name} ${room.room_number}`,

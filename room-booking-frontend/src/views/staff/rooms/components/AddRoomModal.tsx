@@ -28,9 +28,13 @@ const AddRoomModal = ({
   const toast = useToast();
 
   const validationSchema = Yup.object().shape({
-    capacity: Yup.string().required("Capacity is Required"),
+    capacity: Yup.number()
+      .typeError("Capacity must be a number")
+      .required("Capacity is Required"),
     building_name: Yup.string().required("Building Name is Required"),
-    room_number: Yup.string().required("Room Number is Required"),
+    room_number: Yup.number()
+      .typeError("Room Number must be a number")
+      .required("Room Number is Required"),
   });
   const formik = useFormik({
     initialValues: {
@@ -57,12 +61,13 @@ const AddRoomModal = ({
           body: JSON.stringify(data),
           credentials: "include",
         });
-        const roomsRes = await response.json();
-        setRooms(roomsRes);
+
         if (response.status === 200) {
+          const roomsRes = await response.json();
+          setRooms(roomsRes);
           toast({
             title: "New Room Added",
-            description: "You have successfully added a room",
+            description: `You have successfully added room ${data.building_name} ${data.room_number}`,
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -87,8 +92,6 @@ const AddRoomModal = ({
     },
     validationSchema: validationSchema,
   });
-
-  console.log("FORMIK DATA", formik.values);
 
   return (
     <Modal isOpen={openAddRoomDialog} onClose={onClose}>
