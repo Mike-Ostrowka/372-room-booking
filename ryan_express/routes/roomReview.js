@@ -88,7 +88,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
  * - Booking must exist for the current user
  */
 roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, addReviewQuery, bookingResult, err_2;
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_2, addReviewQuery, reviewsResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -101,6 +101,27 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
+                getReviewsQuery = "SELECT * FROM room_reviews WHERE booking_id=$1;";
+                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [booking_id,])];
+            case 2:
+                getReviewsResult = _a.sent();
+                if (getReviewsResult.rowCount > 0) {
+                    console.log("Error: A room review already exists for this booking.");
+                    response.status(500).json({
+                        error: "Error: A room review already exists for this booking."
+                    });
+                    return [2 /*return*/];
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.status(500).json({
+                    error: err_2,
+                });
+                return [3 /*break*/, 4];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
                 addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, index_1.default.query(addReviewQuery, [
                         review,
@@ -110,19 +131,19 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                         issue_details,
                         booking_id,
                     ])];
-            case 2:
-                bookingResult = _a.sent();
-                console.log(bookingResult.rows);
-                response.json(bookingResult.rows);
-                return [3 /*break*/, 4];
-            case 3:
-                err_2 = _a.sent();
-                console.log(err_2);
+            case 5:
+                reviewsResult = _a.sent();
+                console.log(reviewsResult.rows);
+                response.json(reviewsResult.rows);
+                return [3 /*break*/, 7];
+            case 6:
+                err_3 = _a.sent();
+                console.log(err_3);
                 response.status(500).json({
-                    error: err_2,
+                    error: err_3,
                 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });

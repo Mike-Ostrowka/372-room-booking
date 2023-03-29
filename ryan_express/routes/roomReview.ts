@@ -50,12 +50,33 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     let issue_details:string = request.body.issue_details;
     let booking_id: number = request.body.booking_id;
 
-    // TODO: error checking
+    // we can have max 1 review per room booking
+    // booking id must be unique
+    try {
+        var getReviewsQuery = `SELECT * FROM room_reviews WHERE booking_id=$1;`;
+        const getReviewsResult = await pool.query(getReviewsQuery, [booking_id,]);
+
+        if (getReviewsResult.rowCount > 0) {
+            console.log("Error: A room review already exists for this booking.");
+
+            response.status(400).json({
+                error: "Error: A room review already exists for this booking."
+            });
+
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+            error: err,
+        });
+    }
+
 
     // build and send query
     try {
         var addReviewQuery = `INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);`;
-        const bookingResult = await pool.query(addReviewQuery, [
+        const reviewsResult = await pool.query(addReviewQuery, [
             review,
             room_rating,
             noise_level,
@@ -63,12 +84,12 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
             issue_details,
             booking_id,
         ]);
-        console.log(bookingResult.rows);
-        response.json(bookingResult.rows);
+        console.log(reviewsResult.rows);
+        response.json(reviewsResult.rows);
     } catch (err) {
         console.log(err);
         response.status(500).json({
-        error: err,
+            error: err,
         });
     }
 });

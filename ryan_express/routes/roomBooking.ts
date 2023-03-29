@@ -39,77 +39,77 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
  * }
  */
 roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
-// parse form data
-let start_datetime: string = request.body.start_datetime;
-let duration: number = request.body.duration;
-let num_occupants: number = request.body.num_occupants;
-let building_name: string = request.body.building_name;
-let room_number: number = request.body.room_number;
-let user_id: number = request.body.user_id;
+    // parse form data
+    let start_datetime: string = request.body.start_datetime;
+    let duration: number = request.body.duration;
+    let num_occupants: number = request.body.num_occupants;
+    let building_name: string = request.body.building_name;
+    let room_number: number = request.body.room_number;
+    let user_id: number = request.body.user_id;
 
-// check max duration and occupants
-let max_duration: number = 60 * 3;
-let max_occupants: number = 25;
-if (duration > max_duration) {
-    response.status(500).json({
-    error: `Error: booking duration exceeds the alloted max of ${max_duration} minutes.`,
-    });
-}
-if (num_occupants > max_occupants) {
-    response.status(500).json({
-    error: `Error: number of occupants exceed the alloted max of ${max_occupants}.`,
-    });
-}
-
-// make sure building and room exists in the rooms table
-try {
-    var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
-    const roomResult = await pool.query(getRoomQuery, [
-    building_name,
-    room_number,
-    ]);
-
-    if (roomResult.rowCount == 0) {
-    console.log(
-        "Error: this room does not exist in the database. please enter a valid building name and room number."
-    );
-
-    response.status(500).json({
-        error:
-        "Error: this room does not exist in the database. please enter a valid building name and room number.",
-    });
-    return;
+    // check max duration and occupants
+    let max_duration: number = 60 * 3;
+    let max_occupants: number = 25;
+    if (duration > max_duration) {
+        response.status(500).json({
+        error: `Error: booking duration exceeds the alloted max of ${max_duration} minutes.`,
+        });
     }
-} catch (err) {
-    console.log(err);
-    response.status(500).json({
-    error: err,
-    });
-}
+    if (num_occupants > max_occupants) {
+        response.status(500).json({
+        error: `Error: number of occupants exceed the alloted max of ${max_occupants}.`,
+        });
+    }
 
-// calculate endtime
-let end_datetime = calculateEndTime(start_datetime, duration);
+    // make sure building and room exists in the rooms table
+    try {
+        var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
+        const roomResult = await pool.query(getRoomQuery, [
+        building_name,
+        room_number,
+        ]);
 
-// build and send query
-try {
-    var addBookingQuery = `INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);`;
-    const bookingResult = await pool.query(addBookingQuery, [
-    start_datetime,
-    end_datetime,
-    duration,
-    num_occupants,
-    building_name,
-    room_number,
-    user_id,
-    ]);
-    console.log(bookingResult.rows);
-    response.json(bookingResult.rows);
-} catch (err) {
-    console.log(err);
-    response.status(500).json({
-    error: err,
-    });
-}
+        if (roomResult.rowCount == 0) {
+            console.log(
+                "Error: this room does not exist in the database. please enter a valid building name and room number."
+            );
+
+            response.status(500).json({
+                error:
+                "Error: this room does not exist in the database. please enter a valid building name and room number.",
+            });
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+        error: err,
+        });
+    }
+
+    // calculate endtime
+    let end_datetime = calculateEndTime(start_datetime, duration);
+
+    // build and send query
+    try {
+        var addBookingQuery = `INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);`;
+        const bookingResult = await pool.query(addBookingQuery, [
+        start_datetime,
+        end_datetime,
+        duration,
+        num_occupants,
+        building_name,
+        room_number,
+        user_id,
+        ]);
+        console.log(bookingResult.rows);
+        response.json(bookingResult.rows);
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({
+        error: err,
+        });
+    }
 });
 
 export default roomBookingRouter;
