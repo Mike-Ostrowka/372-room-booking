@@ -73,6 +73,43 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
     });
 }); });
 /**
+ * Get all reviews for a particular room
+ * Endpt: /room-review/room
+ * Sample request body:
+ * {
+ *  building_name: "SUB",
+ *  room_number: 4001
+ * }
+ */
+roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var building_name, room_number, getReviewsQuery, reviewsResult, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                building_name = request.body.building_name;
+                room_number = request.body.room_number;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                getReviewsQuery = "SELECT room_reviews.* FROM room_reviews \n        INNER JOIN room_bookings ON room_reviews.booking_id=room_bookings.booking_id \n        WHERE building_name=$1 \n        AND room_number=$2;";
+                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [building_name, room_number])];
+            case 2:
+                reviewsResult = _a.sent();
+                console.log(reviewsResult.rows);
+                response.json(reviewsResult.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.status(500).json({
+                    error: err_2,
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+/**
  * Add a new room review
  * Sample request body format:
  * {
@@ -88,7 +125,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
  * - 1 review per booking
  */
 roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_2, endTimeQuery, endTimeResult, endTime, err_3, addReviewQuery, reviewsResult, err_4;
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_3, endTimeQuery, endTimeResult, endTime, err_4, addReviewQuery, reviewsResult, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -114,10 +151,10 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_2 = _a.sent();
-                console.log(err_2);
+                err_3 = _a.sent();
+                console.log(err_3);
                 response.status(500).json({
-                    error: err_2,
+                    error: err_3,
                 });
                 return [3 /*break*/, 4];
             case 4:
@@ -136,10 +173,10 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 }
                 return [3 /*break*/, 7];
             case 6:
-                err_3 = _a.sent();
-                console.log(err_3);
+                err_4 = _a.sent();
+                console.log(err_4);
                 response.status(500).json({
-                    error: err_3,
+                    error: err_4,
                 });
                 return [3 /*break*/, 7];
             case 7:
@@ -159,10 +196,10 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 response.json(reviewsResult.rows);
                 return [3 /*break*/, 10];
             case 9:
-                err_4 = _a.sent();
-                console.log(err_4);
+                err_5 = _a.sent();
+                console.log(err_5);
                 response.status(500).json({
-                    error: err_4,
+                    error: err_5,
                 });
                 return [3 /*break*/, 10];
             case 10: return [2 /*return*/];

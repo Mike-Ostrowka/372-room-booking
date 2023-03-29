@@ -24,6 +24,38 @@ roomReviewRouter.get("/", isLoggedIn, async (request: any, response: any) => {
       });
     }
 });
+
+/**
+ * Get all reviews for a particular room
+ * Endpt: /room-review/room
+ * Sample request body:
+ * {
+ *  building_name: "SUB",
+ *  room_number: 4001
+ * }
+ */
+roomReviewRouter.get("/room", isLoggedIn, async (request: any, response: any) => {
+    let building_name = request.body.building_name;
+    let room_number = request.body.room_number;
+
+    // check that room exists
+
+    // build and send query
+    try {
+      var getReviewsQuery = `SELECT room_reviews.* FROM room_reviews 
+        INNER JOIN room_bookings ON room_reviews.booking_id=room_bookings.booking_id 
+        WHERE building_name=$1 
+        AND room_number=$2;`;
+      const reviewsResult = await pool.query(getReviewsQuery, [building_name, room_number]);
+      console.log(reviewsResult.rows);
+      response.json(reviewsResult.rows);
+    } catch (err) {
+      console.log(err);
+      response.status(500).json({
+        error: err,
+      });
+    }
+});
   
 /**
  * Add a new room review
