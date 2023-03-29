@@ -71,6 +71,7 @@ roomReviewRouter.get("/room", isLoggedIn, async (request: any, response: any) =>
  * Constraints:
  * - Reviews can only be made for past bookings
  * - 1 review per booking
+ * - Booking must exist
  */
 roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     // parse form data
@@ -103,12 +104,14 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         });
     }
 
+    // check that booking exists
+
     // reviews can only be made for past bookings
     try {
         // get the booking endtime
         var endTimeQuery = `SELECT end_datetime FROM room_bookings WHERE booking_id=$1;`;
         const endTimeResult = await pool.query(endTimeQuery, [booking_id]);
-        let endTime = endTimeResult.rows[0];
+        let endTime = endTimeResult.rows[0].end_datetime;
 
         if (!timeUtils.isPastDate(endTime)) {
             console.log("Error: Reviews may only be made for past bookings");

@@ -20,8 +20,8 @@ function calculateEndTime(start_time: string, duration: number) {
 
 // checks if a datetime is in the past
 // called by the room review endpt to validate a review is for a past booking
-function isPastDate(datetime: string) {
-  let inDatetime = new Date(datetime);
+function isPastDate(inputDate: string) {
+  let inDatetime = new Date(inputDate);
   let curDatetime = new Date();
   return inDatetime < curDatetime;
 }

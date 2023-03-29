@@ -163,7 +163,8 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 return [4 /*yield*/, index_1.default.query(endTimeQuery, [booking_id])];
             case 5:
                 endTimeResult = _a.sent();
-                endTime = endTimeResult.rows[0];
+                endTime = endTimeResult.rows[0].end_datetime;
+                console.log("received endtime from db: ".concat(endTime));
                 if (!calcTime_1.default.isPastDate(endTime)) {
                     console.log("Error: Reviews may only be made for past bookings");
                     response.status(400).json({
