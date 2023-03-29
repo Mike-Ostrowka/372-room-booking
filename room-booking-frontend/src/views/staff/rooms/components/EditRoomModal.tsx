@@ -33,7 +33,7 @@ const EditRoomModal = ({
   const { loggedInUser } = useContext(UserContext);
   const buildings = new Set(rooms.map((r: any) => r.building_name));
 
-  console.log("ROOM DATA: ", roomData);
+  console.log("ROOM DATA: ", rooms);
 
   const validationSchema = Yup.object().shape({
     capacity: Yup.string().required("Capacity is Required"),
@@ -42,25 +42,25 @@ const EditRoomModal = ({
   });
   const formik = useFormik({
     initialValues: {
-      capacity: "",
-      building_name: "",
-      room_number: "",
-      has_projector: false,
-      has_whiteboard: false,
+      capacity: roomData.capacity.toString(),
+      building_name: roomData.building_name.toString(),
+      room_number: roomData.room_number.toString(),
+      has_projector: roomData.hasprojector,
+      has_whiteboard: roomData.haswhiteboard,
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       const data = {
         capacity: parseInt(values.capacity),
         building_name: values.building_name,
         room_number: parseInt(values.room_number),
-        hasprojector: values.has_projector,
-        haswhiteboard: values.has_whiteboard,
+        has_projector: values.has_projector,
+        has_whiteboard: values.has_whiteboard,
       };
       try {
         const response = await fetch(
           `http://localhost:8080/rooms/${loggedInUser.u_id}`,
           {
-            method: "POST",
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
@@ -121,7 +121,9 @@ const EditRoomModal = ({
                     }
                   />
                   {formik.errors.capacity && formik.touched.capacity && (
-                    <FormHelperText>{formik.errors.capacity}</FormHelperText>
+                    <FormHelperText>
+                      {formik.errors.capacity.toString()}
+                    </FormHelperText>
                   )}
                   <Select
                     placeholder="Building Name"
@@ -145,7 +147,7 @@ const EditRoomModal = ({
                   {formik.errors.building_name &&
                     formik.touched.building_name && (
                       <FormHelperText>
-                        {formik.errors.building_name}
+                        {formik.errors.building_name.toString()}
                       </FormHelperText>
                     )}
                   <Select
@@ -162,16 +164,21 @@ const EditRoomModal = ({
                     }
                   >
                     {rooms.map((r: any) => (
-                      <option value={r} key={r.room_number}>
+                      <option
+                        value={r.room_number.toString()}
+                        key={r.room_number}
+                      >
                         {r.room_number.toString()}
                       </option>
                     ))}
                   </Select>
                   {formik.errors.room_number && formik.touched.room_number && (
-                    <FormHelperText>{formik.errors.room_number}</FormHelperText>
+                    <FormHelperText>
+                      {formik.errors.room_number.toString()}
+                    </FormHelperText>
                   )}
                   <Checkbox
-                    name="isStaff"
+                    name="has_projector"
                     defaultChecked={formik.values.has_projector}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -180,7 +187,7 @@ const EditRoomModal = ({
                   </Checkbox>
 
                   <Checkbox
-                    name="isStaff"
+                    name="has_whiteboard"
                     defaultChecked={formik.values.has_whiteboard}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
