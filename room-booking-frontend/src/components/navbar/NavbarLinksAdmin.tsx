@@ -97,7 +97,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
           </Text>
         </Text>
       </Flex>
-      <SidebarResponsive routes={routes} />
+      <SidebarResponsive routes={routes()} />
 
       <Menu>
         <MenuButton p="0px">

@@ -5,8 +5,9 @@ import pg from "pg";
 
 import registerRouter from "./routes/register";
 import loginRouter from "./routes/login";
-import searchRoomsRouter from './routes/searchRooms';
+import searchRoomsRouter from "./routes/searchRooms";
 import roomBookingRouter from "./routes/roomBooking";
+import roomsRouter from "./routes/rooms";
 import roomReviewRouter from "./routes/roomReview";
 
 let app = express();
@@ -45,19 +46,22 @@ app.use("/", function (req: any, res: any, next: any) {
 });
 
 // Register a user
-app.use('/register-api', registerRouter);
+app.use("/register-api", registerRouter);
 
 // Log in
-app.use('/login-api', loginRouter);
+app.use("/login-api", loginRouter);
 
 // Search for available rooms
-app.use('/search-rooms', searchRoomsRouter);
+app.use("/search-rooms", searchRoomsRouter);
 
 // Room bookings
-app.use('/room-booking', roomBookingRouter);
+app.use("/room-booking", roomBookingRouter);
+
+// Rooms
+app.use("/rooms", roomsRouter);
 
 // Room reviews
-app.use('/room-review', roomReviewRouter);
+app.use("/room-review", roomReviewRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

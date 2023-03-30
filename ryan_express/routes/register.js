@@ -38,11 +38,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = require("express");
 var md5_1 = __importDefault(require("md5"));
 var index_1 = __importDefault(require("../index"));
 var registerRouter = (0, express_1.Router)();
+// POST /register-api - registers new users into the system
 registerRouter.post("/", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var firstName, lastName, username, password, isStaff, registerQuery, result, e_1;
     return __generator(this, function (_a) {
@@ -51,7 +52,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                 firstName = request.body.firstName;
                 lastName = request.body.lastName;
                 username = request.body.username;
-                password = (0, md5_1.default)(request.body.password);
+                password = (0, md5_1["default"])(request.body.password);
                 isStaff = request.body.isStaff;
                 return [4 /*yield*/, isUser(username)];
             case 1:
@@ -65,7 +66,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                 _a.trys.push([2, 4, , 5]);
                 registerQuery = "INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)";
                 console.log(registerQuery);
-                return [4 /*yield*/, index_1.default.query(registerQuery, [
+                return [4 /*yield*/, index_1["default"].query(registerQuery, [
                         username,
                         password,
                         firstName,
@@ -74,7 +75,8 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                     ])];
             case 3:
                 result = _a.sent();
-                if ((result.rowCount = 1)) {
+                // check if user was registered successfully
+                if (result.rowCount == 1) {
                     console.log("registered user");
                     response.json({ success: true, userExists: false });
                 }
@@ -92,7 +94,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
         }
     });
 }); });
-//check if user exists
+// check if user exists
 function isUser(username) {
     return __awaiter(this, void 0, void 0, function () {
         var authenticationQuery, result, e_2;
@@ -101,7 +103,7 @@ function isUser(username) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1";
-                    return [4 /*yield*/, index_1.default.query(authenticationQuery, [username])];
+                    return [4 /*yield*/, index_1["default"].query(authenticationQuery, [username])];
                 case 1:
                     result = _a.sent();
                     if (result.rows.length > 0 && result.rows[0].json_agg != null) {
@@ -120,4 +122,4 @@ function isUser(username) {
         });
     });
 }
-exports.default = registerRouter;
+exports["default"] = registerRouter;
