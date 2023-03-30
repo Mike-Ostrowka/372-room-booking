@@ -7,6 +7,7 @@ import { Icon, Tag } from "@chakra-ui/react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 // Custom components
 import Card from "components/card/Card";
+import CalendarReview from "components/rating/CalendarReview";
 
 export default function MiniCalendar(props: {
   selectRange: boolean;
@@ -22,11 +23,16 @@ export default function MiniCalendar(props: {
         new Date(rb.start_datetime).toDateString() === date.toDateString()
     );
     return roomBooking ? (
-      <Tag
-        marginLeft={5}
-      >{`${roomBooking.building_name} ${roomBooking.room_number}`}</Tag>
+      <div>
+        <Tag
+          marginLeft={5}
+        >{`${roomBooking.building_name} ${roomBooking.room_number}`}</Tag>
+        <CalendarReview/>
+      </div>
     ) : null;
   };
+
+  // const roomReviewModal
 
   useEffect(() => {
     const fetchRoomBookings = async () => {
@@ -67,3 +73,4 @@ export default function MiniCalendar(props: {
     </Card>
   );
 }
+
