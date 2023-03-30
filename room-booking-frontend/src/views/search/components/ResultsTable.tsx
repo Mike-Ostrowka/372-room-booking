@@ -9,7 +9,7 @@ import {
   Td,
 } from "@chakra-ui/react";
 
-const ResultsTable = () => {
+const ResultsTable = ({ rooms }: any) => {
   return (
     <TableContainer>
       <Table variant="striped">
@@ -24,27 +24,15 @@ const ResultsTable = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>SUB</Td>
-            <Td>4200</Td>
-            <Td>Yes</Td>
-            <Td>Yes</Td>
-            <Td>25</Td>
-          </Tr>
-          <Tr>
-            <Td>SUB</Td>
-            <Td>2120</Td>
-            <Td>Yes</Td>
-            <Td>No</Td>
-            <Td>20</Td>
-          </Tr>
-          <Tr>
-            <Td>SUB</Td>
-            <Td>4101</Td>
-            <Td>Yes</Td>
-            <Td>Yes</Td>
-            <Td>50</Td>
-          </Tr>
+          {rooms.map((r: any) => (
+            <Tr>
+              <Td>{r.building_name}</Td>
+              <Td>{r.room_number}</Td>
+              <Td>{r.hasprojector ? "Yes" : "No"}</Td>
+              <Td>{r.haswhiteboard ? "Yes" : "No"}</Td>
+              <Td>{r.capacity}</Td>
+            </Tr>
+          ))}
         </Tbody>
       </Table>
     </TableContainer>
