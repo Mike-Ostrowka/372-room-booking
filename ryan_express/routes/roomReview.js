@@ -92,10 +92,7 @@ roomReviewRouter.get("/room", isLoggedIn_1["default"], function (request, respon
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, index_1["default"].query(getRoomQuery, [
-                        building_name,
-                        room_number,
-                    ])];
+                return [4 /*yield*/, index_1["default"].query(getRoomQuery, [building_name, room_number])];
             case 2:
                 roomResult = _a.sent();
                 if (roomResult.rowCount === 0) {
