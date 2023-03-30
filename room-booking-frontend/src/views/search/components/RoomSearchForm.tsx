@@ -71,7 +71,7 @@ const RoomSearchForm = ({ setRooms }: any) => {
   return (
     <Card width="100%">
       <CardHeader>
-        <Heading size="md">Search Criteria (Work in progress...)</Heading>
+        <Heading size="md">Search Criteria</Heading>
       </CardHeader>
       <CardBody>
         <form onSubmit={formik.handleSubmit}>
