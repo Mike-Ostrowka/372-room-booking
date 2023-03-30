@@ -1,10 +1,11 @@
 import { Icon } from "@chakra-ui/react";
-import { MdHome, MdSensorDoor, MdMap, MdSearch } from "react-icons/md";
+import { MdHome, MdSensorDoor, MdMap, MdSearch, MdStarRate } from "react-icons/md";
 
 import MainDashboard from "views/admin/default";
 import RoomBooking from "views/room-booking";
 import MapTab from "views/map";
 import RoomSearch from "views/search";
+import RoomReview from "views/room-review";
 
 const routes = [
   {
@@ -34,6 +35,13 @@ const routes = [
     path: "/search",
     icon: <Icon as={MdSearch} width="20px" height="20px" color="inherit" />,
     component: RoomSearch,
+  },
+  {
+    name: "Room Review",
+    layout: "/admin",
+    path: "/review",
+    icon: <Icon as={MdStarRate} width="20px" height="20px" color="inherit" />,
+    component: RoomReview,
   },
 ];
 
