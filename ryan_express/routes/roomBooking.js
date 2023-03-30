@@ -73,6 +73,40 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
     });
 }); });
 /**
+ * Get all room bookings for a given user
+ * Sample request body:
+ * {
+ *  user_id: 27
+ * }
+ */
+roomBookingRouter.get("/user", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var user_id, getBookingsQuery, bookingsResult, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                user_id = request.body.user_id;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                getBookingsQuery = "SELECT * FROM room_bookings WHERE user_id=$1;";
+                return [4 /*yield*/, index_1["default"].query(getBookingsQuery, [user_id])];
+            case 2:
+                bookingsResult = _a.sent();
+                console.log(bookingsResult.rows);
+                response.status(200).json(bookingsResult.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                response.status(500).json({
+                    error: err_2
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+/**
  * Add a new room booking
  * Building name, room number must exist in the db
  * Sample request body format:
@@ -86,7 +120,7 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
  * }
  */
 roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_2, end_datetime, addBookingQuery, bookingResult, err_3;
+    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -127,10 +161,10 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_2 = _a.sent();
-                console.log(err_2);
+                err_3 = _a.sent();
+                console.log(err_3);
                 response.status(500).json({
-                    error: err_2
+                    error: err_3
                 });
                 return [3 /*break*/, 4];
             case 4:
@@ -154,10 +188,10 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 response.status(200).json(bookingResult.rows);
                 return [3 /*break*/, 8];
             case 7:
-                err_3 = _a.sent();
-                console.log(err_3);
+                err_4 = _a.sent();
+                console.log(err_4);
                 response.status(500).json({
-                    error: err_3
+                    error: err_4
                 });
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
