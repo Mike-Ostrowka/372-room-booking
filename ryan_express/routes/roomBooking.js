@@ -74,6 +74,7 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
 }); });
 /**
  * Get all room bookings for a given user
+ * Endpt: /room-booking/user
  * Sample request body:
  * {
  *  user_id: 27
