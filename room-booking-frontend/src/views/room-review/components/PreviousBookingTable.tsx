@@ -75,7 +75,7 @@ const PreviousBookingTable = () => {
   return (
     <TableContainer>
       <Table variant="striped">
-        <TableCaption>Available Rooms for Search Criteria</TableCaption>
+        <TableCaption>Past bookings that you can review</TableCaption>
         <Thead>
           <Tr>
             <Th>Building Name</Th>
