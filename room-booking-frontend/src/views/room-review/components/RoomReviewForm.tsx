@@ -22,8 +22,7 @@ import * as Yup from "yup";
 const RoomReviewForm = (bookingID: any) => {
   const [rating, setRating] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [sliderValue, setSliderValue] = useState(0);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [review, setReview] = useState("");
   const [issues, setIssues] = useState("");
   const [checked, setChecked] = useState(true);
   const [noise, setNoise] = useState(1);
@@ -39,10 +38,10 @@ const RoomReviewForm = (bookingID: any) => {
   });
   const formik = useFormik({
     initialValues: {
-      reviewText: "",
+      reviewText: review,
       roomRating: rating,
       noiseLevel: noise,
-      functioningRoom: true,
+      functioningRoom: checked,
       issueDetails: issues,
       bookingID: bookingID,
     },
@@ -75,18 +74,20 @@ const RoomReviewForm = (bookingID: any) => {
                     placeholder="Enter your review"
                     size="lg"
                     name="reviewText"
-                    value={formik.values.reviewText}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                    value={review}
+                    onChange={(e) => {
+                      setReview(e.target.value);
+                    }}
                     borderColor={
-                      formik.errors.reviewText &&
-                      formik.touched.reviewText &&
-                      "red" || "black"
+                      (formik.errors.reviewText &&
+                        formik.touched.reviewText &&
+                        "red") ||
+                      "black"
                     }
                   />
                 </Stack>
                 <Stack>
-                  <NoiseReview setNoise={setNoise}/>
+                  <NoiseReview setNoise={setNoise} />
                 </Stack>
                 <Stack paddingTop="20px">
                   <Checkbox
