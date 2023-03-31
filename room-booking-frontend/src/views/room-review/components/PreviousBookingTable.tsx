@@ -8,18 +8,24 @@ import {
   Th,
   Td,
   Button,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import RoomReviewModal from "./RoomReviewModal";
+import RoomReviewForm from "./RoomReviewForm";
 
 const PreviousBookingTable = () => {
 
     const [roomBookings, setRoomBookings] = useState([]);
-
-    const createReviewModal = (bookingID: any) => {
-        RoomReviewModal(bookingID);
-    }
+    const [bookingID, setBookingID] = useState(0);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const fetchBookings = async () => {
         if(roomBookings.length > 0) {
@@ -32,7 +38,12 @@ const PreviousBookingTable = () => {
           },
           credentials: "include",
         });
-        const responseData = await response.json();
+        let responseData = await response.json();
+        console.log(responseData);
+        responseData = responseData.filter((booking: any) => {
+            return Date.parse(booking.start_datetime) < Date.now();
+        });
+        // console.log(responseData);
         responseData.sort(function(a:any, b:any) {
             return Date.parse(b.start_datetime) - Date.parse(a.start_datetime);
         })
@@ -41,7 +52,7 @@ const PreviousBookingTable = () => {
 
     useEffect (() => {
         fetchBookings().catch(console.error);
-    });
+    }, []);
   return (
     <TableContainer>
       <Table variant="striped">
@@ -51,19 +62,51 @@ const PreviousBookingTable = () => {
             <Th>Building Name</Th>
             <Th>Room Number</Th>
             <Th>Date</Th>
+            <Th>Time</Th>
             <Th>Duration</Th>
           </Tr>
         </Thead>
         <Tbody>
           {roomBookings.map((room: any) => (
-            <Tr 
-            // onClick={createReviewModal()}
-            >
+            <Tr key={room.booking_id}>
               <Td>{room.building_name}</Td>
               <Td>{room.room_number}</Td>
-              <Td>{format(new Date(room.start_datetime), 'MMMM d, yyyy')}</Td>
+              <Td>{format(new Date(room.start_datetime), "MMMM d, yyyy")}</Td>
+              <Td>{format(new Date(room.start_datetime), "h:mm aaa")}</Td>
               <Td>{room.duration} minutes</Td>
-              <Td><Button>Create Review</Button></Td>
+              <Td>
+                <Button
+                  colorScheme="teal"
+                  onClick={() => {
+                    setBookingID(room.booking_id);
+                    onOpen();
+                  }}
+                >
+                  Create Review
+                </Button>
+              </Td>
+              <Td>
+                <Modal isOpen={isOpen} onClose={onClose} size="xl">
+                  <ModalOverlay
+                    bg="none"
+                    backdropFilter="auto"
+                    backdropBlur="2px"
+                  />
+                  <ModalContent>
+                    <ModalHeader>Create a review</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <RoomReviewForm bookingID={bookingID} onClose={onClose}/>
+                    </ModalBody>
+
+                    <ModalFooter>
+                      <Button variant="ghost" mr={3} onClick={onClose}>
+                        Close
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+              </Td>
             </Tr>
           ))}
         </Tbody>
