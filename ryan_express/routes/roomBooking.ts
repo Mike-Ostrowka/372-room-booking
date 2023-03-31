@@ -33,21 +33,25 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
  *  user_id: 27
  * }
  */
-roomBookingRouter.get("/user", isLoggedIn, async (request: any, response: any) => {
-  let user_id: number = request.body.user_id;
-  // build and send query
-  try {
-    var getBookingsQuery = `SELECT * FROM room_bookings WHERE user_id=$1;`;
-    const bookingsResult = await pool.query(getBookingsQuery, [user_id]);
-    console.log(bookingsResult.rows);
-    response.status(200).json(bookingsResult.rows);
-  } catch (err) {
-    console.log(err);
-    response.status(500).json({
-      error: err,
-    });
+roomBookingRouter.get(
+  "/:user_id",
+  isLoggedIn,
+  async (request: any, response: any) => {
+    let user_id: number = request.params.user_id;
+    // build and send query
+    try {
+      var getBookingsQuery = `SELECT * FROM room_bookings WHERE user_id=$1;`;
+      const bookingsResult = await pool.query(getBookingsQuery, [user_id]);
+      console.log(bookingsResult.rows);
+      response.status(200).json(bookingsResult.rows);
+    } catch (err) {
+      console.log(err);
+      response.status(500).json({
+        error: err,
+      });
+    }
   }
-});
+);
 
 /**
  * Add a new room booking

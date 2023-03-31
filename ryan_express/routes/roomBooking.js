@@ -80,12 +80,12 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
  *  user_id: 27
  * }
  */
-roomBookingRouter.get("/user", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var user_id, getBookingsQuery, bookingsResult, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                user_id = request.body.user_id;
+                user_id = request.params.user_id;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);

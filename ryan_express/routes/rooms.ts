@@ -3,6 +3,7 @@ import pool from "../index";
 
 // middleware
 import isLoggedInAdmin from "./middleware/isLoggedInAdmin";
+import isLoggedIn from "./middleware/isLoggedIn";
 
 const roomsRouter = Router();
 
@@ -46,7 +47,7 @@ roomsRouter.post("/", isLoggedInAdmin, async (request: any, response: any) => {
 });
 
 // GET /rooms - gets all rooms
-roomsRouter.get("/", isLoggedInAdmin, async (request: any, response: any) => {
+roomsRouter.get("/", isLoggedIn, async (request: any, response: any) => {
   try {
     // make query to get rooms
     const getRoomsQuery = "SELECT * FROM rooms";

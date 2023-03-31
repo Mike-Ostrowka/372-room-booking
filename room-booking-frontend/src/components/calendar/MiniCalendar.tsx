@@ -7,6 +7,8 @@ import { Icon, Tag } from "@chakra-ui/react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 // Custom components
 import Card from "components/card/Card";
+import { UserContext } from "contexts/UserContext";
+import { useContext } from "react";
 
 export default function MiniCalendar(props: {
   selectRange: boolean;
@@ -15,6 +17,8 @@ export default function MiniCalendar(props: {
   const { selectRange, ...rest } = props;
   const [value, onChange] = useState(new Date());
   const [roomBookings, setRoomBookings] = useState([]);
+
+  const { loggedInUser } = useContext(UserContext);
 
   const getTileContent = ({ date }: any) => {
     const roomBooking = roomBookings.find(
@@ -31,10 +35,13 @@ export default function MiniCalendar(props: {
   useEffect(() => {
     const fetchRoomBookings = async () => {
       try {
-        const response = await fetch("http://localhost:8080/room-booking", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:8080/room-booking/${loggedInUser.u_id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         const responseData = await response.json();
         console.log("ROOM BOOKINGS HERE: ", responseData);
         setRoomBookings(responseData);

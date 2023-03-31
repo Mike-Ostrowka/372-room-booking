@@ -43,6 +43,7 @@ var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware
 var isLoggedInAdmin_1 = __importDefault(require("./middleware/isLoggedInAdmin"));
+var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
 var roomsRouter = (0, express_1.Router)();
 /**
  * Allowing administator to perform the
@@ -94,7 +95,7 @@ roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response)
     });
 }); });
 // GET /rooms - gets all rooms
-roomsRouter.get("/", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomsRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getRoomsQuery, getRoomsRes, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {

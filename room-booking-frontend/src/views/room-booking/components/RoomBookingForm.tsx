@@ -11,38 +11,15 @@ import {
   useToast,
   Select,
 } from "@chakra-ui/react";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "contexts/UserContext";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const RoomBookingForm = () => {
-  const roomNumbers = [
-    "2120",
-    "2410",
-    "2420",
-    "2440",
-    "3210",
-    "3220",
-    "3230",
-    "4001",
-    "4003",
-    "4005",
-    "4101",
-    "4103",
-    "4105",
-    "4107",
-    "4200",
-    "4311",
-    "4313",
-    "4315",
-    "4317",
-    "4322",
-    "4324",
-    "4325",
-    "4326",
-  ];
-  const buildingNames = ["SUB"];
+  const [roomNumbers, setRoomNumbers] = useState([]);
+  const [buildingNames, setBuildingNames] = useState([]);
+
   const toast = useToast();
   const { loggedInUser } = useContext(UserContext);
   console.log("LOGGED IN USER: ", loggedInUser);
@@ -111,6 +88,33 @@ const RoomBookingForm = () => {
     },
     validationSchema: validationSchema,
   });
+
+  useEffect(() => {
+    const fetchRoomsAndBuildings = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/rooms", {
+          method: "GET",
+          credentials: "include",
+        });
+        const roomsRes = await res.json();
+        console.log("ROOMS RES", roomsRes);
+        const roomNums = formik.values.building_name
+          ? roomsRes
+              .filter(
+                (r: any) => r.building_name == formik.values.building_name
+              )
+              .map((r: any) => r.room_number)
+          : roomsRes.map((r: any) => r.room_number);
+        const buildings = new Set(roomsRes.map((r: any) => r.building_name));
+        setRoomNumbers(roomNums);
+        setBuildingNames(Array.from(buildings));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchRoomsAndBuildings();
+  }, [formik.values.building_name]);
+
   return (
     <Card width="75%">
       <CardHeader>
