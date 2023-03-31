@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardBody,
@@ -7,23 +6,17 @@ import {
   Checkbox,
   FormControl,
   Heading,
-  Input,
-  Modal,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Stack,
   Text,
   Textarea,
-  Tooltip,
-  useDisclosure,
 } from "@chakra-ui/react";
+import HiddenField from "components/fields/HiddenField";
+import NoiseReview from "components/rating/NoiseReview";
 import RoomReview from "components/rating/RoomReview";
+import { UserContext } from "contexts/UserContext";
 
 import { useFormik } from "formik";
-import { useState } from "react";
-import { Rating } from "react-simple-star-rating";
+import { useContext, useState } from "react";
 import * as Yup from "yup";
 
 const RoomReviewForm = (bookingID: any) => {
@@ -31,6 +24,11 @@ const RoomReviewForm = (bookingID: any) => {
   const [submitted, setSubmitted] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [issues, setIssues] = useState("");
+  const [checked, setChecked] = useState(true);
+  const [noise, setNoise] = useState(1);
+
+  const { loggedInUser } = useContext(UserContext);
 
   const validationSchema = Yup.object().shape({
     reviewText: Yup.string().required("Review is Required"),
@@ -43,12 +41,13 @@ const RoomReviewForm = (bookingID: any) => {
     initialValues: {
       reviewText: "",
       roomRating: rating,
-      noiseLevel: 0,
+      noiseLevel: noise,
       functioningRoom: true,
-      issueDetails: "",
+      issueDetails: issues,
       bookingID: bookingID,
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
+      console.log(values);
       formik.resetForm();
       setSubmitting(false);
       setSubmitted(true);
@@ -57,7 +56,7 @@ const RoomReviewForm = (bookingID: any) => {
     enableReinitialize: true,
   });
   return !submitted ? (
-    <Card width="100%">
+    <Card width="100%" color="telegram" variant="outline" background="gray.100">
       <CardHeader>
         <Heading size="md">New Room Review</Heading>
       </CardHeader>
@@ -66,11 +65,11 @@ const RoomReviewForm = (bookingID: any) => {
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={5} alignItems="center">
               <Stack width="100%" spacing={4}>
-                <Stack width="100%" padding="2" margin="2">
+                <Stack width="100%">
                   <Text mb="8px">Enter a rating:</Text>
                   <RoomReview setRating={setRating} />
                 </Stack>
-                <Stack>
+                <Stack paddingTop="20px" paddingBottom="20px">
                   <Text mb="8px">Provide details about your review:</Text>
                   <Textarea
                     placeholder="Enter your review"
@@ -82,46 +81,29 @@ const RoomReviewForm = (bookingID: any) => {
                     borderColor={
                       formik.errors.reviewText &&
                       formik.touched.reviewText &&
-                      "red"
+                      "red" || "black"
                     }
                   />
                 </Stack>
                 <Stack>
-                  <Slider
-                    defaultValue={0}
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={formik.values.noiseLevel}
-                    onChangeEnd={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    borderColor={
-                      formik.errors.noiseLevel &&
-                      formik.touched.noiseLevel &&
-                      "red"
-                    }
-                  >
-                    <SliderTrack bg="red.100">
-                      <Box position="relative" right={10} />
-                      <SliderFilledTrack bg="tomato" />
-                    </SliderTrack>
-                    <Tooltip
-                      hasArrow
-                      bg="teal.500"
-                      color="white"
-                      placement="top"
-                      isOpen={showTooltip}
-                      label={`${sliderValue}%`}
-                    >
-                    <SliderThumb boxSize={6} />
-                    </Tooltip>
-                  </Slider>
+                  <NoiseReview setNoise={setNoise}/>
                 </Stack>
-                <Stack>
-                  <Checkbox defaultChecked>
+                <Stack paddingTop="20px">
+                  <Checkbox
+                    defaultChecked
+                    isChecked={checked}
+                    onChange={() => {
+                      setChecked(!checked);
+                    }}
+                  >
                     All the equipment in the room was functioning
                   </Checkbox>
                 </Stack>
+                <HiddenField
+                  isHidden={checked}
+                  issues={issues}
+                  setIssues={setIssues}
+                />
                 <Stack width="100%" alignContent="center" alignItems="center">
                   <Button
                     variant="solid"
