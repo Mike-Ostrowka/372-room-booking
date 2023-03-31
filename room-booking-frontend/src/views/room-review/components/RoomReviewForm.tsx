@@ -4,12 +4,20 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Checkbox,
   FormControl,
   Heading,
   Input,
+  Modal,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
   Stack,
   Text,
   Textarea,
+  Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
 import RoomReview from "components/rating/RoomReview";
 
@@ -19,7 +27,11 @@ import { Rating } from "react-simple-star-rating";
 import * as Yup from "yup";
 
 const RoomReviewForm = (bookingID: any) => {
-    const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [sliderValue, setSliderValue] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
+
   const validationSchema = Yup.object().shape({
     reviewText: Yup.string().required("Review is Required"),
     roomRating: Yup.number().required("Rating is Required"),
@@ -38,12 +50,14 @@ const RoomReviewForm = (bookingID: any) => {
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       formik.resetForm();
+      setSubmitting(false);
+      setSubmitted(true);
     },
     validationSchema: validationSchema,
     enableReinitialize: true,
   });
-  return (
-    <Card width="75%">
+  return !submitted ? (
+    <Card width="100%">
       <CardHeader>
         <Heading size="md">New Room Review</Heading>
       </CardHeader>
@@ -66,11 +80,49 @@ const RoomReviewForm = (bookingID: any) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     borderColor={
-                      formik.errors.reviewText && formik.touched.reviewText && "red"
+                      formik.errors.reviewText &&
+                      formik.touched.reviewText &&
+                      "red"
                     }
                   />
                 </Stack>
-                <Stack width="50%">
+                <Stack>
+                  <Slider
+                    defaultValue={0}
+                    min={0}
+                    max={10}
+                    step={1}
+                    value={formik.values.noiseLevel}
+                    onChangeEnd={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    borderColor={
+                      formik.errors.noiseLevel &&
+                      formik.touched.noiseLevel &&
+                      "red"
+                    }
+                  >
+                    <SliderTrack bg="red.100">
+                      <Box position="relative" right={10} />
+                      <SliderFilledTrack bg="tomato" />
+                    </SliderTrack>
+                    <Tooltip
+                      hasArrow
+                      bg="teal.500"
+                      color="white"
+                      placement="top"
+                      isOpen={showTooltip}
+                      label={`${sliderValue}%`}
+                    >
+                    <SliderThumb boxSize={6} />
+                    </Tooltip>
+                  </Slider>
+                </Stack>
+                <Stack>
+                  <Checkbox defaultChecked>
+                    All the equipment in the room was functioning
+                  </Checkbox>
+                </Stack>
+                <Stack width="100%" alignContent="center" alignItems="center">
                   <Button
                     variant="solid"
                     colorScheme="red"
@@ -85,6 +137,12 @@ const RoomReviewForm = (bookingID: any) => {
           </form>
         </FormControl>
       </CardBody>
+    </Card>
+  ) : (
+    <Card width="75%">
+      <CardHeader>
+        <Heading size="md">Thanks for submitting a review 🥳</Heading>
+      </CardHeader>
     </Card>
   );
 };

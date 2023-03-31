@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Rating } from "react-simple-star-rating";
 
-export function RoomReview(setRating:any) {
+export function RoomReview(props:{setRating: any}) {
   
 
   // Catch Rating value
   const handleRating = (rate: number) => {
-    setRating(rate);
+    props.setRating(rate);
 
     // other logic
   };
