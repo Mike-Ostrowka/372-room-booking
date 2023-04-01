@@ -12,7 +12,7 @@ export const HiddenField = ({ isHidden, issues, setIssues }: HiddenFieldProps) =
       <Stack>
         <Text mb="8px">What was wrong with this room?</Text>
         <Textarea
-          placeholder="Enter your issues"
+          placeholder="Enter the room issues"
           size="lg"
           name="issueText"
           value={issues}

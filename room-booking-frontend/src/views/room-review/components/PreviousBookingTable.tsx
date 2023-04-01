@@ -16,6 +16,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  CardHeader,
+  Card,
+  Text,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useEffect, useState, useContext } from "react";
@@ -24,6 +27,7 @@ import { UserContext } from "contexts/UserContext";
 
 const PreviousBookingTable = () => {
   const [roomBookings, setRoomBookings] = useState([]);
+  const [userReviews, setUserReviews] = useState([]);
   const [bookingID, setBookingID] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -55,10 +59,12 @@ const PreviousBookingTable = () => {
       return Date.parse(booking.start_datetime) < Date.now();
     });
     responseData = responseData.filter((booking: any) => {
+      console.log(booking, `id is ${loggedInUser.u_id}`);
+      console.log(booking.user_id == loggedInUser.u_id);
       return booking.user_id == loggedInUser.u_id;
     });
     responseData = responseData.filter((booking: any) => {
-      return !responseReviewData.some(
+      return responseReviewData.some(
         (review: any) => review.booking_id == booking.booking_id
       );
     });
@@ -67,12 +73,14 @@ const PreviousBookingTable = () => {
       return Date.parse(b.start_datetime) - Date.parse(a.start_datetime);
     });
     setRoomBookings(responseData);
+    setUserReviews(responseReviewData);
+    console.log(responseData);
   };
 
   useEffect(() => {
     fetchBookings().catch(console.error);
   }, []);
-  return (
+  return roomBookings.length > 0 ? (
     <TableContainer>
       <Table variant="striped">
         <TableCaption>Past bookings that you can review</TableCaption>
@@ -131,6 +139,10 @@ const PreviousBookingTable = () => {
         </Tbody>
       </Table>
     </TableContainer>
+  ): (
+    <Card>
+      <Text fontSize="30px">No bookings available to review</Text>
+    </Card>
   );
 };
 

@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Checkbox,
   FormControl,
@@ -9,6 +10,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import HiddenField from "components/fields/HiddenField";
 import NoiseReview from "components/rating/NoiseReview";
@@ -16,7 +18,7 @@ import RoomReview from "components/rating/RoomReview";
 import { UserContext } from "contexts/UserContext";
 
 import { useFormik } from "formik";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import * as Yup from "yup";
 
 const RoomReviewForm = (bookingID: any) => {
@@ -25,9 +27,33 @@ const RoomReviewForm = (bookingID: any) => {
   const [review, setReview] = useState("");
   const [issues, setIssues] = useState("");
   const [checked, setChecked] = useState(true);
-  const [noise, setNoise] = useState(1);
+  const [noise, setNoise] = useState(0);
+  const errorMessage = useRef(null);
 
   const { loggedInUser } = useContext(UserContext);
+  const toast = useToast();
+
+  const submitReview = async () => {
+    const res = await fetch(
+      "http://localhost:8080/api/room-review/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          review: review,
+          room_rating: rating,
+          noise_level: noise,
+          functioning_room: checked,
+          issue_details: issues,
+          bookingID: bookingID,
+        }),
+      }
+    );
+    const data = await res.json();
+    console.log(data);
+  }
 
   const validationSchema = Yup.object().shape({
     reviewText: Yup.string().required("Review is Required"),
@@ -46,6 +72,37 @@ const RoomReviewForm = (bookingID: any) => {
       bookingID: bookingID,
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
+      if(!checked && issues === "") {
+        toast({
+          title: "Review",
+          description: "Please enter details about the room issues",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+      if(rating === 0) {
+       toast({
+         title: "Review",
+         description: "Please enter the room rating",
+         status: "error",
+         duration: 5000,
+         isClosable: true,
+       });
+       return; 
+      }
+      if (noise === 0) {
+        toast({
+          title: "Review",
+          description: "Please enter the room noise level",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
       console.log(values);
       formik.resetForm();
       setSubmitting(false);
