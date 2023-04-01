@@ -41,10 +41,7 @@ roomReviewRouter.get("/room", isLoggedIn, async (request: any, response: any) =>
     // check that room exists
     try {
         var getRoomQuery = `SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2`;
-        const roomResult = await pool.query(getRoomQuery, [
-        building_name,
-        room_number,
-        ]);
+        const roomResult = await pool.query(getRoomQuery, [building_name,room_number]);
 
         if (roomResult.rowCount === 0) {
             console.log(
