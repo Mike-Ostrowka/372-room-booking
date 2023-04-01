@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Checkbox,
   FormControl,
@@ -21,39 +20,34 @@ import { useFormik } from "formik";
 import { useContext, useRef, useState } from "react";
 import * as Yup from "yup";
 
-const RoomReviewForm = (bookingID: any) => {
+const RoomReviewForm = (props: { bookingID: any, setBookingID: any }) => {
   const [rating, setRating] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [review, setReview] = useState("");
   const [issues, setIssues] = useState("");
   const [checked, setChecked] = useState(true);
   const [noise, setNoise] = useState(0);
-  const errorMessage = useRef(null);
 
   const { loggedInUser } = useContext(UserContext);
   const toast = useToast();
 
   const submitReview = async () => {
-    const res = await fetch(
-      "http://localhost:8080/api/room-review/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          review: review,
-          room_rating: rating,
-          noise_level: noise,
-          functioning_room: checked,
-          issue_details: issues,
-          bookingID: bookingID,
-        }),
-      }
-    );
-    const data = await res.json();
-    console.log(data);
-  }
+    const res = await fetch("http://localhost:8080/room-review/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        review: review,
+        room_rating: rating,
+        noise_level: noise,
+        functioning_room: checked,
+        issue_details: issues,
+        booking_id: props.bookingID,
+      }),
+      credentials: "include",
+    });
+  };
 
   const validationSchema = Yup.object().shape({
     reviewText: Yup.string().required("Review is Required"),
@@ -69,10 +63,10 @@ const RoomReviewForm = (bookingID: any) => {
       noiseLevel: noise,
       functioningRoom: checked,
       issueDetails: issues,
-      bookingID: bookingID,
+      bookingID: props.bookingID,
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
-      if(!checked && issues === "") {
+      if (!checked && issues === "") {
         toast({
           title: "Review",
           description: "Please enter details about the room issues",
@@ -82,15 +76,15 @@ const RoomReviewForm = (bookingID: any) => {
         });
         return;
       }
-      if(rating === 0) {
-       toast({
-         title: "Review",
-         description: "Please enter the room rating",
-         status: "error",
-         duration: 5000,
-         isClosable: true,
-       });
-       return; 
+      if (rating === 0) {
+        toast({
+          title: "Review",
+          description: "Please enter the room rating",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
       }
       if (noise === 0) {
         toast({
@@ -104,6 +98,7 @@ const RoomReviewForm = (bookingID: any) => {
       }
 
       console.log(values);
+      submitReview();
       formik.resetForm();
       setSubmitting(false);
       setSubmitted(true);

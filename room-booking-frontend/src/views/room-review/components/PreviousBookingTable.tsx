@@ -27,7 +27,6 @@ import { UserContext } from "contexts/UserContext";
 
 const PreviousBookingTable = () => {
   const [roomBookings, setRoomBookings] = useState([]);
-  const [userReviews, setUserReviews] = useState([]);
   const [bookingID, setBookingID] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -35,9 +34,10 @@ const PreviousBookingTable = () => {
 
   const fetchBookings = async () => {
     if (roomBookings.length > 0) {
+      setRoomBookings([]);
       return;
     }
-    const response = await fetch("http://localhost:8080/room-booking", {
+    const response = await fetch(`http://localhost:8080/room-booking/${loggedInUser.u_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -59,12 +59,7 @@ const PreviousBookingTable = () => {
       return Date.parse(booking.start_datetime) < Date.now();
     });
     responseData = responseData.filter((booking: any) => {
-      console.log(booking, `id is ${loggedInUser.u_id}`);
-      console.log(booking.user_id == loggedInUser.u_id);
-      return booking.user_id == loggedInUser.u_id;
-    });
-    responseData = responseData.filter((booking: any) => {
-      return responseReviewData.some(
+      return !responseReviewData.some(
         (review: any) => review.booking_id == booking.booking_id
       );
     });
@@ -73,8 +68,6 @@ const PreviousBookingTable = () => {
       return Date.parse(b.start_datetime) - Date.parse(a.start_datetime);
     });
     setRoomBookings(responseData);
-    setUserReviews(responseReviewData);
-    console.log(responseData);
   };
 
   useEffect(() => {
@@ -123,11 +116,15 @@ const PreviousBookingTable = () => {
                     <ModalHeader>Create a review</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <RoomReviewForm bookingID={bookingID} onClose={onClose} />
+                      <RoomReviewForm bookingID={bookingID} setBookingID={setBookingID}/>
                     </ModalBody>
 
                     <ModalFooter>
-                      <Button variant="ghost" mr={3} onClick={onClose}>
+                      <Button variant="ghost" mr={3} onClick={() => {
+                        setBookingID(0);
+                        fetchBookings().catch(console.error);
+                        onClose();
+                      }}>
                         Close
                       </Button>
                     </ModalFooter>
