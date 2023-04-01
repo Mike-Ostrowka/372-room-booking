@@ -30,7 +30,7 @@ const LostItemsTable = ({ lostItems, setLostItems }: any) => {
         const lostItemsRes = await res.json();
         setLostItems(lostItemsRes);
         toast({
-          title: "Lost Item Report Delete",
+          title: "Lost Item Report Deleted",
           description: "You have deleted a lost item report",
           status: "info",
           duration: 5000,
