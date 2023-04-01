@@ -116,7 +116,7 @@ const RoomBookingForm = () => {
   }, [formik.values.building_name]);
 
   return (
-    <Card width="75%">
+    <Card width="100%">
       <CardHeader>
         <Heading size="md">New Room Booking</Heading>
       </CardHeader>
