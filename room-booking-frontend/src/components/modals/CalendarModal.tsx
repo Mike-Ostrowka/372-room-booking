@@ -8,7 +8,7 @@ const CalendarModal = (props: { isOpen:any, onClose:any, reviews: any, booking:a
     const { isOpen, onClose, reviews, booking } = props;
     
     return (
-      <Modal isOpen={isOpen} onClose={onClose} size="3xl">
+      <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
         <ModalOverlay bg="none" backdropFilter="auto" backdropBlur="2px" />
         <ModalContent>
           <ModalHeader>Booking Details</ModalHeader>
