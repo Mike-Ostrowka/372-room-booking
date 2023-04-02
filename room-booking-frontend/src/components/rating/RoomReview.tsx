@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Rating } from "react-simple-star-rating";
 
-export function RoomReview(props:{setRating: any}) {
+export function RoomReview(props:{setRating?: any, rating?: any}) {
   
 
   // Catch Rating value
@@ -31,10 +31,11 @@ export function RoomReview(props:{setRating: any}) {
       size={30}
       transition
       showTooltip
+      readonly={props.rating ? true : false}
       tooltipArray={tooltipArray}
       fillColorArray={fillColorArray}
       tooltipDefaultText="Your Rating"
-      //   initialValue={5}
+        initialValue={props.rating || 0}
       emptyStyle={{ display: "flex" }}
       fillStyle={{ display: "-webkit-inline-box" }}
     />

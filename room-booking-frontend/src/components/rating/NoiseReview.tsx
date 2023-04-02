@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Rating } from "react-simple-star-rating";
 import { AiFillSound, AiOutlineSound} from "react-icons/ai";
 
-export function NoiseReview(props: { setNoise: any }) {
+export function NoiseReview(props: { setNoise?: any, value?: any }) {
   // Catch Rating value
   const handleRating = (rate: number) => {
     props.setNoise(rate);
@@ -29,6 +29,7 @@ export function NoiseReview(props: { setNoise: any }) {
       size={30}
       transition
       showTooltip
+      readonly={props.value ? true : false}
       tooltipArray={tooltipArray}
       fillColorArray={fillColorArray}
       tooltipDefaultText="Room Loudness"
@@ -37,6 +38,7 @@ export function NoiseReview(props: { setNoise: any }) {
       fillIcon={<AiFillSound size={50} />}
       emptyStyle={{ display: "flex" }}
       fillStyle={{ display: "-webkit-inline-box" }}
+      initialValue={props.value}
     />
   );
 }
