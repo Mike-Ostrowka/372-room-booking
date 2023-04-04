@@ -42,7 +42,7 @@ app.use("/", function (req, res, next) {
     next();
 });
 // Get room statistics
-app.get("/statistics", statistics_1["default"]);
+app.use("/statistics", statistics_1["default"]);
 // Register a user
 app.use("/register-api", register_1["default"]);
 // Log in

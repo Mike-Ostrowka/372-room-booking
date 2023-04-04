@@ -48,7 +48,7 @@ app.use("/", function (req: any, res: any, next: any) {
 });
 
 // Get room statistics
-app.get("/statistics", statisticsRouter);
+app.use("/statistics", statisticsRouter);
 
 // Register a user
 app.use("/register-api", registerRouter);
