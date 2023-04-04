@@ -200,7 +200,7 @@ roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) {
     });
 }); });
 /**
- * Delete a room booking
+ * Cancel a room booking
  * Sample request body format:
  * {
  *  booking_id: 88,
@@ -208,9 +208,10 @@ roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) {
  * }
  * Constraints:
  * - Booking must exist and must belong to the user
+ * - Must be a future booking
  */
 roomBookingRouter.delete("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var booking_id, user_id, getBookingsQuery, getBookingsResult, err_5, deleteBookingQuery, deleteResult, err_6;
+    var booking_id, user_id, getBookingQuery, getBookingResult, booking_start, err_5, deleteBookingQuery, deleteResult, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -219,16 +220,26 @@ roomBookingRouter.delete("/", isLoggedIn_1.default, function (request, response)
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                getBookingsQuery = "SELECT * FROM room_bookings WHERE booking_id=$1 AND user_id=$2;";
-                return [4 /*yield*/, index_1.default.query(getBookingsQuery, [booking_id, user_id])];
+                getBookingQuery = "SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;";
+                return [4 /*yield*/, index_1.default.query(getBookingQuery, [booking_id, user_id])];
             case 2:
-                getBookingsResult = _a.sent();
-                if (getBookingsResult.rowCount === 0) {
+                getBookingResult = _a.sent();
+                if (getBookingResult.rowCount === 0) {
                     console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
                     response.status(400).json({
                         error: "Error: Either this room booking does not exist, or it does not belong to this user.."
                     });
                     return [2 /*return*/];
+                }
+                else {
+                    booking_start = getBookingResult.rows[0].start_datetime;
+                    if (!calcTime_1.default.isFutureDate(booking_start)) {
+                        console.log("Error: Only future bookings may be cancelled.");
+                        response.status(400).json({
+                            error: "Error: Only future bookings may be cancelled."
+                        });
+                        return [2 /*return*/];
+                    }
                 }
                 return [3 /*break*/, 4];
             case 3:

@@ -141,7 +141,7 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
 });
 
 /**
- * Delete a room booking
+ * Cancel a room booking
  * Sample request body format:
  * {
  *  booking_id: 88,
@@ -149,23 +149,36 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
  * }
  * Constraints:
  * - Booking must exist and must belong to the user
+ * - Must be a future booking
  */
 roomBookingRouter.delete("/", isLoggedIn, async (request: any, response: any) => {
   let booking_id: number = request.body.booking_id;
   let user_id: number = request.body.user_id;
 
   // check that booking exists and it belongs to the user
+  // if booking exists, get the start time
   try {
-      var getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_id=$1 AND user_id=$2;`;
-      const getBookingsResult = await pool.query(getBookingsQuery, [booking_id, user_id]);
+      var getBookingQuery = `SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;`;
+      const getBookingResult = await pool.query(getBookingQuery, [booking_id, user_id]);
 
-      if (getBookingsResult.rowCount === 0) {
+      if (getBookingResult.rowCount === 0) {
           console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
           response.status(400).json({
               error: "Error: Either this room booking does not exist, or it does not belong to this user.."
           });
 
           return;
+      } else {
+        // check that the booking is in the future
+        let booking_start = getBookingResult.rows[0].start_datetime;
+        
+        if (!timeUtils.isFutureDate(booking_start)) {
+          console.log("Error: Only future bookings may be cancelled.");
+          response.status(400).json({
+              error: "Error: Only future bookings may be cancelled."
+          });
+          return;
+        }
       }
   } catch (err) {
       console.log(err);
