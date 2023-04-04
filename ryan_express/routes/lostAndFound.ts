@@ -134,7 +134,7 @@ lostAndFoundRouter.put(
   }
 );
 
-// DELETE /rooms/:id - deletes a room
+// DELETE /rooms/:id - deletes a lost item report
 lostAndFoundRouter.delete(
   "/:id",
   isLoggedIn,
