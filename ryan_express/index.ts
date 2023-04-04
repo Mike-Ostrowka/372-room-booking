@@ -5,11 +5,13 @@ import pg from "pg";
 
 import registerRouter from "./routes/register";
 import loginRouter from "./routes/login";
+import logoutRouter from "./routes/logout";
 import searchRoomsRouter from "./routes/searchRooms";
 import roomBookingRouter from "./routes/roomBooking";
 import roomsRouter from "./routes/rooms";
 import roomReviewRouter from "./routes/roomReview";
 import lostAndFoundRouter from "./routes/lostAndFound";
+import statisticsRouter from "./routes/statistics";
 
 let app = express();
 
@@ -46,11 +48,17 @@ app.use("/", function (req: any, res: any, next: any) {
   next();
 });
 
+// Get room statistics
+app.use("/statistics", statisticsRouter);
+
 // Register a user
 app.use("/register-api", registerRouter);
 
 // Log in
 app.use("/login-api", loginRouter);
+
+// log out
+app.use("/logout-api", logoutRouter);
 
 // Search for available rooms
 app.use("/search-rooms", searchRoomsRouter);

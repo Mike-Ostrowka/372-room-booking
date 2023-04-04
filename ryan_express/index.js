@@ -9,11 +9,13 @@ var cors_1 = __importDefault(require("cors"));
 var pg_1 = __importDefault(require("pg"));
 var register_1 = __importDefault(require("./routes/register"));
 var login_1 = __importDefault(require("./routes/login"));
+var logout_1 = __importDefault(require("./routes/logout"));
 var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
 var rooms_1 = __importDefault(require("./routes/rooms"));
 var roomReview_1 = __importDefault(require("./routes/roomReview"));
 var lostAndFound_1 = __importDefault(require("./routes/lostAndFound"));
+var statistics_1 = __importDefault(require("./routes/statistics"));
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
@@ -40,10 +42,14 @@ app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
     next();
 });
+// Get room statistics
+app.use("/statistics", statistics_1["default"]);
 // Register a user
 app.use("/register-api", register_1["default"]);
 // Log in
 app.use("/login-api", login_1["default"]);
+// log out
+app.use("/logout-api", logout_1["default"]);
 // Search for available rooms
 app.use("/search-rooms", searchRooms_1["default"]);
 // Room bookings
