@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
@@ -48,14 +48,14 @@ var roomReviewRouter = (0, express_1.Router)();
 /**
  * Get all room reviews
  */
-roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomReviewRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getReviewsQuery, reviewsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 getReviewsQuery = "SELECT * FROM room_reviews;";
-                return [4 /*yield*/, index_1.default.query(getReviewsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getReviewsQuery)];
             case 1:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
@@ -65,7 +65,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.status(500).json({
-                    error: err_1,
+                    error: err_1
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -81,7 +81,7 @@ roomReviewRouter.get("/", isLoggedIn_1.default, function (request, response) { r
  *  room_number: 4001
  * }
  */
-roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomReviewRouter.get("/room", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var building_name, room_number, getRoomQuery, roomResult, err_2, getReviewsQuery, reviewsResult, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -92,13 +92,13 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, index_1.default.query(getRoomQuery, [building_name, room_number])];
+                return [4 /*yield*/, index_1["default"].query(getRoomQuery, [building_name, room_number])];
             case 2:
                 roomResult = _a.sent();
                 if (roomResult.rowCount === 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
-                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number."
                     });
                     return [2 /*return*/];
                 }
@@ -107,13 +107,13 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
                 err_2 = _a.sent();
                 console.log(err_2);
                 response.status(500).json({
-                    error: err_2,
+                    error: err_2
                 });
                 return [3 /*break*/, 4];
             case 4:
                 _a.trys.push([4, 6, , 7]);
                 getReviewsQuery = "SELECT room_reviews.* FROM room_reviews \n        INNER JOIN room_bookings ON room_reviews.booking_id=room_bookings.booking_id \n        WHERE building_name=$1 \n        AND room_number=$2;";
-                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [building_name, room_number])];
+                return [4 /*yield*/, index_1["default"].query(getReviewsQuery, [building_name, room_number])];
             case 5:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
@@ -123,7 +123,7 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
                 err_3 = _a.sent();
                 console.log(err_3);
                 response.status(500).json({
-                    error: err_3,
+                    error: err_3
                 });
                 return [3 /*break*/, 7];
             case 7: return [2 /*return*/];
@@ -146,7 +146,7 @@ roomReviewRouter.get("/room", isLoggedIn_1.default, function (request, response)
  * - 1 review per booking
  * - Booking must exist
  */
-roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_4, getBookingsQuery, getBookingsResult, err_5, endTimeQuery, endTimeResult, endTime, err_6, addReviewQuery, reviewsResult, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -161,7 +161,7 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getReviewsQuery = "SELECT * FROM room_reviews WHERE booking_id=$1;";
-                return [4 /*yield*/, index_1.default.query(getReviewsQuery, [booking_id])];
+                return [4 /*yield*/, index_1["default"].query(getReviewsQuery, [booking_id])];
             case 2:
                 getReviewsResult = _a.sent();
                 if (getReviewsResult.rowCount > 0) {
@@ -176,13 +176,13 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 err_4 = _a.sent();
                 console.log(err_4);
                 response.status(500).json({
-                    error: err_4,
+                    error: err_4
                 });
                 return [3 /*break*/, 4];
             case 4:
                 _a.trys.push([4, 6, , 7]);
                 getBookingsQuery = "SELECT * FROM room_bookings WHERE booking_id=$1;";
-                return [4 /*yield*/, index_1.default.query(getBookingsQuery, [booking_id])];
+                return [4 /*yield*/, index_1["default"].query(getBookingsQuery, [booking_id])];
             case 5:
                 getBookingsResult = _a.sent();
                 if (getBookingsResult.rowCount === 0) {
@@ -197,17 +197,17 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 err_5 = _a.sent();
                 console.log(err_5);
                 response.status(500).json({
-                    error: err_5,
+                    error: err_5
                 });
                 return [3 /*break*/, 7];
             case 7:
                 _a.trys.push([7, 9, , 10]);
                 endTimeQuery = "SELECT end_datetime FROM room_bookings WHERE booking_id=$1;";
-                return [4 /*yield*/, index_1.default.query(endTimeQuery, [booking_id])];
+                return [4 /*yield*/, index_1["default"].query(endTimeQuery, [booking_id])];
             case 8:
                 endTimeResult = _a.sent();
                 endTime = endTimeResult.rows[0].end_datetime;
-                if (!calcTime_1.default.isPastDate(endTime)) {
+                if (!calcTime_1["default"].isPastDate(endTime)) {
                     console.log("Error: Reviews may only be made for past bookings");
                     response.status(400).json({
                         error: "Error: Reviews may only be made for past bookings"
@@ -219,13 +219,13 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 err_6 = _a.sent();
                 console.log(err_6);
                 response.status(500).json({
-                    error: err_6,
+                    error: err_6
                 });
                 return [3 /*break*/, 10];
             case 10:
                 _a.trys.push([10, 12, , 13]);
                 addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
-                return [4 /*yield*/, index_1.default.query(addReviewQuery, [
+                return [4 /*yield*/, index_1["default"].query(addReviewQuery, [
                         review,
                         room_rating,
                         noise_level,
@@ -242,11 +242,11 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 err_7 = _a.sent();
                 console.log(err_7);
                 response.status(500).json({
-                    error: err_7,
+                    error: err_7
                 });
                 return [3 /*break*/, 13];
             case 13: return [2 /*return*/];
         }
     });
 }); });
-exports.default = roomReviewRouter;
+exports["default"] = roomReviewRouter;
