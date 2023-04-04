@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware
@@ -54,7 +54,7 @@ var roomsRouter = (0, express_1.Router)();
  * -Delete
  */
 // POST /rooms - creates a new room
-roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomsRouter.post("/", isLoggedInAdmin_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var building_name, room_number, has_projector, has_whiteboard, capacity, addRoomQuery, getRoomsQuery, getRoomsRes, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -68,7 +68,7 @@ roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response)
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 addRoomQuery = "INSERT INTO rooms (building_name, room_number, hasprojector, haswhiteboard, capacity) VALUES ($1, $2, $3, $4, $5)";
-                return [4 /*yield*/, index_1["default"].query(addRoomQuery, [
+                return [4 /*yield*/, index_1.default.query(addRoomQuery, [
                         building_name,
                         room_number,
                         has_projector,
@@ -78,7 +78,7 @@ roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response)
             case 2:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
-                return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
+                return [4 /*yield*/, index_1.default.query(getRoomsQuery)];
             case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
@@ -87,7 +87,7 @@ roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response)
                 e_1 = _a.sent();
                 console.log(e_1);
                 response.status(500).json({
-                    error: e_1
+                    error: e_1,
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -95,14 +95,14 @@ roomsRouter.post("/", isLoggedInAdmin_1["default"], function (request, response)
     });
 }); });
 // GET /rooms - gets all rooms
-roomsRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomsRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getRoomsQuery, getRoomsRes, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 getRoomsQuery = "SELECT * FROM rooms";
-                return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
+                return [4 /*yield*/, index_1.default.query(getRoomsQuery)];
             case 1:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
@@ -111,7 +111,7 @@ roomsRouter.get("/", isLoggedIn_1["default"], function (request, response) { ret
                 e_2 = _a.sent();
                 console.log(e_2);
                 response.status(500).json({
-                    error: e_2
+                    error: e_2,
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -119,7 +119,7 @@ roomsRouter.get("/", isLoggedIn_1["default"], function (request, response) { ret
     });
 }); });
 // PUT /rooms/:id - updates a room
-roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var room_number, building_name, new_room_number, new_building_name, has_projector, has_whiteboard, capacity, updateRoomQuery, getRoomsQuery, getRoomsRes, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -135,7 +135,7 @@ roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], fu
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 updateRoomQuery = "UPDATE rooms SET building_name=$1, room_number=$2, hasprojector=$3, haswhiteboard=$4, capacity=$5 WHERE room_number=$6 AND building_name=$7";
-                return [4 /*yield*/, index_1["default"].query(updateRoomQuery, [
+                return [4 /*yield*/, index_1.default.query(updateRoomQuery, [
                         new_building_name,
                         new_room_number,
                         has_projector,
@@ -147,7 +147,7 @@ roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], fu
             case 2:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
-                return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
+                return [4 /*yield*/, index_1.default.query(getRoomsQuery)];
             case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
@@ -156,7 +156,7 @@ roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], fu
                 e_3 = _a.sent();
                 console.log(e_3);
                 response.status(500).json({
-                    error: e_3
+                    error: e_3,
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -164,7 +164,7 @@ roomsRouter.put("/:room_number/:building_name", isLoggedInAdmin_1["default"], fu
     });
 }); });
 // DELETE /rooms/:id - deletes a room
-roomsRouter["delete"]("/:room_number/:building_name", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomsRouter.delete("/:room_number/:building_name", isLoggedInAdmin_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var room_number, building_name, deleteRoomQuery, getRoomsQuery, getRoomsRes, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -175,11 +175,11 @@ roomsRouter["delete"]("/:room_number/:building_name", isLoggedInAdmin_1["default
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 deleteRoomQuery = "DELETE FROM rooms WHERE room_number=$1 AND building_name=$2";
-                return [4 /*yield*/, index_1["default"].query(deleteRoomQuery, [room_number, building_name])];
+                return [4 /*yield*/, index_1.default.query(deleteRoomQuery, [room_number, building_name])];
             case 2:
                 _a.sent();
                 getRoomsQuery = "SELECT * FROM rooms";
-                return [4 /*yield*/, index_1["default"].query(getRoomsQuery)];
+                return [4 /*yield*/, index_1.default.query(getRoomsQuery)];
             case 3:
                 getRoomsRes = _a.sent();
                 response.json(getRoomsRes.rows);
@@ -188,11 +188,11 @@ roomsRouter["delete"]("/:room_number/:building_name", isLoggedInAdmin_1["default
                 e_4 = _a.sent();
                 console.log(e_4);
                 response.status(500).json({
-                    error: e_4
+                    error: e_4,
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }
     });
 }); });
-exports["default"] = roomsRouter;
+exports.default = roomsRouter;

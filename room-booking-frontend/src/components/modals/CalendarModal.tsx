@@ -15,7 +15,7 @@ const CalendarModal = (props: { isOpen:any, onClose:any, reviews: any, booking:a
           <ModalCloseButton />
           <ModalBody>
             <Stack direction="row" spacing="50px">
-              <BookingInfo booking={booking} />
+              <BookingInfo booking={booking} onClose={onClose}/>
               <ReviewList reviews={reviews} />
             </Stack>
           </ModalBody>
