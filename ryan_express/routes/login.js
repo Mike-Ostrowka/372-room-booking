@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var md5_1 = __importDefault(require("md5"));
 var index_1 = __importDefault(require("../index"));
@@ -49,13 +49,13 @@ loginRouter.post("/", function (request, response) { return __awaiter(void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                hashedpw = (0, md5_1["default"])(request.body.password);
+                hashedpw = (0, md5_1.default)(request.body.password);
                 username = request.body.username;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1 AND password = $2";
-                return [4 /*yield*/, index_1["default"].query(authenticationQuery, [username, hashedpw])];
+                return [4 /*yield*/, index_1.default.query(authenticationQuery, [username, hashedpw])];
             case 2:
                 result = _a.sent();
                 // check if this user exists within the users table
@@ -66,7 +66,7 @@ loginRouter.post("/", function (request, response) { return __awaiter(void 0, vo
                         u: userObject["username"],
                         p: userObject["password"],
                         is_staff: userObject["isstaff"],
-                        success: true
+                        success: true,
                     };
                     // create a session which contains user data
                     request.session.user = properObject;
@@ -86,4 +86,4 @@ loginRouter.post("/", function (request, response) { return __awaiter(void 0, vo
         }
     });
 }); });
-exports["default"] = loginRouter;
+exports.default = loginRouter;

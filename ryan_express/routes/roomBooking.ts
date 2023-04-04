@@ -27,7 +27,7 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
 
 /**
  * Get all room bookings for a given user
- * Endpt: /room-booking/user
+ * Endpt: /room-booking/<user_id>
  * Sample request body:
  * {
  *  user_id: 27
@@ -137,6 +137,54 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     response.status(500).json({
       error: err,
     });
+  }
+});
+
+/**
+ * Delete a room booking
+ * Sample request body format:
+ * {
+ *  booking_id: 88,
+ *  user_id: 27
+ * }
+ * Constraints:
+ * - Booking must exist and must belong to the user
+ */
+roomBookingRouter.delete("/", isLoggedIn, async (request: any, response: any) => {
+  let booking_id: number = request.body.booking_id;
+  let user_id: number = request.body.user_id;
+
+  // check that booking exists and it belongs to the user
+  try {
+      var getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_id=$1 AND user_id=$2;`;
+      const getBookingsResult = await pool.query(getBookingsQuery, [booking_id, user_id]);
+
+      if (getBookingsResult.rowCount === 0) {
+          console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
+          response.status(400).json({
+              error: "Error: Either this room booking does not exist, or it does not belong to this user.."
+          });
+
+          return;
+      }
+  } catch (err) {
+      console.log(err);
+      response.status(500).json({
+          error: err,
+      });
+  }
+
+  // build and send query
+  try {
+      var deleteBookingQuery = `DELETE FROM room_bookings WHERE booking_id=$1;`;
+      const deleteResult = await pool.query(deleteBookingQuery, [booking_id]);
+      console.log(deleteResult.rows);
+      response.status(200).json(deleteResult.rows);
+  } catch (err) {
+      console.log(err);
+      response.status(500).json({
+          error: err,
+      });
   }
 });
 
