@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
 var express_session_1 = __importDefault(require("express-session"));
 var cors_1 = __importDefault(require("cors"));
@@ -50,27 +50,28 @@ var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
 var rooms_1 = __importDefault(require("./routes/rooms"));
 var roomReview_1 = __importDefault(require("./routes/roomReview"));
-var app = (0, express_1.default)();
+var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
-    credentials: true,
+    credentials: true
 };
-app.use((0, cors_1.default)(corsOptions));
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use((0, cors_1["default"])(corsOptions));
+app.use(express_1["default"].json());
+app.use(express_1["default"].urlencoded({ extended: false }));
 var port = process.env.PORT || 8080;
-var pool = new pg_1.default.Pool({
+var pool = new pg_1["default"].Pool({
     host: "34.82.200.170",
     user: "testuser",
     password: "password",
-    database: "room_booking_app",
+    database: "room_booking_app"
 });
-app.use((0, express_session_1.default)({
+app.use(express_1["default"].static(path_1["default"].join(__dirname, 'dist')));
+app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
     cookie: { maxAge: 30 * 60 * 1000 },
-    saveUninitialized: true,
+    saveUninitialized: true
 }));
 app.use("/", function (req, res, next) {
     console.log(req.method, "request: ", req.url, JSON.stringify(req.body));
@@ -80,7 +81,7 @@ app.get("/", function (request, response) {
     response.sendFile(path_1["default"].join(__dirname, 'dist', 'index.html'));
 });
 app.get("/statistics", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var reviewcountquery, testquery, total_room_query, result, e_1;
+    var review_count_query, current_room_bookings_query, total_rooms_query, today, week_in_the_future, result, review_count, current_room_bookings, total_rooms, available_rooms, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -88,43 +89,52 @@ app.get("/statistics", function (request, response) { return __awaiter(void 0, v
                     response.send({ statistics: false });
                 }
                 console.log(request.session.user.u_id);
-                reviewcountquery = 'SELECT review_id, bookings.booking_id, bookings.user_id FROM room_reviews INNER JOIN (SELECT booking_id, user_id from room_bookings) bookings ON room_reviews.booking_id = bookings.booking_id and bookings.user_id = $1;';
-                testquery = "SELECT COUNT(DISTINCT (room_number, building_name)) from room_bookings where start_datetime < $1 and $1 < end_datetime;";
-                total_room_query = "SELECT COUNT(*) FROM rooms";
+                review_count_query = 'SELECT COUNT(*) FROM room_reviews INNER JOIN (SELECT booking_id, user_id from room_bookings) bookings ON room_reviews.booking_id = bookings.booking_id and bookings.user_id = $1;';
+                current_room_bookings_query = "SELECT COUNT(DISTINCT (room_number, building_name)) from room_bookings where start_datetime < $1 and $1 < end_datetime;";
+                total_rooms_query = "SELECT COUNT(*) FROM rooms";
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, pool.query(testquery, [new Date()])];
+                _a.trys.push([1, 5, , 6]);
+                today = new Date();
+                week_in_the_future = new Date();
+                week_in_the_future.setDate(week_in_the_future.getDate() + 7);
+                return [4 /*yield*/, pool.query(review_count_query, [request.session.user.u_id])];
             case 2:
                 result = _a.sent();
-                console.log(result.rows[0]['count']);
-                return [4 /*yield*/, (pool.query(total_room_query))];
+                review_count = Number(result.rows[0]['count']);
+                return [4 /*yield*/, pool.query(current_room_bookings_query, [today])];
             case 3:
+                //get total available rooms
                 result = _a.sent();
-                console.log(result.rows[0]['count']);
-                response.send({ Success: true });
-                return [3 /*break*/, 5];
+                current_room_bookings = Number(result.rows[0]['count']);
+                return [4 /*yield*/, (pool.query(total_rooms_query))];
             case 4:
+                result = _a.sent();
+                total_rooms = Number(result.rows[0]['count']);
+                available_rooms = total_rooms - current_room_bookings;
+                response.send({ reviews: review_count, available: available_rooms });
+                return [3 /*break*/, 6];
+            case 5:
                 e_1 = _a.sent();
                 response.send(e_1);
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); });
 // Register a user
-app.use("/register-api", register_1.default);
+app.use("/register-api", register_1["default"]);
 // Log in
-app.use("/login-api", login_1.default);
+app.use("/login-api", login_1["default"]);
 // Search for available rooms
-app.use("/search-rooms", searchRooms_1.default);
+app.use("/search-rooms", searchRooms_1["default"]);
 // Room bookings
-app.use("/room-booking", roomBooking_1.default);
+app.use("/room-booking", roomBooking_1["default"]);
 // Rooms
-app.use("/rooms", rooms_1.default);
+app.use("/rooms", rooms_1["default"]);
 // Room reviews
-app.use("/room-review", roomReview_1.default);
+app.use("/room-review", roomReview_1["default"]);
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
-exports.default = pool;
+exports["default"] = pool;
