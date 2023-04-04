@@ -12,6 +12,8 @@ var register_1 = __importDefault(require("./routes/register"));
 var login_1 = __importDefault(require("./routes/login"));
 var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
+var rooms_1 = __importDefault(require("./routes/rooms"));
+var roomReview_1 = __importDefault(require("./routes/roomReview"));
 var app = (0, express_1["default"])();
 var corsOptions = {
     origin: "http://localhost:5173",
@@ -43,13 +45,17 @@ app.get("/", function (request, response) {
     response.sendFile(path_1["default"].join(__dirname, 'dist', 'index.html'));
 });
 // Register a user
-app.use('/register-api', register_1["default"]);
+app.use("/register-api", register_1["default"]);
 // Log in
-app.use('/login-api', login_1["default"]);
+app.use("/login-api", login_1["default"]);
 // Search for available rooms
-app.use('/search-rooms', searchRooms_1["default"]);
+app.use("/search-rooms", searchRooms_1["default"]);
 // Room bookings
-app.use('/room-booking', roomBooking_1["default"]);
+app.use("/room-booking", roomBooking_1["default"]);
+// Rooms
+app.use("/rooms", rooms_1["default"]);
+// Room reviews
+app.use("/room-review", roomReview_1["default"]);
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });

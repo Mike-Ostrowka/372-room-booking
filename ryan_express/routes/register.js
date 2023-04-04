@@ -43,6 +43,7 @@ var express_1 = require("express");
 var md5_1 = __importDefault(require("md5"));
 var index_1 = __importDefault(require("../index"));
 var registerRouter = (0, express_1.Router)();
+// POST /register-api - registers new users into the system
 registerRouter.post("/", function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var firstName, lastName, username, password, isStaff, registerQuery, result, e_1;
     return __generator(this, function (_a) {
@@ -74,7 +75,8 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                     ])];
             case 3:
                 result = _a.sent();
-                if ((result.rowCount = 1)) {
+                // check if user was registered successfully
+                if (result.rowCount == 1) {
                     console.log("registered user");
                     response.json({ success: true, userExists: false });
                 }
@@ -92,7 +94,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
         }
     });
 }); });
-//check if user exists
+// check if user exists
 function isUser(username) {
     return __awaiter(this, void 0, void 0, function () {
         var authenticationQuery, result, e_2;
