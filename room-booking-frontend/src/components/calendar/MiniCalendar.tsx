@@ -135,7 +135,7 @@ export default function MiniCalendar(props: {
     fetchReviews();
     fetchRoomBookings();
     fetchAllRoomBookings();
-  }, []);
+  }, [isOpen]);
   return (
     <Card
       alignItems="center"
