@@ -13,6 +13,7 @@ import RoomBooking from "views/room-booking";
 import MapTab from "views/map";
 import RoomSearch from "views/search";
 import StaffRoomsComponent from "views/staff/rooms";
+import StaffLostItems from "views/staff/lost-items";
 import LostItems from "views/lost-and-found";
 
 import { useContext } from "react";
@@ -31,6 +32,15 @@ const routes = () => {
             <Icon as={MdSettings} width="20px" height="20px" color="inherit" />
           ),
           component: StaffRoomsComponent,
+        },
+        {
+          name: "Manage Lost Items",
+          layout: "/admin",
+          path: "/admin-lost-items",
+          icon: (
+            <Icon as={MdReport} width="20px" height="20px" color="inherit" />
+          ),
+          component: StaffLostItems,
         },
       ]
     : [

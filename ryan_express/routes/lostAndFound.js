@@ -171,7 +171,7 @@ lostAndFoundRouter.put("/:id", isLoggedIn_1["default"], function (request, respo
     });
 }); });
 // PUT /lost-and-found/status/:id - updates status of a lost item
-lostAndFoundRouter.put("/:id", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var lost_item_id, item_found, updateLostItemQuery, getLostItemsQuery, getLostItemsRes, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -181,7 +181,7 @@ lostAndFoundRouter.put("/:id", isLoggedInAdmin_1["default"], function (request, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 4, , 5]);
-                updateLostItemQuery = "UPDATE lost_items SET item_found=$1, WHERE id=$2";
+                updateLostItemQuery = "UPDATE lost_items SET item_found=$1 WHERE id=$2";
                 return [4 /*yield*/, index_1["default"].query(updateLostItemQuery, [item_found, lost_item_id])];
             case 2:
                 _a.sent();

@@ -110,17 +110,17 @@ lostAndFoundRouter.put(
 
 // PUT /lost-and-found/status/:id - updates status of a lost item
 lostAndFoundRouter.put(
-  "/:id",
+  "/status/:id",
   isLoggedInAdmin,
   async (request: any, response: any) => {
     // parse data
     const lost_item_id: number = request.params.id;
-    const item_found: string = request.body.item_found;
+    const item_found: boolean = request.body.item_found;
 
     try {
       // make query to update room
       const updateLostItemQuery =
-        "UPDATE lost_items SET item_found=$1, WHERE id=$2";
+        "UPDATE lost_items SET item_found=$1 WHERE id=$2";
       await pool.query(updateLostItemQuery, [item_found, lost_item_id]);
       const getLostItemsQuery = "SELECT * FROM lost_items";
       const getLostItemsRes = await pool.query(getLostItemsQuery);
