@@ -1,6 +1,7 @@
 import { Button, Spacer, Stack, Text } from "@chakra-ui/react";
 import ReviewCard from "components/card/ReviewCard";
 import { useEffect, useState } from "react";
+import ReviewMap from "./ReviewMap";
 
 
 const ReviewList = (props: {reviews: any}) => {
@@ -34,11 +35,7 @@ const ReviewList = (props: {reviews: any}) => {
           Hide Reviews
         </Button>
         <Stack>
-          {reviews.map((review: any) => (
-            <Stack key={review.review_id}>
-              <ReviewCard review={review} />
-            </Stack>
-          ))}
+          <ReviewMap reviews={reviews} />
         </Stack>
       </Stack>
     );
