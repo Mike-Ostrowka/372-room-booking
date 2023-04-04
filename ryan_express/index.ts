@@ -10,6 +10,7 @@ import searchRoomsRouter from "./routes/searchRooms";
 import roomBookingRouter from "./routes/roomBooking";
 import roomsRouter from "./routes/rooms";
 import roomReviewRouter from "./routes/roomReview";
+import lostAndFoundRouter from "./routes/lostAndFound";
 import statisticsRouter from "./routes/statistics";
 
 let app = express();
@@ -70,6 +71,9 @@ app.use("/rooms", roomsRouter);
 
 // Room reviews
 app.use("/room-review", roomReviewRouter);
+
+// Lost and Found
+app.use("/lost-and-found", lostAndFoundRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

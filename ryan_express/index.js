@@ -14,6 +14,7 @@ var searchRooms_1 = __importDefault(require("./routes/searchRooms"));
 var roomBooking_1 = __importDefault(require("./routes/roomBooking"));
 var rooms_1 = __importDefault(require("./routes/rooms"));
 var roomReview_1 = __importDefault(require("./routes/roomReview"));
+var lostAndFound_1 = __importDefault(require("./routes/lostAndFound"));
 var statistics_1 = __importDefault(require("./routes/statistics"));
 var app = (0, express_1["default"])();
 var corsOptions = {
@@ -57,6 +58,8 @@ app.use("/room-booking", roomBooking_1["default"]);
 app.use("/rooms", rooms_1["default"]);
 // Room reviews
 app.use("/room-review", roomReview_1["default"]);
+// Lost and Found
+app.use("/lost-and-found", lostAndFound_1["default"]);
 app.listen(port, function () {
     console.log("App running on port ".concat(port));
 });
