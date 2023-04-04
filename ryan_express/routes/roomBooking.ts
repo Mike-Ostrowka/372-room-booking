@@ -27,7 +27,7 @@ roomBookingRouter.get("/", isLoggedIn, async (request: any, response: any) => {
 
 /**
  * Get all room bookings for a given user
- * Endpt: /room-booking/user
+ * Endpt: /room-booking/<user_id>
  * Sample request body:
  * {
  *  user_id: 27
@@ -137,6 +137,67 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     response.status(500).json({
       error: err,
     });
+  }
+});
+
+/**
+ * Cancel a room booking
+ * Sample request body format:
+ * {
+ *  booking_id: 88,
+ *  user_id: 27
+ * }
+ * Constraints:
+ * - Booking must exist and must belong to the user
+ * - Must be a future booking
+ */
+roomBookingRouter.delete("/", isLoggedIn, async (request: any, response: any) => {
+  let booking_id: number = request.body.booking_id;
+  let user_id: number = request.body.user_id;
+
+  // check that booking exists and it belongs to the user
+  // if booking exists, get the start time
+  try {
+      var getBookingQuery = `SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;`;
+      const getBookingResult = await pool.query(getBookingQuery, [booking_id, user_id]);
+
+      if (getBookingResult.rowCount === 0) {
+          console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
+          response.status(400).json({
+              error: "Error: Either this room booking does not exist, or it does not belong to this user.."
+          });
+
+          return;
+      } else {
+        // check that the booking is in the future
+        let booking_start = getBookingResult.rows[0].start_datetime;
+        
+        if (!timeUtils.isFutureDate(booking_start)) {
+          console.log("Error: Only future bookings may be cancelled.");
+          response.status(400).json({
+              error: "Error: Only future bookings may be cancelled."
+          });
+          return;
+        }
+      }
+  } catch (err) {
+      console.log(err);
+      response.status(500).json({
+          error: err,
+      });
+  }
+
+  // build and send query
+  try {
+      var deleteBookingQuery = `DELETE FROM room_bookings WHERE booking_id=$1;`;
+      const deleteResult = await pool.query(deleteBookingQuery, [booking_id]);
+      console.log(deleteResult.rows);
+      response.status(200).json(deleteResult.rows);
+  } catch (err) {
+      console.log(err);
+      response.status(500).json({
+          error: err,
+      });
   }
 });
 

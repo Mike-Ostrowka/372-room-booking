@@ -6,6 +6,7 @@ import {
   MdReport,
   MdSearch,
   MdSettings,
+  MdStarRate,
 } from "react-icons/md";
 
 import MainDashboard from "views/admin/default";
@@ -18,6 +19,7 @@ import LostItems from "views/lost-and-found";
 
 import { useContext } from "react";
 import { UserContext } from "contexts/UserContext";
+import RoomReview from "views/room-review";
 
 const routes = () => {
   const { loggedInUser } = useContext(UserContext);
@@ -89,6 +91,15 @@ const routes = () => {
             <Icon as={MdReport} width="20px" height="20px" color="inherit" />
           ),
           component: LostItems,
+        },
+        {
+          name: "Room Review",
+          layout: "/admin",
+          path: "/review",
+          icon: (
+            <Icon as={MdStarRate} width="20px" height="20px" color="inherit" />
+          ),
+          component: RoomReview,
         },
       ];
 };

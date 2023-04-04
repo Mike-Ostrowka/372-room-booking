@@ -26,4 +26,12 @@ function isPastDate(inputDate: string) {
   return inDatetime < curDatetime;
 }
 
-export default {calculateEndTime, isPastDate};
+// checks if a datetime is in the future
+// called by the cancel booking endpt
+function isFutureDate(inputDate: string) {
+  let inDatetime = new Date(inputDate);
+  let curDatetime = new Date();
+  return inDatetime > curDatetime;
+}
+
+export default {calculateEndTime, isPastDate, isFutureDate};

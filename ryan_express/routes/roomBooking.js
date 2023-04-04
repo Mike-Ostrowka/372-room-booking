@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
@@ -48,14 +48,14 @@ var roomBookingRouter = (0, express_1.Router)();
 /**
  * Get all room bookings
  */
-roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getBookingsQuery, bookingsResult, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 getBookingsQuery = "SELECT * FROM room_bookings;";
-                return [4 /*yield*/, index_1["default"].query(getBookingsQuery)];
+                return [4 /*yield*/, index_1.default.query(getBookingsQuery)];
             case 1:
                 bookingsResult = _a.sent();
                 console.log(bookingsResult.rows);
@@ -65,7 +65,7 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
                 err_1 = _a.sent();
                 console.log(err_1);
                 response.status(500).json({
-                    error: err_1
+                    error: err_1,
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -74,13 +74,13 @@ roomBookingRouter.get("/", isLoggedIn_1["default"], function (request, response)
 }); });
 /**
  * Get all room bookings for a given user
- * Endpt: /room-booking/user
+ * Endpt: /room-booking/<user_id>
  * Sample request body:
  * {
  *  user_id: 27
  * }
  */
-roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.get("/:user_id", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var user_id, getBookingsQuery, bookingsResult, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -90,7 +90,7 @@ roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, r
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getBookingsQuery = "SELECT * FROM room_bookings WHERE user_id=$1;";
-                return [4 /*yield*/, index_1["default"].query(getBookingsQuery, [user_id])];
+                return [4 /*yield*/, index_1.default.query(getBookingsQuery, [user_id])];
             case 2:
                 bookingsResult = _a.sent();
                 console.log(bookingsResult.rows);
@@ -100,7 +100,7 @@ roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, r
                 err_2 = _a.sent();
                 console.log(err_2);
                 response.status(500).json({
-                    error: err_2
+                    error: err_2,
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -120,7 +120,7 @@ roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, r
  *  user_id: 1
  * }
  */
-roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomBookingRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -135,19 +135,19 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 max_occupants = 25;
                 if (duration > max_duration) {
                     response.status(500).json({
-                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
+                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes."),
                     });
                 }
                 if (num_occupants > max_occupants) {
                     response.status(500).json({
-                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
+                        error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, "."),
                     });
                 }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getRoomQuery = "SELECT * FROM rooms WHERE building_name=$1 AND room_number=$2";
-                return [4 /*yield*/, index_1["default"].query(getRoomQuery, [
+                return [4 /*yield*/, index_1.default.query(getRoomQuery, [
                         building_name,
                         room_number,
                     ])];
@@ -156,7 +156,7 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 if (roomResult.rowCount === 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
                     response.status(500).json({
-                        error: "Error: this room does not exist in the database. please enter a valid building name and room number."
+                        error: "Error: this room does not exist in the database. please enter a valid building name and room number.",
                     });
                     return [2 /*return*/];
                 }
@@ -165,16 +165,16 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 err_3 = _a.sent();
                 console.log(err_3);
                 response.status(500).json({
-                    error: err_3
+                    error: err_3,
                 });
                 return [3 /*break*/, 4];
             case 4:
-                end_datetime = calcTime_1["default"].calculateEndTime(start_datetime, duration);
+                end_datetime = calcTime_1.default.calculateEndTime(start_datetime, duration);
                 _a.label = 5;
             case 5:
                 _a.trys.push([5, 7, , 8]);
                 addBookingQuery = "INSERT INTO room_bookings (start_datetime, end_datetime, duration, num_occupants, building_name, room_number, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7);";
-                return [4 /*yield*/, index_1["default"].query(addBookingQuery, [
+                return [4 /*yield*/, index_1.default.query(addBookingQuery, [
                         start_datetime,
                         end_datetime,
                         duration,
@@ -192,11 +192,81 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 err_4 = _a.sent();
                 console.log(err_4);
                 response.status(500).json({
-                    error: err_4
+                    error: err_4,
                 });
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
         }
     });
 }); });
-exports["default"] = roomBookingRouter;
+/**
+ * Cancel a room booking
+ * Sample request body format:
+ * {
+ *  booking_id: 88,
+ *  user_id: 27
+ * }
+ * Constraints:
+ * - Booking must exist and must belong to the user
+ * - Must be a future booking
+ */
+roomBookingRouter.delete("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var booking_id, user_id, getBookingQuery, getBookingResult, booking_start, err_5, deleteBookingQuery, deleteResult, err_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                booking_id = request.body.booking_id;
+                user_id = request.body.user_id;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                getBookingQuery = "SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;";
+                return [4 /*yield*/, index_1.default.query(getBookingQuery, [booking_id, user_id])];
+            case 2:
+                getBookingResult = _a.sent();
+                if (getBookingResult.rowCount === 0) {
+                    console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
+                    response.status(400).json({
+                        error: "Error: Either this room booking does not exist, or it does not belong to this user.."
+                    });
+                    return [2 /*return*/];
+                }
+                else {
+                    booking_start = getBookingResult.rows[0].start_datetime;
+                    if (!calcTime_1.default.isFutureDate(booking_start)) {
+                        console.log("Error: Only future bookings may be cancelled.");
+                        response.status(400).json({
+                            error: "Error: Only future bookings may be cancelled."
+                        });
+                        return [2 /*return*/];
+                    }
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                err_5 = _a.sent();
+                console.log(err_5);
+                response.status(500).json({
+                    error: err_5,
+                });
+                return [3 /*break*/, 4];
+            case 4:
+                _a.trys.push([4, 6, , 7]);
+                deleteBookingQuery = "DELETE FROM room_bookings WHERE booking_id=$1;";
+                return [4 /*yield*/, index_1.default.query(deleteBookingQuery, [booking_id])];
+            case 5:
+                deleteResult = _a.sent();
+                console.log(deleteResult.rows);
+                response.status(200).json(deleteResult.rows);
+                return [3 /*break*/, 7];
+            case 6:
+                err_6 = _a.sent();
+                console.log(err_6);
+                response.status(500).json({
+                    error: err_6,
+                });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); });
+exports.default = roomBookingRouter;

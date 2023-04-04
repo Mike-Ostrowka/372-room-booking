@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 // Calculate and format the endtime,
 // given a booking start time and duration
 function calculateEndTime(start_time, duration) {
@@ -24,4 +24,11 @@ function isPastDate(inputDate) {
     var curDatetime = new Date();
     return inDatetime < curDatetime;
 }
-exports["default"] = { calculateEndTime: calculateEndTime, isPastDate: isPastDate };
+// checks if a datetime is in the future
+// called by the cancel booking endpt
+function isFutureDate(inputDate) {
+    var inDatetime = new Date(inputDate);
+    var curDatetime = new Date();
+    return inDatetime > curDatetime;
+}
+exports.default = { calculateEndTime: calculateEndTime, isPastDate: isPastDate, isFutureDate: isFutureDate };
