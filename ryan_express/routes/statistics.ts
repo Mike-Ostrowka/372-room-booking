@@ -33,7 +33,7 @@ statisticsRouter.get("/", isLoggedIn, async (request: any, response: any) => {
     let total_rooms: number = Number(result.rows[0]["count"]);
     let available_rooms: Number = total_rooms - current_room_bookings;
 
-    response.send({ reviews: review_count, available: available_rooms });
+    response.json({ reviews: review_count, available: available_rooms });
   } catch (e) {
     response.send(e);
   }
