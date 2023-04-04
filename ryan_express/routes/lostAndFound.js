@@ -202,7 +202,7 @@ lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1["default"], function (re
         }
     });
 }); });
-// DELETE /rooms/:id - deletes a room
+// DELETE /rooms/:id - deletes a lost item report
 lostAndFoundRouter["delete"]("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var lost_item_id, deleteLostItemQuery, getLostItemsQuery, getLostItemsRes, e_6;
     return __generator(this, function (_a) {
