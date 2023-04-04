@@ -2,7 +2,7 @@ import { Button, Stack, Toast, useToast } from "@chakra-ui/react";
 import { UserContext } from "contexts/UserContext";
 import { useContext } from "react";
 
-const DeleteBookingButton = (props: {booking_id:any, isHidden: any, onClose: any} ) => {
+const CancelBookingButton = (props: {booking_id:any, isHidden: any, onClose: any} ) => {
 
       const { loggedInUser } = useContext(UserContext);
       const toast = useToast();
@@ -38,11 +38,11 @@ const DeleteBookingButton = (props: {booking_id:any, isHidden: any, onClose: any
             colorScheme="red"
             mt="20px"
             >
-                Delete Booking
+                Cancel Booking
             </Button>
         </Stack>
     ): null
 
 }
 
-export default DeleteBookingButton;
+export default CancelBookingButton;

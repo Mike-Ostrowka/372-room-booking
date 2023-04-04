@@ -1,5 +1,5 @@
 import { Button, Stack, Text } from "@chakra-ui/react";
-import DeleteBookingButton from "components/buttons/DeleteBookingButton";
+import CancelBookingButton from "components/buttons/CancelBookingButton";
 import { format } from "date-fns";
 
 
@@ -28,7 +28,7 @@ const bookingInfo = (props: {booking:any, onClose: any}) => {
             "h:mm aaa"
           )}
         </Text>
-        <DeleteBookingButton
+        <CancelBookingButton
           booking_id={booking.booking_id}
           isHidden={new Date(booking.start_datetime).getTime() > new Date().getTime()}
           onClose={props.onClose}
