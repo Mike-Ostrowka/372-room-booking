@@ -7,9 +7,20 @@ import {
   Tr,
   Th,
   Td,
+  Button,
 } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
+import { RoomContext } from "contexts/RoomContext";
+import { useContext } from "react";
 
 const ResultsTable = ({ rooms }: any) => {
+  const { setRoomData } = useContext(RoomContext);
+  const history = useHistory();
+
+  const navigateToBooking = (roomData: any) => {
+    setRoomData(roomData);
+    history.push("/admin/room-booking");
+  };
   return (
     <TableContainer>
       <Table variant="striped">
@@ -31,6 +42,9 @@ const ResultsTable = ({ rooms }: any) => {
               <Td>{r.hasprojector ? "Yes" : "No"}</Td>
               <Td>{r.haswhiteboard ? "Yes" : "No"}</Td>
               <Td>{r.capacity}</Td>
+              <Td>
+                <Button onClick={() => navigateToBooking(r)}>Book</Button>
+              </Td>
             </Tr>
           ))}
         </Tbody>
