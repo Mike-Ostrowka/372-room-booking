@@ -62,20 +62,20 @@ const routes = () => {
           ),
           component: RoomSearch,
         },
-        {
-          name: "Book a Room",
-          layout: "/admin",
-          path: "/room-booking",
-          icon: (
-            <Icon
-              as={MdSensorDoor}
-              width="20px"
-              height="20px"
-              color="inherit"
-            />
-          ),
-          component: RoomBooking,
-        },
+        // {
+        //   name: "Book a Room",
+        //   layout: "/admin",
+        //   path: "/room-booking",
+        //   icon: (
+        //     <Icon
+        //       as={MdSensorDoor}
+        //       width="20px"
+        //       height="20px"
+        //       color="inherit"
+        //     />
+        //   ),
+        //   component: RoomBooking,
+        // },
         {
           name: "Map",
           layout: "/admin",

@@ -9,7 +9,7 @@ const RoomSearch = () => {
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <Stack spacing={4}>
         <RoomSearchForm setRooms={setRooms} />
-        <ResultsTable rooms={rooms} />
+        <ResultsTable rooms={rooms} setRooms={setRooms} />
       </Stack>
     </Box>
   );

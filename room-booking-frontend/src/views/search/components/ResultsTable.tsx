@@ -9,17 +9,21 @@ import {
   Td,
   Button,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router-dom";
+import RoomBookingModal from "components/modals/RoomBookingModal";
 import { RoomContext } from "contexts/RoomContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
-const ResultsTable = ({ rooms }: any) => {
+const ResultsTable = ({ rooms, setRooms }: any) => {
+  const [openRoomBookingDialog, setOpenRoomBookingDialog] = useState(false);
   const { setRoomData } = useContext(RoomContext);
-  const history = useHistory();
+
+  const handleModalClose = () => {
+    setOpenRoomBookingDialog(false);
+  };
 
   const navigateToBooking = (roomData: any) => {
     setRoomData(roomData);
-    history.push("/admin/room-booking");
+    setOpenRoomBookingDialog(true);
   };
   return (
     <TableContainer>
@@ -49,6 +53,14 @@ const ResultsTable = ({ rooms }: any) => {
           ))}
         </Tbody>
       </Table>
+      {openRoomBookingDialog && (
+        <RoomBookingModal
+          isOpen={openRoomBookingDialog}
+          onClose={handleModalClose}
+          setOpenRoomBookingDialog={setOpenRoomBookingDialog}
+          setRooms={setRooms}
+        />
+      )}
     </TableContainer>
   );
 };

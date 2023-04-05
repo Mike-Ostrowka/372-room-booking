@@ -18,7 +18,7 @@ import * as Yup from "yup";
 import { SearchContext } from "contexts/SearchContext";
 import { RoomContext } from "contexts/RoomContext";
 
-const RoomBookingForm = () => {
+const RoomBookingForm = ({ setOpenRoomBookingDialog, setRooms }: any) => {
   const [roomNumbers, setRoomNumbers] = useState([]);
   const [buildingNames, setBuildingNames] = useState([]);
 
@@ -92,6 +92,8 @@ const RoomBookingForm = () => {
         console.log(e);
         setSubmitting(false);
       }
+      setOpenRoomBookingDialog(false);
+      setRooms([]);
       formik.resetForm();
     },
     validationSchema: validationSchema,
@@ -143,6 +145,7 @@ const RoomBookingForm = () => {
                   borderColor={
                     formik.errors.duration && formik.touched.duration && "red"
                   }
+                  isDisabled={true}
                 />
                 {formik.errors.duration && formik.touched.duration && (
                   <FormHelperText>{formik.errors.duration}</FormHelperText>
@@ -159,6 +162,7 @@ const RoomBookingForm = () => {
                     formik.touched.num_occupants &&
                     "red"
                   }
+                  isDisabled={true}
                 />
                 {formik.errors.num_occupants &&
                   formik.touched.num_occupants && (
@@ -178,6 +182,7 @@ const RoomBookingForm = () => {
                     formik.touched.building_name &&
                     "red"
                   }
+                  isDisabled={true}
                 >
                   {buildingNames.map((b) => (
                     <option value={b} key={b}>
@@ -203,6 +208,7 @@ const RoomBookingForm = () => {
                     formik.touched.room_number &&
                     "red"
                   }
+                  isDisabled={true}
                 >
                   {roomNumbers.map((r) => (
                     <option value={r} key={r}>
@@ -221,6 +227,7 @@ const RoomBookingForm = () => {
                   value={formik.values.start_datetime}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  isDisabled={true}
                 />
               </Stack>
               <Stack width="50%">
