@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 // Middleware to check if the user is logged in
 function isLoggedInAdmin(request, response, next) {
     if (request.session.user && request.session.user.is_staff) {
@@ -11,4 +11,4 @@ function isLoggedInAdmin(request, response, next) {
         response.json({ success: false });
     }
 }
-exports.default = isLoggedInAdmin;
+exports["default"] = isLoggedInAdmin;
