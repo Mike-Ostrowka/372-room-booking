@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
 var logoutRouter = (0, express_1.Router)();
@@ -46,7 +46,7 @@ var logoutRouter = (0, express_1.Router)();
  * Logs out a user by deleting their session
  * Endpoint: /logout-api
  */
-logoutRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+logoutRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // check that session exists
         if (request.session) {
@@ -56,7 +56,7 @@ logoutRouter.get("/", isLoggedIn_1["default"], function (request, response) { re
                 if (err) {
                     console.log(err);
                     response.status(500).json({
-                        error: err
+                        error: err,
                     });
                 }
                 response.status(200).json({ success: "logged out" });
@@ -65,4 +65,4 @@ logoutRouter.get("/", isLoggedIn_1["default"], function (request, response) { re
         return [2 /*return*/];
     });
 }); });
-exports["default"] = logoutRouter;
+exports.default = logoutRouter;

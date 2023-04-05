@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var md5_1 = __importDefault(require("md5"));
 var index_1 = __importDefault(require("../index"));
@@ -52,7 +52,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                 firstName = request.body.firstName;
                 lastName = request.body.lastName;
                 username = request.body.username;
-                password = (0, md5_1["default"])(request.body.password);
+                password = (0, md5_1.default)(request.body.password);
                 isStaff = request.body.isStaff;
                 return [4 /*yield*/, isUser(username)];
             case 1:
@@ -66,7 +66,7 @@ registerRouter.post("/", function (request, response) { return __awaiter(void 0,
                 _a.trys.push([2, 4, , 5]);
                 registerQuery = "INSERT INTO users (username, password, firstname, lastname, isstaff) VALUES ($1, $2, $3, $4, $5)";
                 console.log(registerQuery);
-                return [4 /*yield*/, index_1["default"].query(registerQuery, [
+                return [4 /*yield*/, index_1.default.query(registerQuery, [
                         username,
                         password,
                         firstName,
@@ -103,7 +103,7 @@ function isUser(username) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     authenticationQuery = "SELECT json_agg(a) FROM users a WHERE username = $1";
-                    return [4 /*yield*/, index_1["default"].query(authenticationQuery, [username])];
+                    return [4 /*yield*/, index_1.default.query(authenticationQuery, [username])];
                 case 1:
                     result = _a.sent();
                     if (result.rows.length > 0 && result.rows[0].json_agg != null) {
@@ -122,4 +122,4 @@ function isUser(username) {
         });
     });
 }
-exports["default"] = registerRouter;
+exports.default = registerRouter;
