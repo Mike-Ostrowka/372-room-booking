@@ -11,8 +11,12 @@ import {
   Heading,
   useToast,
 } from "@chakra-ui/react";
+import { SearchContext } from "contexts/SearchContext";
+import { useContext } from "react";
 
 const RoomSearchForm = ({ setRooms }: any) => {
+  const { setSearchCriteria } = useContext(SearchContext);
+
   const toast = useToast();
   const validationSchema = Yup.object().shape({
     duration: Yup.number()
@@ -38,6 +42,7 @@ const RoomSearchForm = ({ setRooms }: any) => {
         hasprojector: values.hasprojector,
         haswhiteboard: values.haswhiteboard,
       };
+      setSearchCriteria(data);
       try {
         const response = await fetch("http://localhost:8080/search-rooms", {
           method: "POST",
