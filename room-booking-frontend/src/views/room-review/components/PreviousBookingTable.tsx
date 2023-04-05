@@ -134,7 +134,7 @@ const PreviousBookingTable = () => {
       </Table>
     </TableContainer>
   ) : (
-    <Card>
+    <Card padding={10}>
       <Text fontSize="30px">No bookings available to review</Text>
     </Card>
   );
