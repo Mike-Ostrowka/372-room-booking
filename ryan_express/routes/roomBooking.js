@@ -139,16 +139,19 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 max_duration = 60 * 3;
                 max_occupants = 25;
                 if (duration > max_duration) {
-                    response.status(500).json({
+                    console.log("ERROR IN DURATION!!!");
+                    response.status(400).json({
                         error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
                     });
+                    return [2 /*return*/];
                 }
                 if (num_occupants > max_occupants) {
-                    response.status(500).json({
+                    response.status(400).json({
                         error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
                     });
+                    return [2 /*return*/];
                 }
-                // check that the booking is for a future timeslot        
+                // check that the booking is for a future timeslot
                 if (!calcTime_1["default"].isFutureDate(start_datetime)) {
                     console.log("Error: Bookings may only be made for future timeslots.");
                     response.status(400).json({
@@ -168,7 +171,7 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 roomResult = _a.sent();
                 if (roomResult.rowCount === 0) {
                     console.log("Error: this room does not exist in the database. please enter a valid building name and room number.");
-                    response.status(500).json({
+                    response.status(400).json({
                         error: "Error: this room does not exist in the database. please enter a valid building name and room number."
                     });
                     return [2 /*return*/];
@@ -234,7 +237,10 @@ roomBookingRouter["delete"]("/", isLoggedIn_1["default"], function (request, res
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getBookingQuery = "SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;";
-                return [4 /*yield*/, index_1["default"].query(getBookingQuery, [booking_id, user_id])];
+                return [4 /*yield*/, index_1["default"].query(getBookingQuery, [
+                        booking_id,
+                        user_id,
+                    ])];
             case 2:
                 getBookingResult = _a.sent();
                 if (getBookingResult.rowCount === 0) {
