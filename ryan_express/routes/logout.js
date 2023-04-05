@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = require("express");
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
 var logoutRouter = (0, express_1.Router)();
@@ -46,7 +46,7 @@ var logoutRouter = (0, express_1.Router)();
  * Logs out a user by deleting their session
  * Endpoint: /logout-api
  */
-logoutRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+logoutRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // check that session exists
         if (request.session) {
@@ -56,7 +56,7 @@ logoutRouter.get("/", isLoggedIn_1.default, function (request, response) { retur
                 if (err) {
                     console.log(err);
                     response.status(500).json({
-                        error: err,
+                        error: err
                     });
                 }
                 response.status(200).json({ success: "logged out" });
@@ -65,4 +65,4 @@ logoutRouter.get("/", isLoggedIn_1.default, function (request, response) { retur
         return [2 /*return*/];
     });
 }); });
-exports.default = logoutRouter;
+exports["default"] = logoutRouter;

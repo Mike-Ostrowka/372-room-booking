@@ -149,7 +149,7 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                     });
                 }
                 // check that the booking is for a future timeslot        
-                if (!calcTime_1.default.isFutureDate(start_datetime)) {
+                if (!calcTime_1["default"].isFutureDate(start_datetime)) {
                     console.log("Error: Bookings may only be made for future timeslots.");
                     response.status(400).json({
                         error: "Error: Bookings may only be made for future timeslots."

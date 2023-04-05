@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware
@@ -46,7 +46,7 @@ var isLoggedInAdmin_1 = __importDefault(require("./middleware/isLoggedInAdmin"))
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
 var lostAndFoundRouter = (0, express_1.Router)();
 // POST /lost-and-found - creates a new lost item
-lostAndFoundRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var item_name, item_description, user_id, addLostItemQuery, getLostItemsQuery, getLostItemsRes, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -58,7 +58,7 @@ lostAndFoundRouter.post("/", isLoggedIn_1.default, function (request, response) 
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 addLostItemQuery = "INSERT INTO lost_items (item_name, item_description, user_id) VALUES ($1, $2, $3)";
-                return [4 /*yield*/, index_1.default.query(addLostItemQuery, [
+                return [4 /*yield*/, index_1["default"].query(addLostItemQuery, [
                         item_name,
                         item_description,
                         user_id,
@@ -66,7 +66,7 @@ lostAndFoundRouter.post("/", isLoggedIn_1.default, function (request, response) 
             case 2:
                 _a.sent();
                 getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
             case 3:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -75,7 +75,7 @@ lostAndFoundRouter.post("/", isLoggedIn_1.default, function (request, response) 
                 e_1 = _a.sent();
                 console.log(e_1);
                 response.status(500).json({
-                    error: e_1,
+                    error: e_1
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -83,14 +83,14 @@ lostAndFoundRouter.post("/", isLoggedIn_1.default, function (request, response) 
     });
 }); });
 // GET /lost-and-found - gets all lost items
-lostAndFoundRouter.get("/", isLoggedInAdmin_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.get("/", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var getLostItemsQuery, getLostItemsRes, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
             case 1:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -99,7 +99,7 @@ lostAndFoundRouter.get("/", isLoggedInAdmin_1.default, function (request, respon
                 e_2 = _a.sent();
                 console.log(e_2);
                 response.status(500).json({
-                    error: e_2,
+                    error: e_2
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -107,7 +107,7 @@ lostAndFoundRouter.get("/", isLoggedInAdmin_1.default, function (request, respon
     });
 }); });
 // GET /lost-and-found/:id - gets all lost items for a user
-lostAndFoundRouter.get("/:id", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.get("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var user_id, getLostItemsQuery, getLostItemsRes, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -117,7 +117,7 @@ lostAndFoundRouter.get("/:id", isLoggedIn_1.default, function (request, response
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getLostItemsQuery = "SELECT * FROM lost_items WHERE user_id = $1";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery, [user_id])];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery, [user_id])];
             case 2:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -126,7 +126,7 @@ lostAndFoundRouter.get("/:id", isLoggedIn_1.default, function (request, response
                 e_3 = _a.sent();
                 console.log(e_3);
                 response.status(500).json({
-                    error: e_3,
+                    error: e_3
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -134,7 +134,7 @@ lostAndFoundRouter.get("/:id", isLoggedIn_1.default, function (request, response
     });
 }); });
 // PUT /lost-and-found/:id - updates a lost item
-lostAndFoundRouter.put("/:id", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.put("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var lost_item_id, item_name, item_description, updateLostItemQuery, getLostItemsQuery, getLostItemsRes, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -146,7 +146,7 @@ lostAndFoundRouter.put("/:id", isLoggedIn_1.default, function (request, response
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 updateLostItemQuery = "UPDATE lost_items SET item_name=$1, item_description=$2 WHERE id=$3";
-                return [4 /*yield*/, index_1.default.query(updateLostItemQuery, [
+                return [4 /*yield*/, index_1["default"].query(updateLostItemQuery, [
                         item_name,
                         item_description,
                         lost_item_id,
@@ -154,7 +154,7 @@ lostAndFoundRouter.put("/:id", isLoggedIn_1.default, function (request, response
             case 2:
                 _a.sent();
                 getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
             case 3:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -163,7 +163,7 @@ lostAndFoundRouter.put("/:id", isLoggedIn_1.default, function (request, response
                 e_4 = _a.sent();
                 console.log(e_4);
                 response.status(500).json({
-                    error: e_4,
+                    error: e_4
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -171,7 +171,7 @@ lostAndFoundRouter.put("/:id", isLoggedIn_1.default, function (request, response
     });
 }); });
 // PUT /lost-and-found/status/:id - updates status of a lost item
-lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var lost_item_id, item_found, updateLostItemQuery, getLostItemsQuery, getLostItemsRes, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -182,11 +182,11 @@ lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1.default, function (reque
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 updateLostItemQuery = "UPDATE lost_items SET item_found=$1 WHERE id=$2";
-                return [4 /*yield*/, index_1.default.query(updateLostItemQuery, [item_found, lost_item_id])];
+                return [4 /*yield*/, index_1["default"].query(updateLostItemQuery, [item_found, lost_item_id])];
             case 2:
                 _a.sent();
                 getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
             case 3:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -195,7 +195,7 @@ lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1.default, function (reque
                 e_5 = _a.sent();
                 console.log(e_5);
                 response.status(500).json({
-                    error: e_5,
+                    error: e_5
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -203,7 +203,7 @@ lostAndFoundRouter.put("/status/:id", isLoggedInAdmin_1.default, function (reque
     });
 }); });
 // DELETE /rooms/:id - deletes a lost item report
-lostAndFoundRouter.delete("/:id", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+lostAndFoundRouter["delete"]("/:id", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var lost_item_id, deleteLostItemQuery, getLostItemsQuery, getLostItemsRes, e_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -213,11 +213,11 @@ lostAndFoundRouter.delete("/:id", isLoggedIn_1.default, function (request, respo
             case 1:
                 _a.trys.push([1, 4, , 5]);
                 deleteLostItemQuery = "DELETE FROM lost_items WHERE id=$1";
-                return [4 /*yield*/, index_1.default.query(deleteLostItemQuery, [lost_item_id])];
+                return [4 /*yield*/, index_1["default"].query(deleteLostItemQuery, [lost_item_id])];
             case 2:
                 _a.sent();
                 getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1.default.query(getLostItemsQuery)];
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
             case 3:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
@@ -226,11 +226,11 @@ lostAndFoundRouter.delete("/:id", isLoggedIn_1.default, function (request, respo
                 e_6 = _a.sent();
                 console.log(e_6);
                 response.status(500).json({
-                    error: e_6,
+                    error: e_6
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }
     });
 }); });
-exports.default = lostAndFoundRouter;
+exports["default"] = lostAndFoundRouter;

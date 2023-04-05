@@ -146,7 +146,7 @@ roomReviewRouter.get("/room", isLoggedIn_1["default"], function (request, respon
  * - 1 review per booking
  * - Booking must exist
  */
-roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_4, getBookingsQuery, getBookingsResult, endTime, err_5, addReviewQuery, reviewsResult, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -194,7 +194,7 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 }
                 else {
                     endTime = getBookingsResult.rows[0].end_datetime;
-                    if (!calcTime_1.default.isPastDate(endTime)) {
+                    if (!calcTime_1["default"].isPastDate(endTime)) {
                         console.log("Error: Reviews may only be made for past bookings");
                         response.status(400).json({
                             error: "Error: Reviews may only be made for past bookings"
@@ -230,7 +230,7 @@ roomReviewRouter.post("/", isLoggedIn_1.default, function (request, response) { 
                 err_6 = _a.sent();
                 console.log(err_6);
                 response.status(500).json({
-                    error: err_6,
+                    error: err_6
                 });
                 return [3 /*break*/, 10];
             case 10: return [2 /*return*/];
