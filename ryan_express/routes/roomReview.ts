@@ -125,7 +125,7 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         });
     }
 
-    // check that booking exists
+    // check that booking exists and it's a past booking
     try {
         var getBookingsQuery = `SELECT * FROM room_bookings WHERE booking_id=$1;`;
         const getBookingsResult = await pool.query(getBookingsQuery, [booking_id]);
@@ -138,29 +138,17 @@ roomReviewRouter.post("/", isLoggedIn, async (request: any, response: any) => {
             });
 
             return;
-        }
-    } catch (err) {
-        console.log(err);
-        response.status(500).json({
-            error: err,
-        });
-    }
+        } else {
+            let endTime = getBookingsResult.rows[0].end_datetime;
 
-    // reviews can only be made for past bookings
-    try {
-        // get the booking endtime
-        var endTimeQuery = `SELECT end_datetime FROM room_bookings WHERE booking_id=$1;`;
-        const endTimeResult = await pool.query(endTimeQuery, [booking_id]);
-        let endTime = endTimeResult.rows[0].end_datetime;
+            if (!timeUtils.isPastDate(endTime)) {
+                console.log("Error: Reviews may only be made for past bookings");
 
-        if (!timeUtils.isPastDate(endTime)) {
-            console.log("Error: Reviews may only be made for past bookings");
-
-            response.status(400).json({
-                error: "Error: Reviews may only be made for past bookings"
-            });
-
-            return;
+                response.status(400).json({
+                    error: "Error: Reviews may only be made for past bookings"
+                });
+                return;
+            }
         }
     } catch (err) {
         console.log(err);

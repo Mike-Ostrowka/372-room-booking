@@ -147,7 +147,7 @@ roomReviewRouter.get("/room", isLoggedIn_1["default"], function (request, respon
  * - Booking must exist
  */
 roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_4, getBookingsQuery, getBookingsResult, err_5, endTimeQuery, endTimeResult, endTime, err_6, addReviewQuery, reviewsResult, err_7;
+    var review, room_rating, noise_level, functioning_room, issue_details, booking_id, getReviewsQuery, getReviewsResult, err_4, getBookingsQuery, getBookingsResult, endTime, err_5, addReviewQuery, reviewsResult, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -192,6 +192,16 @@ roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response)
                     });
                     return [2 /*return*/];
                 }
+                else {
+                    endTime = getBookingsResult.rows[0].end_datetime;
+                    if (!calcTime_1["default"].isPastDate(endTime)) {
+                        console.log("Error: Reviews may only be made for past bookings");
+                        response.status(400).json({
+                            error: "Error: Reviews may only be made for past bookings"
+                        });
+                        return [2 /*return*/];
+                    }
+                }
                 return [3 /*break*/, 7];
             case 6:
                 err_5 = _a.sent();
@@ -202,28 +212,6 @@ roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response)
                 return [3 /*break*/, 7];
             case 7:
                 _a.trys.push([7, 9, , 10]);
-                endTimeQuery = "SELECT end_datetime FROM room_bookings WHERE booking_id=$1;";
-                return [4 /*yield*/, index_1["default"].query(endTimeQuery, [booking_id])];
-            case 8:
-                endTimeResult = _a.sent();
-                endTime = endTimeResult.rows[0].end_datetime;
-                if (!calcTime_1["default"].isPastDate(endTime)) {
-                    console.log("Error: Reviews may only be made for past bookings");
-                    response.status(400).json({
-                        error: "Error: Reviews may only be made for past bookings"
-                    });
-                    return [2 /*return*/];
-                }
-                return [3 /*break*/, 10];
-            case 9:
-                err_6 = _a.sent();
-                console.log(err_6);
-                response.status(500).json({
-                    error: err_6
-                });
-                return [3 /*break*/, 10];
-            case 10:
-                _a.trys.push([10, 12, , 13]);
                 addReviewQuery = "INSERT INTO room_reviews (review, room_rating, noise_level, functioning_room, issue_details, booking_id) VALUES ($1, $2, $3, $4, $5, $6);";
                 return [4 /*yield*/, index_1["default"].query(addReviewQuery, [
                         review,
@@ -233,19 +221,19 @@ roomReviewRouter.post("/", isLoggedIn_1["default"], function (request, response)
                         issue_details,
                         booking_id,
                     ])];
-            case 11:
+            case 8:
                 reviewsResult = _a.sent();
                 console.log(reviewsResult.rows);
                 response.json(reviewsResult.rows);
-                return [3 /*break*/, 13];
-            case 12:
-                err_7 = _a.sent();
-                console.log(err_7);
+                return [3 /*break*/, 10];
+            case 9:
+                err_6 = _a.sent();
+                console.log(err_6);
                 response.status(500).json({
-                    error: err_7
+                    error: err_6
                 });
-                return [3 /*break*/, 13];
-            case 13: return [2 /*return*/];
+                return [3 /*break*/, 10];
+            case 10: return [2 /*return*/];
         }
     });
 }); });

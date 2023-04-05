@@ -65,6 +65,11 @@ roomBookingRouter.get(
  *  room_number: 2120
  *  user_id: 1
  * }
+ * Constraints:
+ * - Max booking duration: 3 hours
+ * - Max occupancy: 25
+ * - Room must exist
+ * - Bookings may only be made for a future time
  */
 roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
   // parse form data
@@ -87,6 +92,15 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
     response.status(500).json({
       error: `Error: number of occupants exceed the alloted max of ${max_occupants}.`,
     });
+  }
+
+  // check that the booking is for a future timeslot        
+  if (!timeUtils.isFutureDate(start_datetime)) {
+    console.log("Error: Bookings may only be made for future timeslots.");
+    response.status(400).json({
+        error: "Error: Bookings may only be made for future timeslots."
+    });
+    return;
   }
 
   // make sure building and room exists in the rooms table
