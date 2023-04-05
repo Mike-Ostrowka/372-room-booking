@@ -38,13 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 var isLoggedIn_1 = __importDefault(require("./middleware/isLoggedIn"));
 var statisticsRouter = (0, express_1.Router)();
 // GET /statistics - gets statistics for rooms
-statisticsRouter.get("/", isLoggedIn_1.default, function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+statisticsRouter.get("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var review_count_query, current_room_bookings_query, total_rooms_query, today, week_in_the_future, result, review_count, current_room_bookings, total_rooms, available_rooms, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -62,18 +62,18 @@ statisticsRouter.get("/", isLoggedIn_1.default, function (request, response) { r
                 today = new Date();
                 week_in_the_future = new Date();
                 week_in_the_future.setDate(week_in_the_future.getDate() + 7);
-                return [4 /*yield*/, index_1.default.query(review_count_query, [
+                return [4 /*yield*/, index_1["default"].query(review_count_query, [
                         request.session.user.u_id,
                     ])];
             case 2:
                 result = _a.sent();
                 review_count = Number(result.rows[0]["count"]);
-                return [4 /*yield*/, index_1.default.query(current_room_bookings_query, [today])];
+                return [4 /*yield*/, index_1["default"].query(current_room_bookings_query, [today])];
             case 3:
                 //get total available rooms
                 result = _a.sent();
                 current_room_bookings = Number(result.rows[0]["count"]);
-                return [4 /*yield*/, index_1.default.query(total_rooms_query)];
+                return [4 /*yield*/, index_1["default"].query(total_rooms_query)];
             case 4:
                 result = _a.sent();
                 total_rooms = Number(result.rows[0]["count"]);
@@ -88,4 +88,4 @@ statisticsRouter.get("/", isLoggedIn_1.default, function (request, response) { r
         }
     });
 }); });
-exports.default = statisticsRouter;
+exports["default"] = statisticsRouter;
