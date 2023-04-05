@@ -68,6 +68,7 @@ roomBookingRouter.get(
  * Constraints:
  * - Max booking duration: 3 hours
  * - Max occupancy: 25
+ * - Max bookings per day: 1
  * - Room must exist
  * - Bookings may only be made for a future time
  */
@@ -125,6 +126,31 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
       });
       return;
     }
+  } catch (err) {
+    console.log(err);
+    response.status(500).json({
+      error: err,
+    });
+  }
+
+  // check if the user already has already made a booking on that day
+  try {
+    // postgres throws a syntax error if we do 'timestamp $2', hence we construct a query using '${param}' instead of '$1'
+    var checkDateQuery = `SELECT * FROM room_bookings WHERE user_id=${user_id} AND DATE_TRUNC('day', start_datetime)=DATE_TRUNC('day', timestamp '${start_datetime}')`;
+    const checkDateResult = await pool.query(checkDateQuery);
+
+    if (checkDateResult.rowCount > 0) {
+      console.log(
+        "Error: The user has already made a booking for this day."
+      );
+
+      response.status(400).json({
+        error:
+          "Error: The user has already made a booking for this day.",
+      });
+      return;
+    }
+
   } catch (err) {
     console.log(err);
     response.status(500).json({
