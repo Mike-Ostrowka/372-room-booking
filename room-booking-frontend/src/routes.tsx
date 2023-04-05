@@ -3,6 +3,7 @@ import {
   MdHome,
   MdSensorDoor,
   MdMap,
+  MdReport,
   MdSearch,
   MdSettings,
   MdStarRate,
@@ -13,6 +14,8 @@ import RoomBooking from "views/room-booking";
 import MapTab from "views/map";
 import RoomSearch from "views/search";
 import StaffRoomsComponent from "views/staff/rooms";
+import StaffLostItems from "views/staff/lost-items";
+import LostItems from "views/lost-and-found";
 
 import { useContext } from "react";
 import { UserContext } from "contexts/UserContext";
@@ -32,6 +35,15 @@ const routes = () => {
           ),
           component: StaffRoomsComponent,
         },
+        {
+          name: "Manage Lost Items",
+          layout: "/admin",
+          path: "/admin-lost-items",
+          icon: (
+            <Icon as={MdReport} width="20px" height="20px" color="inherit" />
+          ),
+          component: StaffLostItems,
+        },
       ]
     : [
         {
@@ -40,6 +52,15 @@ const routes = () => {
           path: "/default",
           icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
           component: MainDashboard,
+        },
+        {
+          name: "Room Search",
+          layout: "/admin",
+          path: "/search",
+          icon: (
+            <Icon as={MdSearch} width="20px" height="20px" color="inherit" />
+          ),
+          component: RoomSearch,
         },
         {
           name: "Book a Room",
@@ -63,13 +84,13 @@ const routes = () => {
           component: MapTab,
         },
         {
-          name: "Room Search",
+          name: "Lost and Found",
           layout: "/admin",
-          path: "/search",
+          path: "/lost-and-found",
           icon: (
-            <Icon as={MdSearch} width="20px" height="20px" color="inherit" />
+            <Icon as={MdReport} width="20px" height="20px" color="inherit" />
           ),
-          component: RoomSearch,
+          component: LostItems,
         },
         {
           name: "Room Review",

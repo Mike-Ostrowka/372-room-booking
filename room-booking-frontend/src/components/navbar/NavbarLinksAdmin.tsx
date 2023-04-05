@@ -1,11 +1,8 @@
 // Chakra Imports
 import {
   Avatar,
-  Button,
   Flex,
   Icon,
-  Image,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -15,27 +12,20 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 // Custom Components
-import { ItemContent } from "components/menu/ItemContent";
-import { SearchBar } from "components/navbar/searchBar/SearchBar";
 import { SidebarResponsive } from "components/sidebar/Sidebar";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import { useContext } from "react";
 // Assets
-import navImage from "assets/img/layout/Navbar.png";
-import { MdNotificationsNone, MdInfoOutline } from "react-icons/md";
-import { IoMdMoon, IoMdSunny } from "react-icons/io";
 import { FaEthereum } from "react-icons/fa";
 import routes from "routes";
 import { UserContext } from "contexts/UserContext";
+import { PersonIcon } from "components/icons/Icons";
 
 export default function HeaderLinks(props: { secondary: boolean }) {
   const { secondary } = props;
-  const { colorMode, toggleColorMode } = useColorMode();
   // Chakra Color Mode
-  const navbarIcon = useColorModeValue("gray.400", "white");
   let menuBg = useColorModeValue("white", "navy.800");
   const textColor = useColorModeValue("secondaryGray.900", "white");
-  const textColorBrand = useColorModeValue("brand.700", "brand.400");
   const ethColor = useColorModeValue("gray.700", "white");
   const borderColor = useColorModeValue("#E6ECFA", "rgba(135, 140, 189, 0.3)");
   const ethBg = useColorModeValue("secondaryGray.300", "navy.900");
@@ -44,10 +34,13 @@ export default function HeaderLinks(props: { secondary: boolean }) {
     "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
     "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
   );
-  const borderButton = useColorModeValue("secondaryGray.500", "whiteAlpha.200");
-  const { setLoggedInUser } = useContext(UserContext);
+  const { loggedInUser, setLoggedInUser } = useContext(UserContext);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await fetch("http://localhost:8080/logout-api", {
+      method: "GET",
+      credentials: "include",
+    });
     setLoggedInUser(null);
     localStorage.removeItem("user");
   };
@@ -104,7 +97,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
           <Avatar
             _hover={{ cursor: "pointer" }}
             color="white"
-            name="Adela Parkson"
+            icon={<PersonIcon />}
             bg="#11047A"
             size="sm"
             w="40px"
@@ -131,7 +124,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
               fontWeight="700"
               color={textColor}
             >
-              👋&nbsp; Hey, Adela
+              {loggedInUser.u}
             </Text>
           </Flex>
           <Flex flexDirection="column" p="10px">

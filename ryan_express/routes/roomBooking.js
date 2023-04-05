@@ -119,6 +119,11 @@ roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, r
  *  room_number: 2120
  *  user_id: 1
  * }
+ * Constraints:
+ * - Max booking duration: 3 hours
+ * - Max occupancy: 25
+ * - Room must exist
+ * - Bookings may only be made for a future time
  */
 roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
@@ -142,6 +147,14 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                     response.status(500).json({
                         error: "Error: number of occupants exceed the alloted max of ".concat(max_occupants, ".")
                     });
+                }
+                // check that the booking is for a future timeslot        
+                if (!calcTime_1.default.isFutureDate(start_datetime)) {
+                    console.log("Error: Bookings may only be made for future timeslots.");
+                    response.status(400).json({
+                        error: "Error: Bookings may only be made for future timeslots."
+                    });
+                    return [2 /*return*/];
                 }
                 _a.label = 1;
             case 1:
