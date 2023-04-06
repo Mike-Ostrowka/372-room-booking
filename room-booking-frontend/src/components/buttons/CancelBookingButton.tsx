@@ -11,7 +11,7 @@ const CancelBookingButton = (props: {booking_id:any, isHidden: any, onClose: any
       const cancelRef = useRef();
 
     const handleClick = async () => {
-        const response = await fetch(`http://localhost:8080/room-booking/`, {
+        const response = await fetch(`/room-booking`, {
           method: "DELETE",
           credentials: "include",
           headers: {

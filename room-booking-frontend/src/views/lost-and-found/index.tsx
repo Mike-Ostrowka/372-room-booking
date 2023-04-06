@@ -14,7 +14,7 @@ const LostItems = () => {
     const fetchLostItems = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/lost-and-found/${loggedInUser.u_id}`,
+          `/lost-and-found/${loggedInUser.u_id}`,
           {
             method: "GET",
             credentials: "include",

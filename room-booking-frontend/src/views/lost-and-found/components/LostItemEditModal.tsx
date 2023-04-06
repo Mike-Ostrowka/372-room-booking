@@ -45,7 +45,7 @@ const LostItemEditModal = ({
       };
       try {
         const response = await fetch(
-          `http://localhost:8080/lost-and-found/${lostItemData.id}`,
+          `/lost-and-found/${lostItemData.id}`,
           {
             method: "PUT",
             headers: {

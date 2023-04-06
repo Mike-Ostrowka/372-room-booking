@@ -37,14 +37,14 @@ const PreviousBookingTable = () => {
       setRoomBookings([]);
       return;
     }
-    const response = await fetch(`http://localhost:8080/room-booking/${loggedInUser.u_id}`, {
+    const response = await fetch(`/room-booking/${loggedInUser.u_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
     });
-    const responseReview = await fetch("http://localhost:8080/room-review", {
+    const responseReview = await fetch("/room-review", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

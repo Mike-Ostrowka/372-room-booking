@@ -34,7 +34,7 @@ const LostItemsForm = ({ setLostItems }: any) => {
         user_id: loggedInUser.u_id,
       };
       try {
-        const response = await fetch("http://localhost:8080/lost-and-found", {
+        const response = await fetch("/lost-and-found", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

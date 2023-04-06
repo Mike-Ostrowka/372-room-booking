@@ -24,7 +24,7 @@ const LostItemsTable = () => {
         item_found: !item.item_found,
       };
       const res = await fetch(
-        `http://localhost:8080/lost-and-found/status/${item.id}`,
+        `/lost-and-found/status/${item.id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -53,7 +53,7 @@ const LostItemsTable = () => {
   useEffect(() => {
     const fetchLostItems = async () => {
       try {
-        const res = await fetch("http://localhost:8080/lost-and-found", {
+        const res = await fetch("/lost-and-found", {
           method: "GET",
           credentials: "include",
         });

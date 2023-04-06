@@ -23,7 +23,7 @@ const RoomsTable = ({ rooms, setRooms }: any) => {
   const handleRoomDeletion = async (room: any) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/rooms/${room.room_number}/${room.building_name}`,
+        `/rooms/${room.room_number}/${room.building_name}`,
         {
           method: "DELETE",
           credentials: "include",

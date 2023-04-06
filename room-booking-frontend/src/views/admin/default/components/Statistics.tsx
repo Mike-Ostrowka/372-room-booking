@@ -7,7 +7,7 @@ const Statistics = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:8080/statistics", {
+        const res = await fetch("/statistics", {
           method: "GET",
           credentials: "include",
         });

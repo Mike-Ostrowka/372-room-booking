@@ -32,7 +32,7 @@ const RoomReviewForm = (props: { bookingID: any, setBookingID: any }) => {
   const toast = useToast();
 
   const submitReview = async () => {
-    const res = await fetch("http://localhost:8080/room-review/", {
+    const res = await fetch("/room-review/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

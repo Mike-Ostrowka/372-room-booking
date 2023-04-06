@@ -21,7 +21,7 @@ const LostItemsTable = ({ lostItems, setLostItems }: any) => {
 
   const handleDelete = async (id: any) => {
     try {
-      const res = await fetch(`http://localhost:8080/lost-and-found/${id}`, {
+      const res = await fetch(`/lost-and-found/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

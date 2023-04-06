@@ -37,7 +37,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
   const { loggedInUser, setLoggedInUser } = useContext(UserContext);
 
   const handleLogout = async () => {
-    await fetch("http://localhost:8080/logout-api", {
+    await fetch("/logout-api", {
       method: "GET",
       credentials: "include",
     });

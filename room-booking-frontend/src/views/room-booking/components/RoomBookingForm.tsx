@@ -92,7 +92,7 @@ const RoomBookingForm = () => {
   useEffect(() => {
     const fetchRoomsAndBuildings = async () => {
       try {
-        const res = await fetch("http://localhost:8080/rooms", {
+        const res = await fetch("/rooms", {
           method: "GET",
           credentials: "include",
         });

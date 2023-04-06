@@ -53,7 +53,7 @@ const AddRoomModal = ({
         has_whiteboard: values.has_whiteboard,
       };
       try {
-        const response = await fetch(`http://localhost:8080/rooms`, {
+        const response = await fetch(`/rooms`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

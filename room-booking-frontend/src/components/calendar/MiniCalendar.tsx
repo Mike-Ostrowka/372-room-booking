@@ -87,7 +87,7 @@ export default function MiniCalendar(props: {
     const fetchRoomBookings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/room-booking/${loggedInUser.u_id}`,
+          `/room-booking/${loggedInUser.u_id}`,
           {
             method: "GET",
             credentials: "include",
@@ -103,7 +103,7 @@ export default function MiniCalendar(props: {
     const fetchAllRoomBookings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/room-booking/`,
+          `room-booking/`,
           {
             method: "GET",
             credentials: "include",
@@ -119,7 +119,7 @@ export default function MiniCalendar(props: {
     const fetchReviews = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/room-review`,
+          `room-review`,
           {
             method: "GET",
             credentials: "include",

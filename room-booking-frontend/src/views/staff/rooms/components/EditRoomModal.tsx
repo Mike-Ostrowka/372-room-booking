@@ -55,7 +55,7 @@ const EditRoomModal = ({
       };
       try {
         const response = await fetch(
-          `http://localhost:8080/rooms/${roomData.room_number}/${roomData.building_name}`,
+          `/rooms/${roomData.room_number}/${roomData.building_name}`,
           {
             method: "PUT",
             headers: {
