@@ -25,8 +25,8 @@ lostAndFoundRouter.post(
         item_description,
         user_id,
       ]);
-      const getLostItemsQuery = "SELECT * FROM lost_items";
-      const getLostItemsRes = await pool.query(getLostItemsQuery);
+      const getLostItemsQuery = "SELECT * FROM lost_items WHERE user_id=$1";
+      const getLostItemsRes = await pool.query(getLostItemsQuery, [user_id]);
       response.json(getLostItemsRes.rows);
     } catch (e) {
       console.log(e);

@@ -65,8 +65,8 @@ lostAndFoundRouter.post("/", isLoggedIn_1["default"], function (request, respons
                     ])];
             case 2:
                 _a.sent();
-                getLostItemsQuery = "SELECT * FROM lost_items";
-                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery)];
+                getLostItemsQuery = "SELECT * FROM lost_items WHERE user_id=$1";
+                return [4 /*yield*/, index_1["default"].query(getLostItemsQuery, [user_id])];
             case 3:
                 getLostItemsRes = _a.sent();
                 response.json(getLostItemsRes.rows);
