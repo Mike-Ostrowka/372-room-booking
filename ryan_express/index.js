@@ -37,7 +37,7 @@ app.use((0, express_session_1["default"])({
     name: "session",
     secret: "testsecretpleasechange",
     resave: false,
-    cookie: { maxAge: 30 * 60 * 1000 },
+    cookie: { maxAge: 60 * 60 * 1000 },
     saveUninitialized: true
 }));
 app.use("/", function (req, res, next) {

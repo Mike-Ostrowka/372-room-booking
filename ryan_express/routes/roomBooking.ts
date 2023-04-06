@@ -68,6 +68,7 @@ roomBookingRouter.get(
  * Constraints:
  * - Max booking duration: 3 hours
  * - Max occupancy: 25
+ * - Max bookings per day: 1
  * - Room must exist
  * - Bookings may only be made for a future time
  */
@@ -84,21 +85,24 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
   let max_duration: number = 60 * 3;
   let max_occupants: number = 25;
   if (duration > max_duration) {
-    response.status(500).json({
+    console.log("ERROR IN DURATION!!!");
+    response.status(400).json({
       error: `Error: booking duration exceeds the alloted max of ${max_duration} minutes.`,
     });
+    return;
   }
   if (num_occupants > max_occupants) {
-    response.status(500).json({
+    response.status(400).json({
       error: `Error: number of occupants exceed the alloted max of ${max_occupants}.`,
     });
+    return;
   }
 
-  // check that the booking is for a future timeslot        
+  // check that the booking is for a future timeslot
   if (!timeUtils.isFutureDate(start_datetime)) {
     console.log("Error: Bookings may only be made for future timeslots.");
     response.status(400).json({
-        error: "Error: Bookings may only be made for future timeslots."
+      error: "Error: Bookings may only be made for future timeslots.",
     });
     return;
   }
@@ -116,12 +120,37 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
         "Error: this room does not exist in the database. please enter a valid building name and room number."
       );
 
-      response.status(500).json({
+      response.status(400).json({
         error:
           "Error: this room does not exist in the database. please enter a valid building name and room number.",
       });
       return;
     }
+  } catch (err) {
+    console.log(err);
+    response.status(500).json({
+      error: err,
+    });
+  }
+
+  // check if the user already has already made a booking on that day
+  try {
+    // postgres throws a syntax error if we do 'timestamp $2', hence we construct a query using '${param}' instead of '$1'
+    var checkDateQuery = `SELECT * FROM room_bookings WHERE user_id=${user_id} AND DATE_TRUNC('day', start_datetime)=DATE_TRUNC('day', timestamp '${start_datetime}')`;
+    const checkDateResult = await pool.query(checkDateQuery);
+
+    if (checkDateResult.rowCount > 0) {
+      console.log(
+        "Error: The user has already made a booking for this day."
+      );
+
+      response.status(400).json({
+        error:
+          "Error: The user has already made a booking for this day.",
+      });
+      return;
+    }
+
   } catch (err) {
     console.log(err);
     response.status(500).json({
@@ -165,54 +194,64 @@ roomBookingRouter.post("/", isLoggedIn, async (request: any, response: any) => {
  * - Booking must exist and must belong to the user
  * - Must be a future booking
  */
-roomBookingRouter.delete("/", isLoggedIn, async (request: any, response: any) => {
-  let booking_id: number = request.body.booking_id;
-  let user_id: number = request.body.user_id;
+roomBookingRouter.delete(
+  "/",
+  isLoggedIn,
+  async (request: any, response: any) => {
+    let booking_id: number = request.body.booking_id;
+    let user_id: number = request.body.user_id;
 
-  // check that booking exists and it belongs to the user
-  // if booking exists, get the start time
-  try {
+    // check that booking exists and it belongs to the user
+    // if booking exists, get the start time
+    try {
       var getBookingQuery = `SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;`;
-      const getBookingResult = await pool.query(getBookingQuery, [booking_id, user_id]);
+      const getBookingResult = await pool.query(getBookingQuery, [
+        booking_id,
+        user_id,
+      ]);
 
       if (getBookingResult.rowCount === 0) {
-          console.log("Error: Either this room booking does not exist, or it does not belong to this user.");
-          response.status(400).json({
-              error: "Error: Either this room booking does not exist, or it does not belong to this user.."
-          });
+        console.log(
+          "Error: Either this room booking does not exist, or it does not belong to this user."
+        );
+        response.status(400).json({
+          error:
+            "Error: Either this room booking does not exist, or it does not belong to this user..",
+        });
 
-          return;
+        return;
       } else {
         // check that the booking is in the future
         let booking_start = getBookingResult.rows[0].start_datetime;
-        
+
         if (!timeUtils.isFutureDate(booking_start)) {
           console.log("Error: Only future bookings may be cancelled.");
           response.status(400).json({
-              error: "Error: Only future bookings may be cancelled."
+            error: "Error: Only future bookings may be cancelled.",
           });
           return;
         }
       }
-  } catch (err) {
+    } catch (err) {
       console.log(err);
       response.status(500).json({
-          error: err,
+        error: err,
       });
-  }
+    }
 
-  // build and send query
-  try {
+    // build and send query
+    try {
       var deleteBookingQuery = `DELETE FROM room_bookings WHERE booking_id=$1;`;
       const deleteResult = await pool.query(deleteBookingQuery, [booking_id]);
       console.log(deleteResult.rows);
       response.status(200).json(deleteResult.rows);
-  } catch (err) {
+    } catch (err) {
       console.log(err);
       response.status(500).json({
-          error: err,
+        error: err,
       });
+    }
   }
-});
+);
 
 export default roomBookingRouter;

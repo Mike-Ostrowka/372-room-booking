@@ -2,7 +2,21 @@ import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "assets/css/MiniCalendar.css";
-import { Button, Center, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Tag, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Center,
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Tag,
+  useDisclosure,
+} from "@chakra-ui/react";
 // Chakra imports
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 // Custom components
@@ -23,7 +37,7 @@ export default function MiniCalendar(props: {
   const [reviews, setReviews] = useState([]);
   const [currentReviews, setCurrentReviews] = useState([]);
   const [currentBooking, setCurrentBooking] = useState(0);
-    const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { loggedInUser } = useContext(UserContext);
 
@@ -34,11 +48,13 @@ export default function MiniCalendar(props: {
     );
     return roomBooking ? (
       <Stack>
-        <Stack onClick={() => {
-          setCurrentReviews(getReviews(roomBooking.room_number));
-          setCurrentBooking(roomBooking);
-          onOpen();
-        }}>
+        <Stack
+          onClick={() => {
+            setCurrentReviews(getReviews(roomBooking.room_number));
+            setCurrentBooking(roomBooking);
+            onOpen();
+          }}
+        >
           <Tag
             marginLeft={5}
           >{`${roomBooking.building_name} ${roomBooking.room_number}`}</Tag>
@@ -57,7 +73,7 @@ export default function MiniCalendar(props: {
     ) : null;
   };
 
-  const getReviews = (room_number:any) => {
+  const getReviews = (room_number: any) => {
     const bookings = allRoomBookings.filter(
       (b: any) => b.room_number === room_number
     );
@@ -68,20 +84,21 @@ export default function MiniCalendar(props: {
     return roomReviews;
   };
 
-  const calcAverageReview = (room_number:any) => {
+  const calcAverageReview = (room_number: any) => {
+    const bookings = allRoomBookings.filter(
+      (b: any) => b.room_number === room_number
+    );
 
-    const bookings = allRoomBookings.filter((b:any) => b.room_number === room_number);
-
-    const roomReviews = reviews.filter((r:any) => {
-      return bookings.some((b:any) => b.booking_id === r.booking_id);
+    const roomReviews = reviews.filter((r: any) => {
+      return bookings.some((b: any) => b.booking_id === r.booking_id);
     });
     let sum = 0;
-    roomReviews.forEach((r:any) => {
+    roomReviews.forEach((r: any) => {
       sum += r.room_rating;
     });
-    if(roomReviews.length === 0) return 5;
-    return sum / roomReviews.length;
-  }
+    if (roomReviews.length === 0) return 5;
+    return (sum / roomReviews.length).toFixed(1);
+  };
 
   useEffect(() => {
     const fetchRoomBookings = async () => {
@@ -164,4 +181,3 @@ export default function MiniCalendar(props: {
     </Card>
   );
 }
-

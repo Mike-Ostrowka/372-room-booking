@@ -53,7 +53,7 @@ const PreviousBookingTable = () => {
     });
     let responseData = await response.json();
     let responseReviewData = await responseReview.json();
-    
+
     //Filter only past bookings from the user with no review from user
     responseData = responseData.filter((booking: any) => {
       return Date.parse(booking.start_datetime) < Date.now();
@@ -63,7 +63,7 @@ const PreviousBookingTable = () => {
         (review: any) => review.booking_id == booking.booking_id
       );
     });
-    
+
     responseData.sort(function (a: any, b: any) {
       return Date.parse(b.start_datetime) - Date.parse(a.start_datetime);
     });
@@ -116,18 +116,12 @@ const PreviousBookingTable = () => {
                     <ModalHeader>Create a review</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <RoomReviewForm bookingID={bookingID} setBookingID={setBookingID}/>
+                      <RoomReviewForm
+                        bookingID={bookingID}
+                        setBookingID={setBookingID}
+                      />
                     </ModalBody>
-
-                    <ModalFooter>
-                      <Button variant="ghost" mr={3} onClick={() => {
-                        setBookingID(0);
-                        fetchBookings().catch(console.error);
-                        onClose();
-                      }}>
-                        Close
-                      </Button>
-                    </ModalFooter>
+                    <ModalFooter />
                   </ModalContent>
                 </Modal>
               </Td>
@@ -136,8 +130,8 @@ const PreviousBookingTable = () => {
         </Tbody>
       </Table>
     </TableContainer>
-  ): (
-    <Card>
+  ) : (
+    <Card padding={10}>
       <Text fontSize="30px">No bookings available to review</Text>
     </Card>
   );
