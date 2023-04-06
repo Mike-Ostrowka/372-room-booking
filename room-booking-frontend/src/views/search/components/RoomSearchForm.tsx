@@ -28,7 +28,15 @@ const RoomSearchForm = ({ setRooms }: any) => {
   });
   const formik = useFormik({
     initialValues: {
-      start_datetime: new Date().toISOString().slice(0, 16),
+      start_datetime: new Date().toLocaleString("en-US", {
+        timeZone: "America/Los_Angeles",
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       duration: "",
       num_occupants: "",
       hasprojector: false,
@@ -36,7 +44,15 @@ const RoomSearchForm = ({ setRooms }: any) => {
     },
     onSubmit: async (values: any, { setSubmitting }: any) => {
       const data = {
-        start_datetime: values.start_datetime,
+        start_datetime: values.start_datetime.toLocaleString("en-US", {
+          timeZone: "America/Los_Angeles",
+          hour12: false,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
         duration: parseInt(values.duration),
         num_occupants: parseInt(values.num_occupants),
         hasprojector: values.hasprojector,
