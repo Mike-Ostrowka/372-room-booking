@@ -44,7 +44,7 @@ const RoomSearchForm = ({ setRooms }: any) => {
       };
       setSearchCriteria(data);
       try {
-        const response = await fetch("http://localhost:8080/search-rooms", {
+        const response = await fetch("/search-rooms", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
