@@ -39,7 +39,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.__esModule = true;
 var express_1 = require("express");
 var index_1 = __importDefault(require("../index"));
 // middleware and util functions
@@ -128,7 +127,7 @@ roomBookingRouter.get("/:user_id", isLoggedIn_1["default"], function (request, r
  * - Bookings may only be made for a future time
  */
 roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, end_datetime, addBookingQuery, bookingResult, err_4;
+    var start_datetime, duration, num_occupants, building_name, room_number, user_id, max_duration, max_occupants, getRoomQuery, roomResult, err_3, checkDateQuery, checkDateResult, err_4, end_datetime, addBookingQuery, bookingResult, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -141,8 +140,6 @@ roomBookingRouter.post("/", isLoggedIn_1["default"], function (request, response
                 max_duration = 60 * 3;
                 max_occupants = 25;
                 if (duration > max_duration) {
-                    response.status(500).json({
-                        error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
                     console.log("ERROR IN DURATION!!!");
                     response.status(400).json({
                         error: "Error: booking duration exceeds the alloted max of ".concat(max_duration, " minutes.")
@@ -262,7 +259,10 @@ roomBookingRouter["delete"]("/", isLoggedIn_1["default"], function (request, res
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 getBookingQuery = "SELECT start_datetime FROM room_bookings WHERE booking_id=$1 AND user_id=$2;";
-                return [4 /*yield*/, index_1.default.query(getBookingQuery, [booking_id, user_id])];
+                return [4 /*yield*/, index_1["default"].query(getBookingQuery, [
+                        booking_id,
+                        user_id,
+                    ])];
             case 2:
                 getBookingResult = _a.sent();
                 if (getBookingResult.rowCount === 0) {
@@ -287,7 +287,7 @@ roomBookingRouter["delete"]("/", isLoggedIn_1["default"], function (request, res
                 err_6 = _a.sent();
                 console.log(err_6);
                 response.status(500).json({
-                    error: err_5,
+                    error: err_6
                 });
                 return [3 /*break*/, 4];
             case 4:
@@ -303,7 +303,7 @@ roomBookingRouter["delete"]("/", isLoggedIn_1["default"], function (request, res
                 err_7 = _a.sent();
                 console.log(err_7);
                 response.status(500).json({
-                    error: err_6,
+                    error: err_7
                 });
                 return [3 /*break*/, 7];
             case 7: return [2 /*return*/];
