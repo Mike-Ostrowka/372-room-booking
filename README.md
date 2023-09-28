@@ -10,21 +10,21 @@ Pictures of some parts of the UI are shown below: <br><br>
 <details>
   <summary>Main Calendar</summary>
 <p align="center">
-  <img src="room-booking-main-page.png" width="350" title="Main Calendar">
+  <img src="room-booking-main-page.png" width="1200" title="Main Calendar">
 </p>
 </details>
 
 <details>
   <summary>Room Booking</summary>
 <p align="center">
-  <img src="room-booking-book.png" width="350" title="Room Booking">
+  <img src="room-booking-book.png" width="1200" title="Room Booking">
 </p>
 </details>
 
 <details>
   <summary>Campus Map</summary>
 <p align="center">
-  <img src="room-booking-map.png" width="350" title="Map">
+  <img src="room-booking-map.png" width="1200" title="Map">
 </p>
 </details>
 
